@@ -13,6 +13,10 @@ public class MainActivity extends AppCompatActivity {
         int count = countSomething();
     }
 
+    private void test() {
+
+    }
+    
     private int countSomething() {
         int count = 0;
         for (int i = 0; i < 33; i++) {
