@@ -9,5 +9,15 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        int count = countSomething();
+    }
+
+    private int countSomething() {
+        int count = 0;
+        for (int i = 0; i < 33; i++) {
+            count++;
+        }
+        return count;
     }
 }
