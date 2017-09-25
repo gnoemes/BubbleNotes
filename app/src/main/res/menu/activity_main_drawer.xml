@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single"
+        android:id="@+id/group_main">
+        <item
+            android:id="@+id/nav_notes"
+            android:icon="@mipmap/ic_launcher_round"
+            android:title="Notes" />
+        <item
+            android:id="@+id/nav_weather"
+            android:icon="@mipmap/ic_launcher_round"
+            android:title="Weather" />
+        <item
+            android:id="@+id/nav_diary"
+            android:icon="@mipmap/ic_launcher_round"
+            android:title="Diary" />
+    </group>
+
+    <group android:checkableBehavior="single"
+           android:id="@+id/group_settings">
+        <item
+            android:id="@+id/nav_import_export"
+            android:icon="@mipmap/ic_launcher_round"
+            android:title="Import/Export database" />
+        <item
+            android:id="@+id/nav_settings"
+            android:icon="@mipmap/ic_launcher_round"
+            android:title="Settings" />
+        <item
+            android:id="@+id/nav_about"
+            android:icon="@mipmap/ic_launcher_round"
+            android:title="About" />
+    </group>
+
+
+</menu>
