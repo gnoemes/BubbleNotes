@@ -2,11 +2,16 @@ package com.gnoemes.bubblenotes;
 
 import android.app.Application;
 
-import com.facebook.stetho.Stetho;
-import com.uphyca.stetho_realm.RealmInspectorModulesProvider;
+import com.gnoemes.bubblenotes.di.AppComponent;
+import com.gnoemes.bubblenotes.di.AppModule;
+import com.gnoemes.bubblenotes.di.DaggerAppComponent;
+import com.gnoemes.bubblenotes.di.DataManagerModule;
+import com.gnoemes.bubblenotes.di.NetworkModule;
+import com.gnoemes.bubblenotes.di.RealmModule;
+import com.gnoemes.bubblenotes.data.source.local.RealmDatabase;
 
-import io.realm.Realm;
-import io.realm.RealmConfiguration;
+import javax.inject.Inject;
+
 import timber.log.Timber;
 
 /**
@@ -14,6 +19,11 @@ import timber.log.Timber;
  */
 
 public class App extends Application {
+
+    @Inject
+    RealmDatabase realmDatabase;
+    private static AppComponent appComponent;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -22,31 +32,35 @@ public class App extends Application {
             Timber.plant(new Timber.DebugTree());
         }
 
-        // Initialize Realm. Should only be done once when the application starts.
-        Realm.init(this);
+        initAppComponent(this);
+        getAppComponent().inject(this);
+        realmDatabase.setupRealm();
+        realmDatabase.setupStetho();
 
-        //TODO Take migration from other project. If db schema was changed, all data will be deleted!
-        RealmConfiguration config = new RealmConfiguration
-                .Builder()
-                .deleteRealmIfMigrationNeeded()
-                .build();
-        Realm.setDefaultConfiguration(config);
-
-        //TODO Stetho is not working. Wait for new version.
-        Stetho.initialize(
-                Stetho.newInitializerBuilder(this)
-                        .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
-                        .enableWebKitInspector(RealmInspectorModulesProvider.builder(this).build())
-                        .build());
-
-
-        //clearRealmDb();
     }
 
-    private void clearRealmDb() {
-        Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
-        Realm.getDefaultInstance().deleteAll();
-        realm.commitTransaction();
+    public static AppComponent getAppComponent() {
+        return appComponent;
+    }
+
+    private void initAppComponent(App app) {
+        appComponent = DaggerAppComponent.builder()
+                .appModule(new AppModule(app))
+                .realmModule(new RealmModule())
+                .dataManagerModule(new DataManagerModule())
+                .networkModule(new NetworkModule())
+                .build();
+    }
+
+    public AppComponent getComponent() {
+        if (appComponent == null) {
+            appComponent = DaggerAppComponent.builder()
+                    .appModule(new AppModule(this))
+                    .realmModule(new RealmModule())
+                    .dataManagerModule(new DataManagerModule())
+                    .networkModule(new NetworkModule())
+                    .build();
+        }
+        return appComponent;
     }
 }

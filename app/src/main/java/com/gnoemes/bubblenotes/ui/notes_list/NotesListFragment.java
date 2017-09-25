@@ -18,7 +18,7 @@ import com.arellomobile.mvp.MvpAppCompatFragment;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.gnoemes.bubblenotes.R;
-import com.gnoemes.bubblenotes.model.Note;
+import com.gnoemes.bubblenotes.data.model.Note;
 import com.gnoemes.bubblenotes.ui.note_detail.NoteDetailActivity;
 
 import butterknife.BindView;

@@ -1,7 +1,6 @@
 package com.gnoemes.bubblenotes.ui.note_detail;
 
 import android.os.Bundle;
-import android.support.design.widget.BaseTransientBottomBar;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -15,7 +14,7 @@ import com.arellomobile.mvp.MvpAppCompatActivity;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.gnoemes.bubblenotes.R;
-import com.gnoemes.bubblenotes.model.Note;
+import com.gnoemes.bubblenotes.data.model.Note;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
