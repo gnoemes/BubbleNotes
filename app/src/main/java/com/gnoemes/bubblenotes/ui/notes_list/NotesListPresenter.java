@@ -38,10 +38,11 @@ public class NotesListPresenter extends MvpPresenter<NotesListView> {
     protected void onFirstViewAttach() {
         super.onFirstViewAttach();
         App.getAppComponent().inject(this);
-        loadNotes();
+        //loadNotes();
+        loadNotesRx();
     }
 
-    //TODO Draft sync version. Change to Rx.
+    //Draft sync version. Change to Rx.
     private void loadNotes() {
         RealmResults<Note> notes = dataManager.loadNotes(Note.class);
 //        RealmResults<Note> notes = realm.where(Note.class).findAllSorted("priority");
@@ -49,8 +50,9 @@ public class NotesListPresenter extends MvpPresenter<NotesListView> {
     }
 
     //Async Rx version
+    //
     private void loadNotesRx() {
-        //TODO Остановить disposable в onStop
+        //TODO Остановить disposable в onDestroy
         Disposable disposable = realm.where(Note.class).findAllSortedAsync("priority")
                 .<RealmResults<Note>>asChangesetObservable()
                 //.filter(realmResultsCollectionChange -> realmResultsCollectionChange.getCollection().isValid())
@@ -60,29 +62,18 @@ public class NotesListPresenter extends MvpPresenter<NotesListView> {
                     @Override
                     public void accept(CollectionChange<RealmResults<Note>> realmResultsCollectionChange) throws Exception {
                         Timber.d("accept");
-                        //TODO Проверить логику уведомлений
-                        //Нужно отдать RealmResults<Note> в первый раз.
-                        //Дальше передавать changeset
+
                         if (realmResultsCollectionChange.getCollection().isLoaded()) {
-
-                           /* if (realmResultsCollectionChange.getChangeset() == null) {
-                                Timber.d("realmResultsCollectionChange.getChangeset() == null");
-                                getViewState().setNotesList(realmResultsCollectionChange.getCollection());
-                            } else {
-                                Timber.d("realmResultsCollectionChange.getChangeset() != null");
-                                getViewState().setChangeSet(realmResultsCollectionChange.getChangeset());
-                            }*/
-
                             if (realmResultsCollectionChange.getChangeset() == null) {
                                 Timber.d("realmResultsCollectionChange.getChangeset() == null");
                                 getViewState().setNotesList(realmResultsCollectionChange.getCollection());
                             }
-                            getViewState().setChangeSet(realmResultsCollectionChange.getChangeset());
-
                         }
+                        getViewState().setChangeSet(realmResultsCollectionChange.getChangeset());
+
                     }
                 }, throwable -> {
-
+                    Timber.d("Error " + throwable);
                 });
     }
 

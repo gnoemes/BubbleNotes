@@ -47,7 +47,10 @@ public class NotesListFragment extends MvpAppCompatFragment implements NotesList
         return new NotesListPresenter(Realm.getDefaultInstance());
     }
 
+    //TODO Choose only one adapter
     NotesListAdapter adapter;
+    NotesListAdapterRecycler adapterRecycler;
+
     NotesListAdapter.ItemClickListener adapterClickListener = new NotesListAdapter.ItemClickListener() {
         @Override
         public void onClick(String note_id) {
@@ -79,8 +82,13 @@ public class NotesListFragment extends MvpAppCompatFragment implements NotesList
         drawer_layout = (DrawerLayout) getActivity().findViewById(R.id.drawer_layout);
 
         listRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+
         adapter = new NotesListAdapter(null, adapterClickListener);
-        listRecyclerView.setAdapter(adapter);
+        adapterRecycler = new NotesListAdapterRecycler(null, adapterClickListener);
+
+        listRecyclerView.setAdapter(adapterRecycler);
+        //listRecyclerView.setAdapter(adapter);
 
         initToolbar();
         //TODO Объяснить
@@ -111,40 +119,43 @@ public class NotesListFragment extends MvpAppCompatFragment implements NotesList
         }
     }
 
-
     @Override
     public void setNotesList(RealmResults<Note> notes) {
-        adapter.updateData(notes);
+        Timber.d("setNotesList");
+        //adapter.updateData(notes);
+        adapterRecycler.updateData(notes);
     }
 
-    //This method not used yet
+
     @Override
     public void setChangeSet(OrderedCollectionChangeSet orderedCollectionChangeSet) {
-        //уведомить адаптер
+        Timber.d("setChangeSet");
         notifyAdapter(orderedCollectionChangeSet);
     }
-    //This method not used yet
+
     private void notifyAdapter(OrderedCollectionChangeSet changeSet) {
+        Timber.d("notifyAdapter ");
         // For deletions, the adapter has to be notified in reverse order.
         if (changeSet == null) {
-            adapter.notifyDataSetChanged();
+            Timber.d("changeSet == null");
+            adapterRecycler.notifyDataSetChanged();
             return;
         }
 
         OrderedCollectionChangeSet.Range[] deletions = changeSet.getDeletionRanges();
         for (int i = deletions.length - 1; i >= 0; i--) {
             OrderedCollectionChangeSet.Range range = deletions[i];
-            adapter.notifyItemRangeRemoved(range.startIndex, range.length);
+            adapterRecycler.notifyItemRangeRemoved(range.startIndex, range.length);
         }
 
         OrderedCollectionChangeSet.Range[] insertions = changeSet.getInsertionRanges();
         for (OrderedCollectionChangeSet.Range range : insertions) {
-            adapter.notifyItemRangeInserted(range.startIndex, range.length);
+            adapterRecycler.notifyItemRangeInserted(range.startIndex, range.length);
         }
 
         OrderedCollectionChangeSet.Range[] modifications = changeSet.getChangeRanges();
         for (OrderedCollectionChangeSet.Range range : modifications) {
-            adapter.notifyItemRangeChanged(range.startIndex, range.length);
+            adapterRecycler.notifyItemRangeChanged(range.startIndex, range.length);
         }
     }
 }

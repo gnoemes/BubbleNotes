@@ -64,7 +64,15 @@ public class NoteDetailPresenter extends MvpPresenter<NoteDetailView> {
                     getViewState().showToast("Error when updating");
                 });
     }
-
+    public void deleteNote(String id) {
+        realm.executeTransactionAsync(realm1 -> {
+            Note note = realm1.where(Note.class).equalTo("id", id).findFirst();
+            note.deleteFromRealm();
+        }, () -> {
+            getViewState().showToast("Note deleted");
+            getViewState().backPressed();
+        });
+    }
     void onStop() {
         Timber.d("onStop");
 
