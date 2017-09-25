@@ -1,4 +1,4 @@
-package com.gnoemes.bubblenotes.model;
+package com.gnoemes.bubblenotes.data.model;
 
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;

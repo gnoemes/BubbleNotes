@@ -2,9 +2,13 @@ package com.gnoemes.bubblenotes.ui.notes_list;
 
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
-import com.gnoemes.bubblenotes.model.Note;
+import com.gnoemes.bubblenotes.App;
+import com.gnoemes.bubblenotes.data.Manager;
+import com.gnoemes.bubblenotes.data.model.Note;
 
 import java.util.UUID;
+
+import javax.inject.Inject;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -22,6 +26,9 @@ import timber.log.Timber;
 public class NotesListPresenter extends MvpPresenter<NotesListView> {
     private Realm realm;
 
+    @Inject
+    Manager.DataManager dataManager;
+
     public NotesListPresenter(Realm realm) {
         this.realm = realm;
     }
@@ -29,12 +36,14 @@ public class NotesListPresenter extends MvpPresenter<NotesListView> {
     @Override
     protected void onFirstViewAttach() {
         super.onFirstViewAttach();
+        App.getAppComponent().inject(this);
         loadNotes();
     }
 
     //TODO Draft sync version. Change to Rx.
     private void loadNotes() {
-        RealmResults<Note> notes = realm.where(Note.class).findAllSorted("priority");
+        RealmResults<Note> notes = dataManager.loadNotes(Note.class);
+//        RealmResults<Note> notes = realm.where(Note.class).findAllSorted("priority");
         getViewState().setNotesList(notes);
     }
 
