@@ -1,8 +1,8 @@
 package com.gnoemes.bubblenotes.di;
 
-import com.gnoemes.bubblenotes.data.source.Manager;
 import com.gnoemes.bubblenotes.data.source.local.RealmDatabase;
 import com.gnoemes.bubblenotes.data.source.local.RealmManager;
+import com.gnoemes.bubblenotes.data.source.local.RealmManagerDefault;
 
 import javax.inject.Singleton;
 
@@ -20,8 +20,8 @@ public class RealmModule {
 
     @Provides
     @Singleton
-    Manager.RealmManager provideRealmManager() {
-        return new RealmManager();
+    RealmManager provideRealmManager() {
+        return new RealmManagerDefault();
 
     }
 }
