@@ -1,7 +1,7 @@
-package com.gnoemes.bubblenotes.data.database;
+package com.gnoemes.bubblenotes.data.source.local;
 
 import com.gnoemes.bubblenotes.App;
-import com.gnoemes.bubblenotes.data.Manager;
+import com.gnoemes.bubblenotes.data.source.Manager;
 import com.gnoemes.bubblenotes.data.model.Note;
 
 import javax.inject.Inject;

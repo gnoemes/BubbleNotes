@@ -4,9 +4,10 @@ package com.gnoemes.bubblenotes.di;
 import android.content.Context;
 
 import com.gnoemes.bubblenotes.App;
-import com.gnoemes.bubblenotes.data.Manager;
-import com.gnoemes.bubblenotes.data.database.RealmDatabase;
-import com.gnoemes.bubblenotes.data.database.RealmManager;
+import com.gnoemes.bubblenotes.data.source.Manager;
+import com.gnoemes.bubblenotes.data.source.local.RealmDatabase;
+import com.gnoemes.bubblenotes.data.source.local.RealmManager;
+import com.gnoemes.bubblenotes.data.source.remote.IRemoteDataManager;
 import com.gnoemes.bubblenotes.ui.notes_list.NotesListPresenter;
 
 import javax.inject.Singleton;
@@ -14,7 +15,7 @@ import javax.inject.Singleton;
 import dagger.Component;
 
 @Singleton
-@Component(modules = {AppModule.class,RealmModule.class,DataManagerModule.class})
+@Component(modules = {AppModule.class,RealmModule.class,DataManagerModule.class,NetworkModule.class})
 public interface AppComponent {
 
     void inject(App app);
@@ -24,6 +25,7 @@ public interface AppComponent {
 
     Context getContext();
     RealmDatabase getRealmDatabase();
+    IRemoteDataManager getRemoteDataManager();
     Manager.DataManager getDataManager();
 //    PrefsManager prefsManager();
 

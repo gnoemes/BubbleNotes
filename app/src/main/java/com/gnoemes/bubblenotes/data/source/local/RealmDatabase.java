@@ -1,4 +1,4 @@
-package com.gnoemes.bubblenotes.data.database;
+package com.gnoemes.bubblenotes.data.source.local;
 
 import android.content.Context;
 

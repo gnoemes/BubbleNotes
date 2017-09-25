@@ -1,8 +1,8 @@
 package com.gnoemes.bubblenotes.di;
 
-import com.gnoemes.bubblenotes.data.Manager;
-import com.gnoemes.bubblenotes.data.database.RealmDatabase;
-import com.gnoemes.bubblenotes.data.database.RealmManager;
+import com.gnoemes.bubblenotes.data.source.Manager;
+import com.gnoemes.bubblenotes.data.source.local.RealmDatabase;
+import com.gnoemes.bubblenotes.data.source.local.RealmManager;
 
 import javax.inject.Singleton;
 

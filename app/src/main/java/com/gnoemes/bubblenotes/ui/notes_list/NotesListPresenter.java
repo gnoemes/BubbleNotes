@@ -3,7 +3,7 @@ package com.gnoemes.bubblenotes.ui.notes_list;
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
 import com.gnoemes.bubblenotes.App;
-import com.gnoemes.bubblenotes.data.Manager;
+import com.gnoemes.bubblenotes.data.source.Manager;
 import com.gnoemes.bubblenotes.data.model.Note;
 
 import java.util.UUID;

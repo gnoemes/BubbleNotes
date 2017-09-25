@@ -1,4 +1,4 @@
-package com.gnoemes.bubblenotes.data;
+package com.gnoemes.bubblenotes.data.source;
 
 import com.gnoemes.bubblenotes.data.model.Note;
 
