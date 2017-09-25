@@ -1,8 +1,9 @@
 package com.gnoemes.bubblenotes.di;
 
 import com.gnoemes.bubblenotes.data.source.DataManager;
-import com.gnoemes.bubblenotes.data.source.Manager;
-import com.gnoemes.bubblenotes.data.source.remote.IRemoteDataManager;
+import com.gnoemes.bubblenotes.data.source.DataManagerDefault;
+import com.gnoemes.bubblenotes.data.source.local.RealmManager;
+import com.gnoemes.bubblenotes.data.source.remote.RemoteManager;
 
 import javax.inject.Singleton;
 
@@ -14,7 +15,7 @@ public class DataManagerModule {
 
     @Provides
     @Singleton
-    Manager.DataManager provideDataManager(Manager.RealmManager realmManager, IRemoteDataManager remoteDataManager) {
-        return new DataManager(realmManager, remoteDataManager);
+    DataManager provideDataManager(RealmManager realmManager, RemoteManager remoteDataManager) {
+        return new DataManagerDefault(realmManager, remoteDataManager);
     }
 }

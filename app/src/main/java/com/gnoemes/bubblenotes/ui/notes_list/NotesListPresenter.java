@@ -3,7 +3,8 @@ package com.gnoemes.bubblenotes.ui.notes_list;
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
 import com.gnoemes.bubblenotes.App;
-import com.gnoemes.bubblenotes.data.source.Manager;
+import com.gnoemes.bubblenotes.data.source.DataManager;
+
 import com.gnoemes.bubblenotes.data.model.Note;
 
 import java.util.UUID;
@@ -27,7 +28,7 @@ public class NotesListPresenter extends MvpPresenter<NotesListView> {
     private Realm realm;
 
     @Inject
-    Manager.DataManager dataManager;
+    DataManager dataManager;
 
     public NotesListPresenter(Realm realm) {
         this.realm = realm;

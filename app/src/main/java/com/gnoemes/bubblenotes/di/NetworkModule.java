@@ -1,8 +1,8 @@
 package com.gnoemes.bubblenotes.di;
 
 
-import com.gnoemes.bubblenotes.data.source.remote.IRemoteDataManager;
-import com.gnoemes.bubblenotes.data.source.remote.RemoteDataSource;
+import com.gnoemes.bubblenotes.data.source.remote.RemoteManager;
+import com.gnoemes.bubblenotes.data.source.remote.RemoteManagerDefault;
 
 import javax.inject.Singleton;
 
@@ -14,7 +14,7 @@ public class NetworkModule {
 
     @Provides
     @Singleton
-    IRemoteDataManager provideRemoteDataManager() {
-        return new RemoteDataSource();
+    RemoteManager provideRemoteDataManager() {
+        return new RemoteManagerDefault();
 }
 }
