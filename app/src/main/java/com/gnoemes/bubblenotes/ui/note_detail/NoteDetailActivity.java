@@ -38,6 +38,7 @@ public class NoteDetailActivity extends MvpAppCompatActivity implements NoteDeta
     @BindView(R.id.priorityEditText) EditText priorityEditText;
     @BindView(R.id.idTextView) TextView idTextView;
     @BindView(R.id.fab) FloatingActionButton fab;
+    @BindView(R.id.fabDelete) FloatingActionButton fabDelete;
 
     @InjectPresenter NoteDetailPresenter presenter;
     @ProvidePresenter
@@ -57,6 +58,14 @@ public class NoteDetailActivity extends MvpAppCompatActivity implements NoteDeta
         disableKeyboardOnStart();
         initToolbar();
         initSaveButton();
+        initDeleteButton();
+    }
+
+    private void initDeleteButton() {
+        fabDelete.setOnClickListener(view1 -> {
+            if (note_id != null)
+                presenter.deleteNote(note_id);
+        });
     }
 
     private void initSaveButton() {
@@ -129,5 +138,10 @@ public class NoteDetailActivity extends MvpAppCompatActivity implements NoteDeta
     @Override
     public void showToast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void backPressed() {
+        onBackPressed();
     }
 }

@@ -18,35 +18,52 @@ import io.realm.OrderedRealmCollection;
 
 //TODO Draft
 public class NotesListAdapterRecycler extends RecyclerView.Adapter<NotesListAdapterRecycler.NoteHolder> {
+
     private NotesListAdapter.ItemClickListener clickListener;
     private OrderedRealmCollection<Note> adapterData;
-
-    @Override
-    public NoteHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return null;
-    }
-
-    @Override
-    public void onBindViewHolder(NoteHolder holder, int position) {
-
-    }
-
-    @Override
-    public int getItemCount() {
-        return 0;
-    }
-
 
     public interface ItemClickListener {
         void onClick(String note_id);
     }
 
-    public NotesListAdapterRecycler(@Nullable OrderedRealmCollection<Note> data, NotesListAdapter.ItemClickListener clickListener) {
-        //TODO разобрать конструктор суперкласса
+    public NotesListAdapterRecycler(@Nullable OrderedRealmCollection<Note> adapterData, NotesListAdapter.ItemClickListener clickListener) {
         this.clickListener = clickListener;
+        this.adapterData = adapterData;
+    }
+
+    @Override
+    public NoteHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.list_item_note, parent, false);
+        return new NotesListAdapterRecycler.NoteHolder(view);
+    }
+
+    @Override
+    public void onBindViewHolder(NoteHolder holder, int position) {
+        Note note = getItem(position);
+        holder.id.setText(note.getId());
+        holder.name.setText(note.getName());
+        holder.priority.setText(note.getPriority() + "");
     }
 
 
+    @Override
+    public int getItemCount() {
+        return isDataValid() ? adapterData.size() : 0;
+    }
+    private boolean isDataValid() {
+        return adapterData != null && adapterData.isValid();
+    }
+
+
+    public Note getItem(int index) {
+        return isDataValid() ? adapterData.get(index) : null;
+    }
+
+    public void updateData(@Nullable OrderedRealmCollection<Note> data) {
+        this.adapterData = data;
+        notifyDataSetChanged();
+    }
 
     //TODO make Holder class static
     public class NoteHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -65,7 +82,7 @@ public class NotesListAdapterRecycler extends RecyclerView.Adapter<NotesListAdap
 
         @Override
         public void onClick(View view) {
-            //clickListener.onClick(getItem(getAdapterPosition()).getId());
+            clickListener.onClick(getItem(getAdapterPosition()).getId());
         }
     }
 }

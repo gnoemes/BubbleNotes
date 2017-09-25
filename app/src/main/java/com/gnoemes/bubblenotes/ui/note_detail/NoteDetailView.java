@@ -20,4 +20,7 @@ public interface NoteDetailView extends MvpView {
 
     @StateStrategyType(SkipStrategy.class)
     void showToast(String message);
+
+    @StateStrategyType(SkipStrategy.class)
+    void backPressed();
 }

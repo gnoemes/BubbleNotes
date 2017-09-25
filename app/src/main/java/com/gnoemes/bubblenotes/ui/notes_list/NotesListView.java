@@ -19,6 +19,6 @@ public interface NotesListView extends MvpView {
     @StateStrategyType(AddToEndSingleStrategy.class)
     void setNotesList(RealmResults<Note> notes);
 
-    @StateStrategyType(SkipStrategy.class)
+    @StateStrategyType(AddToEndSingleStrategy.class)
     void setChangeSet(OrderedCollectionChangeSet orderedCollectionChangeSet);
 }
