@@ -10,8 +10,8 @@ import io.realm.RealmResults;
  */
 
 public interface RealmManager {
-    Observable<Note> findById(String id);
-    Observable<RealmResults<Note>> findAll();
+    Observable<Note> findNoteById(String id);
+    Observable<RealmResults<Note>> findAllNotes();
     Observable<Boolean> addNote(String id, String name, int priority);
     Observable<Boolean> updateNote(String id, String name, int priority);
     Observable<Boolean> deleteNote(String id);

@@ -18,7 +18,6 @@ import com.gnoemes.bubblenotes.data.model.Note;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.realm.Realm;
 import timber.log.Timber;
 
 /**
@@ -42,7 +41,7 @@ public class NoteDetailActivity extends MvpAppCompatActivity implements NoteDeta
     @InjectPresenter NoteDetailPresenter presenter;
     @ProvidePresenter
     NoteDetailPresenter providePresenter() {
-        return new NoteDetailPresenter(Realm.getDefaultInstance(), getIntent().getStringExtra(EXTRA_NOTE_ID));
+        return new NoteDetailPresenter(getIntent().getStringExtra(EXTRA_NOTE_ID));
     }
 
     @Override

@@ -13,7 +13,6 @@ import javax.inject.Inject;
 import io.reactivex.Observer;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
-import io.realm.Realm;
 import timber.log.Timber;
 
 /**
@@ -26,11 +25,9 @@ public class NoteDetailPresenter extends MvpPresenter<NoteDetailView> {
     @Inject
     DataManager dataManager;
 
-    private Realm realm;
     private String id;
 
-    public NoteDetailPresenter(Realm realm, String id) {
-        this.realm = realm;
+    public NoteDetailPresenter(String id) {
         this.id = id;
         App.getAppComponent().inject(this);
     }
@@ -68,7 +65,6 @@ public class NoteDetailPresenter extends MvpPresenter<NoteDetailView> {
             }
         });
 
-//        Note note = realm.where(Note.class).equalTo("id", this.id).findFirst();
     }
 
     public void addNote(String name, int priority) {
@@ -93,19 +89,9 @@ public class NoteDetailPresenter extends MvpPresenter<NoteDetailView> {
                 @Override
                 public void onComplete() {
                     getViewState().showToast("Note saved " + id);
+                    getViewState().backPressed();
                 }
             });
-
-//        realm.executeTransactionAsync(realm1 -> {
-//                    Note note = realm1.createObject(Note.class, id);
-//                    note.setName(name);
-//                    note.setPriority(priority);
-//                }, () -> {
-//                    getViewState().showToast("Note saved " + id);
-//                },
-//                error -> {
-//                    getViewState().showToast("Error when saving");
-//                });
     }
 
     public void updateNote(String id, String name, int priority) {
@@ -131,19 +117,9 @@ public class NoteDetailPresenter extends MvpPresenter<NoteDetailView> {
                     @Override
                     public void onComplete() {
                         getViewState().showToast("Note updated");
+                        getViewState().backPressed();
                     }
                 });
-
-//        realm.executeTransactionAsync(realm1 -> {
-//                    Note note = realm1.where(Note.class).equalTo("id", id).findFirst();
-//                    note.setName(name);
-//                    note.setPriority(priority);
-//                }, () -> {
-//                    getViewState().showToast("Note updated");
-//                },
-//                error -> {
-//                    getViewState().showToast("Error when updating");
-//                });
     }
     public void deleteNote(String id) {
         dataManager.deleteNote(id)
@@ -169,14 +145,6 @@ public class NoteDetailPresenter extends MvpPresenter<NoteDetailView> {
                         getViewState().backPressed();
                     }
                 });
-
-//        realm.executeTransactionAsync(realm1 -> {
-//            Note note = realm1.where(Note.class).equalTo("id", id).findFirst();
-//            note.deleteFromRealm();
-//        }, () -> {
-//            getViewState().showToast("Note deleted");
-//            getViewState().backPressed();
-//        });
     }
     void onStop() {
         Timber.d("onStop");
@@ -186,6 +154,5 @@ public class NoteDetailPresenter extends MvpPresenter<NoteDetailView> {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        realm.close();
     }
 }

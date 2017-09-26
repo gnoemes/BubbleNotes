@@ -24,7 +24,6 @@ import com.gnoemes.bubblenotes.ui.note_detail.NoteDetailActivity;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.realm.OrderedCollectionChangeSet;
-import io.realm.Realm;
 import io.realm.RealmResults;
 import timber.log.Timber;
 
@@ -44,7 +43,7 @@ public class NotesListFragment extends MvpAppCompatFragment implements NotesList
     NotesListPresenter presenter;
     @ProvidePresenter
     NotesListPresenter providePresenter() {
-        return new NotesListPresenter(Realm.getDefaultInstance());
+        return new NotesListPresenter();
     }
 
     //TODO Choose only one adapter

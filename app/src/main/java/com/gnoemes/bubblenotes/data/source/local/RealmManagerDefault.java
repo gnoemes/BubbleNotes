@@ -19,7 +19,7 @@ public class RealmManagerDefault implements RealmManager {
 
 
     @Override
-    public Observable<Note> findById(final String id) {
+    public Observable<Note> findNoteById(final String id) {
         return Observable.create(subscriber -> {
             try {
                 Note note = realmDatabase.findById(Note.class,id);
@@ -33,7 +33,7 @@ public class RealmManagerDefault implements RealmManager {
     }
 
     @Override
-    public Observable<RealmResults<Note>> findAll() {
+    public Observable<RealmResults<Note>> findAllNotes() {
         return Observable.create(subscriber -> {
             try {
                 RealmResults<Note> notes = realmDatabase.findAll(Note.class);

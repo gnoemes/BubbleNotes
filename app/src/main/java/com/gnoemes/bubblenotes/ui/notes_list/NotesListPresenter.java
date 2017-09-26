@@ -11,7 +11,6 @@ import javax.inject.Inject;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
-import io.realm.Realm;
 import io.realm.RealmResults;
 import io.realm.rx.CollectionChange;
 import timber.log.Timber;
@@ -22,32 +21,20 @@ import timber.log.Timber;
 
 @InjectViewState
 public class NotesListPresenter extends MvpPresenter<NotesListView> {
-    private Realm realm;
 
     @Inject
     DataManager dataManager;
 
-    public NotesListPresenter(Realm realm) {
-        this.realm = realm;
-    }
+    public NotesListPresenter() {}
 
     @Override
     protected void onFirstViewAttach() {
         super.onFirstViewAttach();
         App.getAppComponent().inject(this);
-        //loadNotes();
         loadNotesRx();
     }
 
-    //Draft sync version. Change to Rx.
-    private void loadNotes() {
-//        RealmResults<Note> notes = dataManager.loadNotes(Note.class);
-//        RealmResults<Note> notes = realm.where(Note.class).findAllSorted("priority");
-//        getViewState().setNotesList(notes);
-    }
-
     //Async Rx version
-    //
     private void loadNotesRx() {
         //TODO Остановить disposable в onDestroy
         Disposable disposable = dataManager.loadNotes().subscribe(notes ->
@@ -83,7 +70,7 @@ public class NotesListPresenter extends MvpPresenter<NotesListView> {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        realm.removeAllChangeListeners();
-        realm.close();
+//        realm.removeAllChangeListeners();
+//        realm.close();
     }
 }

@@ -30,12 +30,12 @@ public class DataManagerDefault implements DataManager {
 
     @Override
     public Observable<Note> loadNotes(String id) {
-        return realmManager.findById(id);
+        return realmManager.findNoteById(id);
     }
 
     @Override
     public Observable<RealmResults<Note>> loadNotes() {
-        return realmManager.findAll();
+        return realmManager.findAllNotes();
     }
 
     @Override
