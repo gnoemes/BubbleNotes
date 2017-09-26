@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.facebook.stetho.Stetho;
 import com.gnoemes.bubblenotes.App;
+import com.gnoemes.bubblenotes.data.model.Note;
 import com.uphyca.stetho_realm.RealmInspectorModulesProvider;
 
 import javax.inject.Inject;
@@ -59,7 +60,24 @@ public class RealmDatabase {
         return Realm.getDefaultInstance();
     }
 
-    public <T extends RealmObject> RealmResults<T> find(Class<T> clazz) {
-        return getRealmInstance().where(clazz).findAllSorted("priority");
+    public <T extends RealmObject> T add(T model) {
+        getRealmInstance().executeTransactionAsync(realm1 ->
+            realm1.copyToRealmOrUpdate(model)
+        );
+        return model;
+    }
+
+    public <T extends RealmObject> T findById(Class<T> clazz, String id) {
+        //TODO Уникальный идентификатор для каждого типа объектов, получение данных в switch по идентификатору
+        return getRealmInstance().where(clazz).equalTo(Note.ID,id).findFirst();
+    }
+
+    public <T extends RealmObject> RealmResults<T> findAll(Class<T> clazz) {
+        //TODO Уникальный идентификатор для каждого типа объектов, получение данных в switch по идентификатору
+        return getRealmInstance().where(clazz).findAllSortedAsync(Note.PRIORITY);
+    }
+
+    public void delete(Class<Note> clazz, String id) {
+        getRealmInstance().executeTransaction(realm -> findById(clazz,id).deleteFromRealm());
     }
 }

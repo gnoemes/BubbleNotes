@@ -9,6 +9,10 @@ import io.realm.annotations.PrimaryKey;
 
 
 public class Note extends RealmObject {
+
+    public static final String ID = "id";
+    public static final String PRIORITY = "priority";
+
     @PrimaryKey
     private String id;
 

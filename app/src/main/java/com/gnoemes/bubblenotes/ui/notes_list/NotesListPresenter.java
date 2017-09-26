@@ -3,11 +3,8 @@ package com.gnoemes.bubblenotes.ui.notes_list;
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
 import com.gnoemes.bubblenotes.App;
-import com.gnoemes.bubblenotes.data.source.DataManager;
-
 import com.gnoemes.bubblenotes.data.model.Note;
-
-import java.util.UUID;
+import com.gnoemes.bubblenotes.data.source.DataManager;
 
 import javax.inject.Inject;
 
@@ -44,17 +41,17 @@ public class NotesListPresenter extends MvpPresenter<NotesListView> {
 
     //Draft sync version. Change to Rx.
     private void loadNotes() {
-        RealmResults<Note> notes = dataManager.loadNotes(Note.class);
+//        RealmResults<Note> notes = dataManager.loadNotes(Note.class);
 //        RealmResults<Note> notes = realm.where(Note.class).findAllSorted("priority");
-        getViewState().setNotesList(notes);
+//        getViewState().setNotesList(notes);
     }
 
     //Async Rx version
     //
     private void loadNotesRx() {
         //TODO Остановить disposable в onDestroy
-        Disposable disposable = realm.where(Note.class).findAllSortedAsync("priority")
-                .<RealmResults<Note>>asChangesetObservable()
+        Disposable disposable = dataManager.loadNotes().subscribe(notes ->
+                notes.asChangesetObservable()
                 //.filter(realmResultsCollectionChange -> realmResultsCollectionChange.getCollection().isValid())
                 //.filter(realmResultsCollectionChange -> realmResultsCollectionChange.getCollection().isLoaded())
                 .subscribeOn(AndroidSchedulers.mainThread())
@@ -74,23 +71,13 @@ public class NotesListPresenter extends MvpPresenter<NotesListView> {
                     }
                 }, throwable -> {
                     Timber.d("Error " + throwable);
-                });
+                }));
+
     }
 
     //Stop all work, because View was stopped. This method NOT be triggered by configuration change.
     public void onStop() {
 
-    }
-
-    public void addNote(String name, int priority) {
-        realm.executeTransactionAsync(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                Note note = realm.createObject(Note.class, UUID.randomUUID().toString());
-                note.setName(name);
-                note.setPriority(priority);
-            }
-        });
     }
 
     @Override

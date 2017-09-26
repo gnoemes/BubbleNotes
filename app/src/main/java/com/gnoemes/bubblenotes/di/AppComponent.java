@@ -8,6 +8,7 @@ import com.gnoemes.bubblenotes.data.source.DataManager;
 import com.gnoemes.bubblenotes.data.source.local.RealmDatabase;
 import com.gnoemes.bubblenotes.data.source.local.RealmManagerDefault;
 import com.gnoemes.bubblenotes.data.source.remote.RemoteManager;
+import com.gnoemes.bubblenotes.ui.note_detail.NoteDetailPresenter;
 import com.gnoemes.bubblenotes.ui.notes_list.NotesListPresenter;
 
 import javax.inject.Singleton;
@@ -22,6 +23,7 @@ public interface AppComponent {
     void inject(RealmManagerDefault realmManager);
     void inject(RealmDatabase realmDatabase);
     void inject(NotesListPresenter notesListPresenter);
+    void inject(NoteDetailPresenter noteDetailPresenter);
 
     Context getContext();
     RealmDatabase getRealmDatabase();
