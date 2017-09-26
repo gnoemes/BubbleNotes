@@ -8,6 +8,7 @@ import com.gnoemes.bubblenotes.data.source.remote.RemoteManager;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import io.reactivex.Observable;
 import io.realm.RealmResults;
 
 /**
@@ -26,8 +27,29 @@ public class DataManagerDefault implements DataManager {
         this.remoteDataManager = remoteDataManager;
     }
 
+
     @Override
-    public RealmResults<Note> loadNotes(Class clazz) {
-        return realmManager.loadNotes(clazz);
+    public Observable<Note> loadNotes(String id) {
+        return realmManager.findNoteById(id);
+    }
+
+    @Override
+    public Observable<RealmResults<Note>> loadNotes() {
+        return realmManager.findAllNotes();
+    }
+
+    @Override
+    public Observable<Boolean> addNote(String id, String name, int priority) {
+        return realmManager.addNote(id,name,priority);
+    }
+
+    @Override
+    public Observable<Boolean> updateNote(String id, String name, int priority) {
+        return realmManager.updateNote(id,name,priority);
+    }
+
+    @Override
+    public Observable<Boolean> deleteNote(String id) {
+        return realmManager.deleteNote(id);
     }
 }

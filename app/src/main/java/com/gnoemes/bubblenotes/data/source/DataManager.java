@@ -2,6 +2,7 @@ package com.gnoemes.bubblenotes.data.source;
 
 import com.gnoemes.bubblenotes.data.model.Note;
 
+import io.reactivex.Observable;
 import io.realm.RealmResults;
 
 /**
@@ -9,5 +10,10 @@ import io.realm.RealmResults;
  */
 
 public interface DataManager {
-    RealmResults<Note> loadNotes(Class clazz);
+
+    Observable<Note> loadNotes(String id);
+    Observable<RealmResults<Note>> loadNotes();
+    Observable<Boolean> addNote(String id, String name, int priority);
+    Observable<Boolean> updateNote(String id, String name, int priority);
+    Observable<Boolean> deleteNote(String id);
 }
