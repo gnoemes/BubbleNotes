@@ -3,6 +3,8 @@ package com.gnoemes.bubblenotes.data.source.local;
 import com.gnoemes.bubblenotes.App;
 import com.gnoemes.bubblenotes.data.model.Note;
 
+import java.util.UUID;
+
 import javax.inject.Inject;
 
 import io.reactivex.Observable;
@@ -55,6 +57,24 @@ public class RealmManagerDefault implements RealmManager {
                 note.setPriority(priority);
                 boolean added = realmDatabase.add(note) != null;
                 subscriber.onNext(added);
+                subscriber.onComplete();
+            } catch (Exception e) {
+                subscriber.onError(e);
+            }
+        });
+    }
+
+    @Override
+    public Observable<String> addNote(String name, int priority) {
+        return Observable.create(subscriber -> {
+            try {
+                String id = UUID.randomUUID().toString();
+                Note note = new Note();
+                note.setId(id);
+                note.setName(name);
+                note.setPriority(priority);
+                boolean added = realmDatabase.add(note) != null;
+                subscriber.onNext(id);
                 subscriber.onComplete();
             } catch (Exception e) {
                 subscriber.onError(e);

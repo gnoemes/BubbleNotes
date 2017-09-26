@@ -14,6 +14,7 @@ public interface DataManager {
     Observable<Note> loadNotes(String id);
     Observable<RealmResults<Note>> loadNotes();
     Observable<Boolean> addNote(String id, String name, int priority);
+    Observable<String> addNote(String name, int priority);
     Observable<Boolean> updateNote(String id, String name, int priority);
     Observable<Boolean> deleteNote(String id);
 }

@@ -13,8 +13,12 @@ import android.widget.Toast;
 import com.arellomobile.mvp.MvpAppCompatActivity;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
+import com.gnoemes.bubblenotes.App;
 import com.gnoemes.bubblenotes.R;
 import com.gnoemes.bubblenotes.data.model.Note;
+import com.gnoemes.bubblenotes.data.source.DataManager;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -38,16 +42,23 @@ public class NoteDetailActivity extends MvpAppCompatActivity implements NoteDeta
     @BindView(R.id.fab) FloatingActionButton fab;
     @BindView(R.id.fabDelete) FloatingActionButton fabDelete;
 
+    @Inject
+    DataManager dataManager;
+
     @InjectPresenter NoteDetailPresenter presenter;
+
     @ProvidePresenter
     NoteDetailPresenter providePresenter() {
-        return new NoteDetailPresenter(getIntent().getStringExtra(EXTRA_NOTE_ID));
+        App.getAppComponent().inject(this);
+        return new NoteDetailPresenter(dataManager, getIntent().getStringExtra(EXTRA_NOTE_ID));
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note_detail);
+
+        Timber.d("onCreate");
         ButterKnife.bind(this);
 
         note_id = getIntent().getStringExtra(EXTRA_NOTE_ID);

@@ -13,6 +13,7 @@ public interface RealmManager {
     Observable<Note> findNoteById(String id);
     Observable<RealmResults<Note>> findAllNotes();
     Observable<Boolean> addNote(String id, String name, int priority);
+    Observable<String> addNote(String name, int priority);
     Observable<Boolean> updateNote(String id, String name, int priority);
     Observable<Boolean> deleteNote(String id);
 }

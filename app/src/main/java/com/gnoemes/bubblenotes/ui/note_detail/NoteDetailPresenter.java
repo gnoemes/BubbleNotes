@@ -6,13 +6,19 @@ import com.gnoemes.bubblenotes.App;
 import com.gnoemes.bubblenotes.data.model.Note;
 import com.gnoemes.bubblenotes.data.source.DataManager;
 
+import java.util.Observable;
 import java.util.UUID;
 
 import javax.inject.Inject;
 
+import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
+import io.reactivex.Scheduler;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 /**
@@ -22,14 +28,15 @@ import timber.log.Timber;
 @InjectViewState
 public class NoteDetailPresenter extends MvpPresenter<NoteDetailView> {
 
-    @Inject
+    //@Inject
     DataManager dataManager;
 
     private String id;
 
-    public NoteDetailPresenter(String id) {
+    public NoteDetailPresenter(DataManager dataManager, String id) {
         this.id = id;
-        App.getAppComponent().inject(this);
+        this.dataManager = dataManager;
+        Timber.d("dataManager == null: " + (dataManager == null));
     }
 
     @Override
@@ -40,8 +47,8 @@ public class NoteDetailPresenter extends MvpPresenter<NoteDetailView> {
         if (id != null)
             getNote(id);
     }
-
-    private void getNote(String id) {
+    //TODO changed method to public from private for test purpose
+    public void getNote(String id) {
 
         dataManager.loadNotes(id).subscribe(new Observer<Note>() {
             @Override
@@ -67,7 +74,8 @@ public class NoteDetailPresenter extends MvpPresenter<NoteDetailView> {
 
     }
 
-    public void addNote(String name, int priority) {
+    //TODO Original method
+    public void addNoteT(String name, int priority) {
         String id = UUID.randomUUID().toString();
         dataManager.addNote(id,name,priority)
             .subscribe(new Observer<Boolean>() {
@@ -92,6 +100,39 @@ public class NoteDetailPresenter extends MvpPresenter<NoteDetailView> {
                     getViewState().backPressed();
                 }
             });
+    }
+
+    public void addNote(String name, int priority) {
+        dataManager.addNote(name, priority)
+                //.subscribeOn(Schedulers.io())
+                .map(s -> {
+                    //Note note = realm.getNote(id);
+                    //api.send(note);
+                    return s;
+                })
+                //.observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<String>() {
+                    @Override
+                    public void onSubscribe(@NonNull Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(@NonNull String s) {
+                        getViewState().showToast("Note saved " + s);
+                        getViewState().backPressed();
+                    }
+
+                    @Override
+                    public void onError(@NonNull Throwable e) {
+                        getViewState().showToast("Error when saving");
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
     }
 
     public void updateNote(String id, String name, int priority) {

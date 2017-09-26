@@ -38,9 +38,16 @@ public class DataManagerDefault implements DataManager {
         return realmManager.findAllNotes();
     }
 
+
     @Override
     public Observable<Boolean> addNote(String id, String name, int priority) {
         return realmManager.addNote(id,name,priority);
+    }
+
+    //TODO Refactor
+    @Override
+    public Observable<String> addNote(String name, int priority) {
+        return realmManager.addNote(name,priority);
     }
 
     @Override
