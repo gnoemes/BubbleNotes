@@ -1,5 +1,7 @@
 package com.gnoemes.bubblenotes;
 
+import android.app.Instrumentation;
+
 import com.gnoemes.bubblenotes.data.model.Note;
 import com.gnoemes.bubblenotes.data.source.DataManager;
 import com.gnoemes.bubblenotes.data.source.local.RealmManager;
@@ -27,6 +29,7 @@ import io.realm.RealmConfiguration;
 import io.realm.RealmList;
 import io.realm.RealmResults;
 
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;

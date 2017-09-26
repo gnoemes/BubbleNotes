@@ -1,5 +1,7 @@
 package com.gnoemes.bubblenotes.ui.notes_list;
 
+import android.util.Log;
+
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
 import com.gnoemes.bubblenotes.App;
@@ -22,10 +24,12 @@ import timber.log.Timber;
 @InjectViewState
 public class NotesListPresenter extends MvpPresenter<NotesListView> {
 
-    @Inject
     DataManager dataManager;
 
-    public NotesListPresenter() {}
+    public NotesListPresenter(DataManager dataManager) {
+        this.dataManager = dataManager;
+    }
+
 
     @Override
     protected void onFirstViewAttach() {
@@ -35,17 +39,19 @@ public class NotesListPresenter extends MvpPresenter<NotesListView> {
     }
 
     //Async Rx version
-    private void loadNotesRx() {
+    public void loadNotesRx() {
+        Log.i("NotesListPresenter", "loadNotesRx st " + Thread.currentThread().getName());
         //TODO Остановить disposable в onDestroy
         Disposable disposable = dataManager.loadNotes().subscribe(notes ->
                 notes.asChangesetObservable()
                 //.filter(realmResultsCollectionChange -> realmResultsCollectionChange.getCollection().isValid())
                 //.filter(realmResultsCollectionChange -> realmResultsCollectionChange.getCollection().isLoaded())
-                .subscribeOn(AndroidSchedulers.mainThread())
+                //.subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<CollectionChange<RealmResults<Note>>>() {
                     @Override
                     public void accept(CollectionChange<RealmResults<Note>> realmResultsCollectionChange) throws Exception {
                         Timber.d("accept");
+                        Log.i("NotesListPresenter", "accept" + Thread.currentThread().getName());
 
                         if (realmResultsCollectionChange.getCollection().isLoaded()) {
                             if (realmResultsCollectionChange.getChangeset() == null) {
@@ -58,6 +64,8 @@ public class NotesListPresenter extends MvpPresenter<NotesListView> {
                     }
                 }, throwable -> {
                     Timber.d("Error " + throwable);
+                    Log.i("NotesListPresenter", "accept" + Thread.currentThread().getName());
+                    Log.i("NotesListPresenter", "Error " + throwable);
                 }));
 
     }

@@ -41,7 +41,7 @@ public class NoteDetailTest {
             }
         });
 
-        presenter = new NoteDetailPresenter("1");
+        //presenter = new NoteDetailPresenter("1");
         presenter.setViewState(stateView);
     }
     @After
