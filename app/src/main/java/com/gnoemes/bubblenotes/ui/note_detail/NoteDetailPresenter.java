@@ -32,6 +32,8 @@ public class NoteDetailPresenter extends MvpPresenter<NoteDetailView> {
         App.getAppComponent().inject(this);
     }
 
+
+
     @Override
     protected void onFirstViewAttach() {
         Timber.d("onFirstViewAttach id: " + id);
