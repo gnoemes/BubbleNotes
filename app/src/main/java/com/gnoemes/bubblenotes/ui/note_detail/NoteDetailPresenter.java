@@ -19,6 +19,7 @@ import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
+import io.realm.Realm;
 import timber.log.Timber;
 
 /**
@@ -30,12 +31,19 @@ public class NoteDetailPresenter extends MvpPresenter<NoteDetailView> {
 
     //@Inject
     DataManager dataManager;
+    Realm realm;
+    Scheduler main;
+    Scheduler io;
 
     private String id;
 
-    public NoteDetailPresenter(DataManager dataManager, String id) {
+    public NoteDetailPresenter(Realm realm, Scheduler main, Scheduler io, DataManager dataManager, String id) {
         this.id = id;
         this.dataManager = dataManager;
+        this.realm = realm;
+        this.main = main;
+        this.io = io;
+
         Timber.d("dataManager == null: " + (dataManager == null));
     }
 
@@ -49,8 +57,7 @@ public class NoteDetailPresenter extends MvpPresenter<NoteDetailView> {
     }
     //TODO changed method to public from private for test purpose
     public void getNote(String id) {
-
-        dataManager.loadNotes(id).subscribe(new Observer<Note>() {
+        dataManager.loadNote(realm, id).subscribe(new Observer<Note>() {
             @Override
             public void onSubscribe(@NonNull Disposable d) {
 
@@ -102,15 +109,10 @@ public class NoteDetailPresenter extends MvpPresenter<NoteDetailView> {
             });
     }
 
-    public void addNote(String name, int priority) {
-        dataManager.addNote(name, priority)
-                //.subscribeOn(Schedulers.io())
-                .map(s -> {
-                    //Note note = realm.getNote(id);
-                    //api.send(note);
-                    return s;
-                })
-                //.observeOn(AndroidSchedulers.mainThread())
+    public void addNote(String id, String name, int priority) {
+        dataManager.addNoteNew(realm, id, name, priority)
+                .subscribeOn(io)
+                .observeOn(main)
                 .subscribe(new Observer<String>() {
                     @Override
                     public void onSubscribe(@NonNull Disposable d) {
@@ -137,15 +139,17 @@ public class NoteDetailPresenter extends MvpPresenter<NoteDetailView> {
 
     public void updateNote(String id, String name, int priority) {
 
-        dataManager.updateNote(id,name,priority)
-                .subscribe(new Observer<Boolean>() {
+        dataManager.updateNote(realm, id,name,priority)
+                .subscribeOn(io)
+                .observeOn(main)
+                .subscribe(new Observer<String>() {
                     @Override
                     public void onSubscribe(@NonNull Disposable d) {
 
                     }
 
                     @Override
-                    public void onNext(@NonNull Boolean aBoolean) {
+                    public void onNext(@NonNull String s) {
 
                     }
 
@@ -163,15 +167,17 @@ public class NoteDetailPresenter extends MvpPresenter<NoteDetailView> {
                 });
     }
     public void deleteNote(String id) {
-        dataManager.deleteNote(id)
-                .subscribe(new Observer<Boolean>() {
+        dataManager.deleteNote(realm, id)
+                .subscribeOn(io)
+                .observeOn(main)
+                .subscribe(new Observer<String>() {
                     @Override
                     public void onSubscribe(@NonNull Disposable d) {
 
                     }
 
                     @Override
-                    public void onNext(@NonNull Boolean aBoolean) {
+                    public void onNext(@NonNull String s) {
 
                     }
 
@@ -195,5 +201,6 @@ public class NoteDetailPresenter extends MvpPresenter<NoteDetailView> {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        realm.close();
     }
 }

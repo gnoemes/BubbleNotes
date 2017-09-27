@@ -14,13 +14,13 @@ import io.realm.RealmConfiguration;
 import io.realm.RealmObject;
 import io.realm.RealmResults;
 
+
 public class RealmDatabase {
 
     private RealmConfiguration config;
 
     @Inject
     Context mContext;
-
 
     public RealmDatabase() {
         App.getAppComponent().inject(this);
@@ -56,6 +56,8 @@ public class RealmDatabase {
         realm.commitTransaction();
     }
 
+    //TODO БЛЯТЬ ПИЗДЕЦ! Каждый раз запрашивается реалм и никогда не закрывается. Нужно использовать только один.
+    //TODO Обязательно должен быть где-нибудь вызван realm.close()
     private Realm getRealmInstance() {
         return Realm.getDefaultInstance();
     }

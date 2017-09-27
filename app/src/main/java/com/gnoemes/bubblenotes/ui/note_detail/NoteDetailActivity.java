@@ -18,10 +18,15 @@ import com.gnoemes.bubblenotes.R;
 import com.gnoemes.bubblenotes.data.model.Note;
 import com.gnoemes.bubblenotes.data.source.DataManager;
 
+import java.util.UUID;
+
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
+import io.realm.Realm;
 import timber.log.Timber;
 
 /**
@@ -50,7 +55,12 @@ public class NoteDetailActivity extends MvpAppCompatActivity implements NoteDeta
     @ProvidePresenter
     NoteDetailPresenter providePresenter() {
         App.getAppComponent().inject(this);
-        return new NoteDetailPresenter(dataManager, getIntent().getStringExtra(EXTRA_NOTE_ID));
+
+        return new NoteDetailPresenter(Realm.getDefaultInstance(),
+                AndroidSchedulers.mainThread(),
+                Schedulers.io(),
+                dataManager,
+                getIntent().getStringExtra(EXTRA_NOTE_ID));
     }
 
     @Override
@@ -93,7 +103,7 @@ public class NoteDetailActivity extends MvpAppCompatActivity implements NoteDeta
     }
 
     private void addNote() {
-        presenter.addNote(nameEditText.getText().toString(), Integer.parseInt(priorityEditText.getText().toString()));
+        presenter.addNote(UUID.randomUUID().toString(), nameEditText.getText().toString(), Integer.parseInt(priorityEditText.getText().toString()));
     }
 
 
