@@ -27,7 +27,10 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import io.realm.OrderedCollectionChangeSet;
+import io.realm.Realm;
 import io.realm.RealmResults;
 import timber.log.Timber;
 
@@ -51,7 +54,10 @@ public class NotesListFragment extends MvpAppCompatFragment implements NotesList
     @ProvidePresenter
     NotesListPresenter providePresenter() {
         App.getAppComponent().inject(this);
-        return new NotesListPresenter(dataManager);
+        return new NotesListPresenter(Realm.getDefaultInstance(),
+                AndroidSchedulers.mainThread(),
+                Schedulers.io(),
+                dataManager);
     }
 
     //TODO Choose only one adapter
@@ -67,9 +73,6 @@ public class NotesListFragment extends MvpAppCompatFragment implements NotesList
             startActivity(intent);
         }
     };
-
-
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

@@ -10,9 +10,11 @@ import com.gnoemes.bubblenotes.data.source.DataManager;
 
 import javax.inject.Inject;
 
+import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
+import io.realm.Realm;
 import io.realm.RealmResults;
 import io.realm.rx.CollectionChange;
 import timber.log.Timber;
@@ -25,9 +27,15 @@ import timber.log.Timber;
 public class NotesListPresenter extends MvpPresenter<NotesListView> {
 
     DataManager dataManager;
+    Realm realm;
+    Scheduler main;
+    Scheduler io;
 
-    public NotesListPresenter(DataManager dataManager) {
+    public NotesListPresenter(Realm realm, Scheduler main, Scheduler io, DataManager dataManager) {
         this.dataManager = dataManager;
+        this.realm = realm;
+        this.main = main;
+        this.io = io;
     }
 
 
@@ -42,16 +50,16 @@ public class NotesListPresenter extends MvpPresenter<NotesListView> {
     public void loadNotesRx() {
         Log.i("NotesListPresenter", "loadNotesRx st " + Thread.currentThread().getName());
         //TODO Остановить disposable в onDestroy
-        Disposable disposable = dataManager.loadNotes().subscribe(notes ->
+        Disposable disposable = dataManager.loadNotesSorted(realm, "priority").subscribe(notes ->
                 notes.asChangesetObservable()
                 //.filter(realmResultsCollectionChange -> realmResultsCollectionChange.getCollection().isValid())
                 //.filter(realmResultsCollectionChange -> realmResultsCollectionChange.getCollection().isLoaded())
-                //.subscribeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(main)
                 .subscribe(new Consumer<CollectionChange<RealmResults<Note>>>() {
                     @Override
                     public void accept(CollectionChange<RealmResults<Note>> realmResultsCollectionChange) throws Exception {
                         Timber.d("accept");
-                        Log.i("NotesListPresenter", "accept" + Thread.currentThread().getName());
+                        Log.i("NotesListPresenter", "accept " + Thread.currentThread().getName());
 
                         if (realmResultsCollectionChange.getCollection().isLoaded()) {
                             if (realmResultsCollectionChange.getChangeset() == null) {
@@ -78,7 +86,7 @@ public class NotesListPresenter extends MvpPresenter<NotesListView> {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        realm.close();
 //        realm.removeAllChangeListeners();
-//        realm.close();
     }
 }
