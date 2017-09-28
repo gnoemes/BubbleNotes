@@ -8,6 +8,7 @@ import com.gnoemes.bubblenotes.data.source.DataManager;
 import com.gnoemes.bubblenotes.data.source.local.RealmDatabase;
 import com.gnoemes.bubblenotes.data.source.local.RealmManagerDefault;
 import com.gnoemes.bubblenotes.data.source.remote.RemoteManager;
+import com.gnoemes.bubblenotes.repo.local.LocalRepository;
 import com.gnoemes.bubblenotes.ui.note_detail.NoteDetailActivity;
 import com.gnoemes.bubblenotes.ui.note_detail.NoteDetailPresenter;
 import com.gnoemes.bubblenotes.ui.notes_list.NotesListFragment;
@@ -18,7 +19,9 @@ import javax.inject.Singleton;
 import dagger.Component;
 
 @Singleton
-@Component(modules = {AppModule.class,RealmModule.class,DataManagerModule.class,NetworkModule.class})
+@Component(modules = {AppModule.class,RealmModule.class,
+        DataManagerModule.class,NetworkModule.class,
+        LocalRepositoryModule.class})
 public interface AppComponent {
 
     void inject(App app);
@@ -33,6 +36,7 @@ public interface AppComponent {
     RealmDatabase getRealmDatabase();
     RemoteManager getRemoteDataManager();
     DataManager getDataManager();
+    LocalRepository getLocalRepository();
 //    PrefsManager prefsManager();
 
 }

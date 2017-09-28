@@ -7,6 +7,7 @@ import com.arellomobile.mvp.MvpPresenter;
 import com.gnoemes.bubblenotes.App;
 import com.gnoemes.bubblenotes.data.model.Note;
 import com.gnoemes.bubblenotes.data.source.DataManager;
+import com.gnoemes.bubblenotes.repo.local.LocalRepository;
 
 import javax.inject.Inject;
 
@@ -27,17 +28,20 @@ import timber.log.Timber;
 public class NotesListPresenter extends MvpPresenter<NotesListView> {
 
     DataManager dataManager;
+    LocalRepository localRepository;
     Realm realm;
     Scheduler main;
     Scheduler io;
 
-    public NotesListPresenter(Realm realm, Scheduler main, Scheduler io, DataManager dataManager) {
+    public NotesListPresenter(Realm realm, Scheduler main, Scheduler io,
+                              DataManager dataManager,
+                              LocalRepository localRepository) {
         this.dataManager = dataManager;
+        this.localRepository = localRepository;
         this.realm = realm;
         this.main = main;
         this.io = io;
     }
-
 
     @Override
     protected void onFirstViewAttach() {
@@ -48,19 +52,16 @@ public class NotesListPresenter extends MvpPresenter<NotesListView> {
 
     //Async Rx version
     public void loadNotesRx() {
-        Log.i("NotesListPresenter", "loadNotesRx st " + Thread.currentThread().getName());
-        //TODO Остановить disposable в onDestroy
-        Disposable disposable = dataManager.loadNotesSorted(realm, "priority").subscribe(notes ->
-                notes.asChangesetObservable()
-                //.filter(realmResultsCollectionChange -> realmResultsCollectionChange.getCollection().isValid())
-                //.filter(realmResultsCollectionChange -> realmResultsCollectionChange.getCollection().isLoaded())
-                .subscribeOn(main)
-                .subscribe(new Consumer<CollectionChange<RealmResults<Note>>>() {
-                    @Override
-                    public void accept(CollectionChange<RealmResults<Note>> realmResultsCollectionChange) throws Exception {
-                        Timber.d("accept");
-                        Log.i("NotesListPresenter", "accept " + Thread.currentThread().getName());
+        localRepository.loadNotesSorted(realm, "priority")
+                .subscribe();
 
+        //TODO Остановить disposable в onDestroy
+        Disposable disposable = localRepository.loadNotesSorted(realm, "priority").subscribe(notes -> {
+            notes.asChangesetObservable()
+                    //.filter(realmResultsCollectionChange -> realmResultsCollectionChange.getCollection().isValid())
+                    .subscribeOn(main)
+                    .subscribe(realmResultsCollectionChange -> {
+                        Timber.d("accept");
                         if (realmResultsCollectionChange.getCollection().isLoaded()) {
                             if (realmResultsCollectionChange.getChangeset() == null) {
                                 Timber.d("realmResultsCollectionChange.getChangeset() == null");
@@ -69,12 +70,10 @@ public class NotesListPresenter extends MvpPresenter<NotesListView> {
                         }
                         getViewState().setChangeSet(realmResultsCollectionChange.getChangeset());
 
-                    }
-                }, throwable -> {
-                    Timber.d("Error " + throwable);
-                    Log.i("NotesListPresenter", "accept" + Thread.currentThread().getName());
-                    Log.i("NotesListPresenter", "Error " + throwable);
-                }));
+                    }, throwable -> {
+                        Timber.d("Error " + throwable);
+                    });
+        });
 
     }
 
@@ -87,6 +86,5 @@ public class NotesListPresenter extends MvpPresenter<NotesListView> {
     public void onDestroy() {
         super.onDestroy();
         realm.close();
-//        realm.removeAllChangeListeners();
     }
 }

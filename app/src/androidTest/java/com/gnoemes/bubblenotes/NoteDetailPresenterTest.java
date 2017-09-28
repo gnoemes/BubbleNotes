@@ -2,27 +2,29 @@ package com.gnoemes.bubblenotes;
 
 import android.support.test.annotation.UiThreadTest;
 import android.support.test.rule.UiThreadTestRule;
+import android.util.Log;
 
 import com.gnoemes.bubblenotes.data.model.Note;
 import com.gnoemes.bubblenotes.data.source.DataManager;
 import com.gnoemes.bubblenotes.data.source.DataManagerDefault;
-import com.gnoemes.bubblenotes.data.source.local.RealmManager;
+import com.gnoemes.bubblenotes.repo.local.LocalRepositoryImpl;
 import com.gnoemes.bubblenotes.ui.note_detail.NoteDetailPresenter;
 import com.gnoemes.bubblenotes.ui.note_detail.NoteDetailView$$State;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import io.reactivex.schedulers.Schedulers;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
-import io.realm.RealmResults;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.times;
@@ -35,8 +37,6 @@ import static org.mockito.Mockito.verify;
 public class NoteDetailPresenterTest {
     @Mock
     NoteDetailView$$State viewState;
-
-    DataManager dataManager;
     NoteDetailPresenter presenter;
     Realm realm;
     @Rule
@@ -46,21 +46,28 @@ public class NoteDetailPresenterTest {
     static String name = "asd";
     static int p = 1;
 
+    @BeforeClass
+    public static void beforeSetup() {
+
+    }
+
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
+        realm = Injector.getInMemoryRealm();
 
-        RealmConfiguration config =
-                new RealmConfiguration.Builder().inMemory().name("test-realm").build();
-        realm = Realm.getInstance(config);
-
-        //TODO Inject Schedulers in Presenter. Schedulers.immediate()
         presenter = new NoteDetailPresenter(realm,
                 Schedulers.trampoline(),
                 Schedulers.trampoline(),
                 new DataManagerDefault(null, null),
+                new LocalRepositoryImpl(),
                 "1");
         presenter.setViewState(viewState);
+    }
+
+    @AfterClass
+    public static void afterDown() {
+
     }
 
     @After
@@ -91,6 +98,7 @@ public class NoteDetailPresenterTest {
         presenter.getNote(id);
         Note note = realm.where(Note.class).equalTo("id", id).findFirst();
         verify(viewState, times(1)).setNote(note);
+        assertEquals(name, note.getName());
     }
 
     @UiThreadTest
@@ -112,6 +120,7 @@ public class NoteDetailPresenterTest {
 
         //TODO Проеерить поля
         Note note = realm.where(Note.class).equalTo("id", id).findFirst();
+        Log.i("TEST", "name " + note.getName() + "p " + note.getPriority());
 
     }
 
@@ -131,5 +140,6 @@ public class NoteDetailPresenterTest {
 
         //TODO Проеерить что удалено
         Note note = realm.where(Note.class).equalTo("id", id).findFirst();
+        Log.i("Test", "note == null " + (note == null));
     }
 }

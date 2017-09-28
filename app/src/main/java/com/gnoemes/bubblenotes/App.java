@@ -6,6 +6,7 @@ import com.gnoemes.bubblenotes.di.AppComponent;
 import com.gnoemes.bubblenotes.di.AppModule;
 import com.gnoemes.bubblenotes.di.DaggerAppComponent;
 import com.gnoemes.bubblenotes.di.DataManagerModule;
+import com.gnoemes.bubblenotes.di.LocalRepositoryModule;
 import com.gnoemes.bubblenotes.di.NetworkModule;
 import com.gnoemes.bubblenotes.di.RealmModule;
 import com.gnoemes.bubblenotes.data.source.local.RealmDatabase;
@@ -49,6 +50,7 @@ public class App extends Application {
                 .realmModule(new RealmModule())
                 .dataManagerModule(new DataManagerModule())
                 .networkModule(new NetworkModule())
+                .localRepositoryModule(new LocalRepositoryModule())
                 .build();
     }
 

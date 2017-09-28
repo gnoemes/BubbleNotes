@@ -8,6 +8,7 @@ import android.support.test.rule.UiThreadTestRule;
 import com.gnoemes.bubblenotes.data.model.Note;
 import com.gnoemes.bubblenotes.data.source.DataManager;
 import com.gnoemes.bubblenotes.data.source.DataManagerDefault;
+import com.gnoemes.bubblenotes.repo.local.LocalRepositoryImpl;
 import com.gnoemes.bubblenotes.ui.note_detail.NoteDetailPresenter;
 import com.gnoemes.bubblenotes.ui.notes_list.NotesListPresenter;
 import com.gnoemes.bubblenotes.ui.notes_list.NotesListView$$State;
@@ -56,7 +57,6 @@ public class NotesListPresenterTest {
 
     @Captor
     ArgumentCaptor<OrderedCollectionChangeSet> changeSetArgumentCaptor;
-
     @Mock
     DataManager dataManager;
     @Rule
@@ -66,15 +66,14 @@ public class NotesListPresenterTest {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
 
-        RealmConfiguration config =
-                new RealmConfiguration.Builder().inMemory().name("test-realm").build();
-        realm = Realm.getInstance(config);
+        realm = Injector.getInMemoryRealm();
 
         //TODO Объяснить trampoline()
         presenter = new NotesListPresenter(realm,
                 Schedulers.trampoline(),
                 Schedulers.trampoline(),
-                new DataManagerDefault(null, null));
+                new DataManagerDefault(null, null),
+                new LocalRepositoryImpl());
 
         presenter.setViewState(viewState);
 
@@ -103,6 +102,27 @@ public class NotesListPresenterTest {
         verify(viewState, times(1)).setNotesList(list);
         verify(viewState, times(2)).setChangeSet(changeSetArgumentCaptor.capture());
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     //Do not use
     public void oldMethodTest() {

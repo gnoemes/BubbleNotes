@@ -17,6 +17,7 @@ import com.gnoemes.bubblenotes.App;
 import com.gnoemes.bubblenotes.R;
 import com.gnoemes.bubblenotes.data.model.Note;
 import com.gnoemes.bubblenotes.data.source.DataManager;
+import com.gnoemes.bubblenotes.repo.local.LocalRepository;
 
 import java.util.UUID;
 
@@ -49,6 +50,8 @@ public class NoteDetailActivity extends MvpAppCompatActivity implements NoteDeta
 
     @Inject
     DataManager dataManager;
+    @Inject
+    LocalRepository localRepository;
 
     @InjectPresenter NoteDetailPresenter presenter;
 
@@ -60,6 +63,7 @@ public class NoteDetailActivity extends MvpAppCompatActivity implements NoteDeta
                 AndroidSchedulers.mainThread(),
                 Schedulers.io(),
                 dataManager,
+                localRepository,
                 getIntent().getStringExtra(EXTRA_NOTE_ID));
     }
 

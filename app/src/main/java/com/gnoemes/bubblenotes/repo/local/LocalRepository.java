@@ -12,10 +12,9 @@ import io.realm.RealmResults;
  */
 
 public interface LocalRepository {
-
     Flowable<RealmResults<Note>> loadNotesSorted(Realm realm, String field);
-    Observable<String> addNote(Realm realm, String id, String name, int priority);
+    Observable<String> addNote(String id, String name, int priority);
     Observable<Note> loadNote(Realm realm, String id);
-    public Observable<String> deleteNote(Realm realm, String id);
-    public Observable<String> updateNote(Realm realm, String id, String name, int priority);
+    public Observable<String> deleteNote(String id);
+    public Observable<String> updateNote(String id, String name, int priority);
 }

@@ -21,6 +21,7 @@ import com.gnoemes.bubblenotes.App;
 import com.gnoemes.bubblenotes.R;
 import com.gnoemes.bubblenotes.data.model.Note;
 import com.gnoemes.bubblenotes.data.source.DataManager;
+import com.gnoemes.bubblenotes.repo.local.LocalRepository;
 import com.gnoemes.bubblenotes.ui.note_detail.NoteDetailActivity;
 
 import javax.inject.Inject;
@@ -48,16 +49,20 @@ public class NotesListFragment extends MvpAppCompatFragment implements NotesList
 
     @Inject
     DataManager dataManager;
+    @Inject
+    LocalRepository localRepository;
 
     @InjectPresenter
     NotesListPresenter presenter;
+
     @ProvidePresenter
     NotesListPresenter providePresenter() {
         App.getAppComponent().inject(this);
         return new NotesListPresenter(Realm.getDefaultInstance(),
                 AndroidSchedulers.mainThread(),
                 Schedulers.io(),
-                dataManager);
+                dataManager,
+                localRepository);
     }
 
     //TODO Choose only one adapter
@@ -147,6 +152,10 @@ public class NotesListFragment extends MvpAppCompatFragment implements NotesList
     }
 
     private void notifyAdapter(OrderedCollectionChangeSet changeSet) {
+
+//        listRecyclerView.getRecycledViewPool().clear();
+//        adapterRecycler.notifyDataSetChanged();
+
         Timber.d("notifyAdapter ");
         // For deletions, the adapter has to be notified in reverse order.
         if (changeSet == null) {
