@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import com.arellomobile.mvp.MvpAppCompatFragment;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
+import com.gnoemes.bubblenotes.App;
 import com.gnoemes.bubblenotes.R;
 import com.gnoemes.bubblenotes.data.model.Note;
 import com.gnoemes.bubblenotes.ui.note_detail.NoteDetailActivity;
@@ -39,11 +40,12 @@ public class NotesListFragment extends MvpAppCompatFragment implements NotesList
     DrawerLayout drawer_layout;
     @BindView(R.id.toolbar) Toolbar toolbar;
 
+
     @InjectPresenter
     NotesListPresenter presenter;
     @ProvidePresenter
     NotesListPresenter providePresenter() {
-        return new NotesListPresenter();
+        return new NotesListPresenter(App.getAppComponent().getNoteRepository());
     }
 
     //TODO Choose only one adapter

@@ -1,8 +1,6 @@
-package com.gnoemes.bubblenotes.di;
+package com.gnoemes.bubblenotes.di.modules;
 
 import android.content.Context;
-
-import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
@@ -10,14 +8,13 @@ import dagger.Provides;
 @Module
 public class AppModule {
 
-    private Context context;
+    private final Context context;
 
     public AppModule(Context context) {
         this.context = context;
     }
 
     @Provides
-    @Singleton
     Context provideContext() {
         return context;
     }
