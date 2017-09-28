@@ -13,7 +13,7 @@ import io.reactivex.Flowable;
 
 @Dao
 public interface NoteDao {
-    @Query("SELECT * FROM " + Config.TABLE_NAME)
+    @Query("SELECT * FROM " + Config.TABLE_NAME + " ORDER by "+Note.SORT_PRIORITY+" ASC")
     Flowable<List<Note>> getAllNotes();
 
     @Query("SELECT * FROM " + Config.TABLE_NAME + " WHERE id == :id")

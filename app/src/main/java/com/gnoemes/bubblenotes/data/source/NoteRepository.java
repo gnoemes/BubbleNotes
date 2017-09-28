@@ -16,7 +16,7 @@ import io.reactivex.Completable;
 import io.reactivex.Flowable;
 
 /**
- * NoteRepository which controls Realm Database, API
+ * NoteRepository which controls Database, API
  */
 
 @Singleton
@@ -41,22 +41,7 @@ public class NoteRepository implements NoteDataSource {
 
     @Override
     public Flowable<List<Note>> loadNotes() {
-        return localDataSource.loadNotes()
-                .flatMapIterable(notes -> notes)
-                .toSortedList((t1, t2) -> {
-                    if (t1.getPriority() > t2.getPriority()) {
-                        return 1;
-                    }
-                    if (t1.getPriority() < t2.getPriority()) {
-                        return -1;
-                    }
-                    return 0;
-                })
-                .toFlowable();
-
-
-
-
+        return localDataSource.loadNotes();
     }
 
     @Override
