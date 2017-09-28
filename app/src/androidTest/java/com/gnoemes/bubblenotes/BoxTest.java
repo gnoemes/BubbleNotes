@@ -14,7 +14,7 @@ public class BoxTest {
 
     @Before
     public void setUp() throws Exception {
-        BoxStore boxStore = MyObjectBox.builder().build();
+        //BoxStore boxStore = MyObjectBox.builder().build();
     }
 
 }

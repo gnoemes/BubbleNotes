@@ -43,7 +43,7 @@ public class NotesListPresenter extends MvpPresenter<NotesListView> {
     @Override
     protected void onFirstViewAttach() {
         super.onFirstViewAttach();
-        deleteAll();
+        //deleteAll();
         //dataObserver();
         loadNotes();
     }

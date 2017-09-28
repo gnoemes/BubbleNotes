@@ -92,6 +92,9 @@ public class NotesListFragment extends MvpAppCompatFragment implements NotesList
 //            note.setPriority(3);
 //            presenter.addNote(note);
             //presenter.addNote("defsdf", 3);
+
+            //List<Note> n= boxStore.boxFor(Note.class).getAll();
+
             Intent intent = new Intent(getActivity(), NoteDetailActivity.class);
             startActivity(intent);
         });
