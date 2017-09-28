@@ -87,6 +87,8 @@ public class MainDrawerActivity extends
                 break;
             case R.id.nav_settings:
                 Timber.d("nav_settings");
+                replaceFragment(com.gnoemes.bubblenotes.ui_box.notes_list.NotesListFragment.class,
+                        com.gnoemes.bubblenotes.ui_box.notes_list.NotesListFragment.TAG);
                 break;
             case R.id.nav_about:
                 Timber.d("nav_about");
