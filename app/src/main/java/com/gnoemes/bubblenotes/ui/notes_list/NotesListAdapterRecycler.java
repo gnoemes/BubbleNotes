@@ -10,7 +10,7 @@ import android.widget.TextView;
 import com.gnoemes.bubblenotes.R;
 import com.gnoemes.bubblenotes.data.model.Note;
 
-import io.realm.OrderedRealmCollection;
+import java.util.List;
 
 /**
  * Created by kenji1947 on 25.09.2017.
@@ -19,14 +19,14 @@ import io.realm.OrderedRealmCollection;
 //TODO Draft
 public class NotesListAdapterRecycler extends RecyclerView.Adapter<NotesListAdapterRecycler.NoteHolder> {
 
-    private NotesListAdapter.ItemClickListener clickListener;
-    private OrderedRealmCollection<Note> adapterData;
+    private final OnItemClickListener clickListener;
+    private List<Note> adapterData;
 
-    public interface ItemClickListener {
-        void onClick(String note_id);
+    public interface OnItemClickListener {
+        void onClick(String id);
     }
 
-    public NotesListAdapterRecycler(@Nullable OrderedRealmCollection<Note> adapterData, NotesListAdapter.ItemClickListener clickListener) {
+    public NotesListAdapterRecycler(@Nullable List<Note> adapterData, OnItemClickListener clickListener) {
         this.clickListener = clickListener;
         this.adapterData = adapterData;
     }
@@ -52,7 +52,7 @@ public class NotesListAdapterRecycler extends RecyclerView.Adapter<NotesListAdap
         return isDataValid() ? adapterData.size() : 0;
     }
     private boolean isDataValid() {
-        return adapterData != null && adapterData.isValid();
+        return adapterData != null;
     }
 
 
@@ -60,7 +60,7 @@ public class NotesListAdapterRecycler extends RecyclerView.Adapter<NotesListAdap
         return isDataValid() ? adapterData.get(index) : null;
     }
 
-    public void updateData(@Nullable OrderedRealmCollection<Note> data) {
+    public void updateData(@Nullable List<Note> data) {
         this.adapterData = data;
         notifyDataSetChanged();
     }

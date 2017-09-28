@@ -1,14 +1,17 @@
 package com.gnoemes.bubblenotes.data.model;
 
-import io.realm.RealmObject;
-import io.realm.annotations.PrimaryKey;
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.PrimaryKey;
+
+import com.gnoemes.bubblenotes.data.source.local.Config;
+
 
 /**
  * Created by kenji1947 on 25.09.2017.
  */
 
-
-public class Note extends RealmObject {
+@Entity(tableName = Config.TABLE_NAME)
+public class Note {
 
     public static final String ID = "id";
     public static final String SORT_PRIORITY = "priority";
@@ -19,21 +22,6 @@ public class Note extends RealmObject {
     private String name;
 
     private int priority;
-
-    public Note() {
-    }
-
-    public Note(String id, String name) {
-        this.id = id;
-        this.name = name;
-        this.priority = 2;
-    }
-
-    public Note(String id, String name, int priority) {
-        this.id = id;
-        this.name = name;
-        this.priority = priority;
-    }
 
     public String getId() {
         return id;

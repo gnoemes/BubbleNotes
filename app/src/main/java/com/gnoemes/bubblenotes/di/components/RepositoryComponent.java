@@ -10,7 +10,6 @@ import dagger.Component;
 @ActivityScope
 @Component(dependencies = AppComponent.class)
 public interface RepositoryComponent {
-
     void inject(NoteDetailPresenter detailPresenter);
     void inject(NotesListPresenter listPresenter);
 }

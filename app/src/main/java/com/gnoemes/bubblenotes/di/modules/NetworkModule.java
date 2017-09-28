@@ -18,5 +18,5 @@ public class NetworkModule {
     @Remote
     NoteDataSource provideRemoteDataManager() {
         return new RemoteDataSource();
-}
+    }
 }

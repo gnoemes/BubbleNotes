@@ -8,7 +8,6 @@ import com.gnoemes.bubblenotes.utils.RxUtil;
 import javax.inject.Inject;
 
 import io.reactivex.disposables.CompositeDisposable;
-import timber.log.Timber;
 
 /**
  * Created by kenji1947 on 25.09.2017.
@@ -34,20 +33,9 @@ public class NotesListPresenter extends MvpPresenter<NotesListView> {
 
     //Async Rx version
     private void loadNotesRx() {
-        subscriptions.add(repository.loadNotes()
-                .subscribe(realmResultsCollectionChange -> {
-                    Timber.d("accept");
-                    if (realmResultsCollectionChange.getCollection().isLoaded()) {
-                        if (realmResultsCollectionChange.getChangeset() == null) {
-                            Timber.d("realmResultsCollectionChange.getChangeset() == null");
-                            getViewState().setNotesList(realmResultsCollectionChange.getCollection());
-                        }
-                    }
-                    getViewState().setChangeSet(realmResultsCollectionChange.getChangeset());
-
-                }, throwable -> {
-                    Timber.d("Error " + throwable);
-                }));
+      subscriptions.add(repository.loadNotes()
+                    .compose(RxUtil.applyFlowableSchedulers())
+                    .subscribe(notes -> getViewState().setNotesList(notes)));
     }
 
 

@@ -7,14 +7,13 @@ import com.gnoemes.bubblenotes.data.model.Note;
 import com.gnoemes.bubblenotes.di.annotations.Local;
 import com.gnoemes.bubblenotes.di.annotations.Remote;
 
+import java.util.List;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import io.reactivex.Completable;
-import io.reactivex.Observable;
-import io.reactivex.Single;
-import io.realm.RealmResults;
-import io.realm.rx.CollectionChange;
+import io.reactivex.Flowable;
 
 /**
  * NoteRepository which controls Realm Database, API
@@ -36,17 +35,32 @@ public class NoteRepository implements NoteDataSource {
     }
 
     @Override
-    public Single<Note> loadNoteById(String id) {
+    public Flowable<Note> loadNoteById(String id) {
         return localDataSource.loadNoteById(id);
     }
 
     @Override
-    public Observable<CollectionChange<RealmResults<Note>>> loadNotes() {
-        return localDataSource.loadNotes();
+    public Flowable<List<Note>> loadNotes() {
+        return localDataSource.loadNotes()
+                .flatMapIterable(notes -> notes)
+                .toSortedList((t1, t2) -> {
+                    if (t1.getPriority() > t2.getPriority()) {
+                        return 1;
+                    }
+                    if (t1.getPriority() < t2.getPriority()) {
+                        return -1;
+                    }
+                    return 0;
+                })
+                .toFlowable();
+
+
+
+
     }
 
     @Override
-    public Single<Note> addOrUpdateNote(Note note) {
+    public Completable addOrUpdateNote(Note note) {
         return localDataSource.addOrUpdateNote(note);
     }
 

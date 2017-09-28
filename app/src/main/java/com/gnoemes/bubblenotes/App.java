@@ -5,8 +5,8 @@ import android.app.Application;
 import com.gnoemes.bubblenotes.di.components.AppComponent;
 import com.gnoemes.bubblenotes.di.components.DaggerAppComponent;
 import com.gnoemes.bubblenotes.di.modules.AppModule;
-import com.gnoemes.bubblenotes.di.modules.LocalDataSourceModule;
 import com.gnoemes.bubblenotes.di.modules.NetworkModule;
+import com.gnoemes.bubblenotes.di.modules.NoteLocalDataSourceModule;
 
 import timber.log.Timber;
 
@@ -38,7 +38,7 @@ public class App extends Application {
     private void initAppComponent(App app) {
         appComponent = DaggerAppComponent.builder()
                 .appModule(new AppModule(app))
-                .localDataSourceModule(new LocalDataSourceModule())
+                .noteLocalDataSourceModule(new NoteLocalDataSourceModule())
                 .networkModule(new NetworkModule())
                 .build();
     }

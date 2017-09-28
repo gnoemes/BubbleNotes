@@ -22,10 +22,11 @@ import com.gnoemes.bubblenotes.R;
 import com.gnoemes.bubblenotes.data.model.Note;
 import com.gnoemes.bubblenotes.ui.note_detail.NoteDetailActivity;
 
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.realm.OrderedCollectionChangeSet;
-import io.realm.RealmResults;
 import timber.log.Timber;
 
 /**
@@ -49,18 +50,9 @@ public class NotesListFragment extends MvpAppCompatFragment implements NotesList
     }
 
     //TODO Choose only one adapter
-    NotesListAdapter adapter;
+//    NotesListAdapter adapter;
     NotesListAdapterRecycler adapterRecycler;
 
-    NotesListAdapter.ItemClickListener adapterClickListener = new NotesListAdapter.ItemClickListener() {
-        @Override
-        public void onClick(String note_id) {
-            Timber.d("onClick" + note_id);
-            Intent intent = new Intent(getActivity(), NoteDetailActivity.class);
-            intent.putExtra(NoteDetailActivity.EXTRA_NOTE_ID, note_id);
-            startActivity(intent);
-        }
-    };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -85,8 +77,16 @@ public class NotesListFragment extends MvpAppCompatFragment implements NotesList
         listRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
 
-        adapter = new NotesListAdapter(null, adapterClickListener);
-        adapterRecycler = new NotesListAdapterRecycler(null, adapterClickListener);
+//        adapter = new NotesListAdapter(null, adapterClickListener);
+        adapterRecycler = new NotesListAdapterRecycler(null, new NotesListAdapterRecycler.OnItemClickListener() {
+            @Override
+            public void onClick(String id) {
+                Timber.d("onClick" + id);
+                Intent intent = new Intent(getActivity(), NoteDetailActivity.class);
+                intent.putExtra(NoteDetailActivity.EXTRA_NOTE_ID, id);
+                startActivity(intent);
+            }
+        });
 
         listRecyclerView.setAdapter(adapterRecycler);
         //listRecyclerView.setAdapter(adapter);
@@ -121,7 +121,7 @@ public class NotesListFragment extends MvpAppCompatFragment implements NotesList
     }
 
     @Override
-    public void setNotesList(RealmResults<Note> notes) {
+    public void setNotesList(List<Note> notes) {
         Timber.d("setNotesList");
         //adapter.updateData(notes);
         adapterRecycler.updateData(notes);

@@ -3,26 +3,25 @@ package com.gnoemes.bubblenotes.data.source.remote;
 import com.gnoemes.bubblenotes.data.model.Note;
 import com.gnoemes.bubblenotes.data.source.NoteDataSource;
 
+import java.util.List;
+
 import io.reactivex.Completable;
-import io.reactivex.Observable;
-import io.reactivex.Single;
-import io.realm.RealmResults;
-import io.realm.rx.CollectionChange;
+import io.reactivex.Flowable;
 
 public class RemoteDataSource implements NoteDataSource {
 
     @Override
-    public Single<Note> loadNoteById(String id) {
+    public Flowable<Note> loadNoteById(String id) {
         throw  new UnsupportedOperationException();
     }
 
     @Override
-    public Observable<CollectionChange<RealmResults<Note>>> loadNotes() {
+    public Flowable<List<Note>> loadNotes() {
         throw  new UnsupportedOperationException();
     }
 
     @Override
-    public Single<Note> addOrUpdateNote(Note note) {
+    public Completable addOrUpdateNote(Note note) {
         throw  new UnsupportedOperationException();
     }
 

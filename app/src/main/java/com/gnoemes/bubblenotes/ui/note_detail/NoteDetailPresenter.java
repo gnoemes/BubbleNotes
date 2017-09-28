@@ -11,7 +11,12 @@ import com.gnoemes.bubblenotes.utils.RxUtil;
 
 import javax.inject.Inject;
 
+import io.reactivex.CompletableObserver;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 /**
@@ -49,35 +54,64 @@ public class NoteDetailPresenter extends MvpPresenter<NoteDetailView> {
 
     public void getNote(String id) {
         subscriptions.add(repository.loadNoteById(id)
+                    .compose(RxUtil.applyFlowableSchedulers())
                     .subscribe(note -> getViewState().setNote(note)));
 
     }
 
     public void addNote(String id,String name, int priority) {
-            subscriptions.add(repository.addOrUpdateNote(NoteMapper.createNoteFromData(id,name,priority))
+            repository.addOrUpdateNote(NoteMapper.createNoteFromData(id,name,priority))
 //                    .filter(note -> note.isLoaded())
-                    .subscribe(note -> {
-                        getViewState().showToast("Note saved " + note.getId());
-                        getViewState().backPressed();
-                    }, throwable -> {
-                        throwable.printStackTrace();
-                        getViewState().showToast("Error when saving");
-                    }));
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new CompletableObserver() {
+                        @Override
+                        public void onSubscribe(@NonNull Disposable d) {
+
+                        }
+
+                        @Override
+                        public void onComplete() {
+                            getViewState().showToast("Note saved ");
+                            getViewState().backPressed();
+                        }
+
+                        @Override
+                        public void onError(@NonNull Throwable e) {
+                            e.printStackTrace();
+                            getViewState().showToast("Error when saving");
+                        }
+                    });
     }
 
     public void updateNote(String id, String name, int priority) {
-        subscriptions.add(repository.addOrUpdateNote((NoteMapper.createNoteFromData(id,name,priority)))
-                .subscribe(note -> {
-                    getViewState().showToast("Note updated");
-                    getViewState().backPressed();
-                }, throwable -> {
-                    throwable.printStackTrace();
-                    getViewState().showToast("Error when updating");
-                }));
+       repository.addOrUpdateNote((NoteMapper.createNoteFromData(id,name,priority)))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new CompletableObserver() {
+                    @Override
+                    public void onSubscribe(@NonNull Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        getViewState().showToast("Note updated");
+                        getViewState().backPressed();
+                    }
+
+                    @Override
+                    public void onError(@NonNull Throwable e) {
+                        e.printStackTrace();
+                        getViewState().showToast("Error when updating");
+                    }
+                });
     }
     public void deleteNote(String id) {
 
         subscriptions.add(repository.deleteNote(id)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(() -> {
                         getViewState().showToast("Note deleted");
                         getViewState().backPressed();
