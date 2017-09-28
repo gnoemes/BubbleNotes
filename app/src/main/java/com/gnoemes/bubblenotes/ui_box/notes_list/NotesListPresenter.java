@@ -11,16 +11,14 @@ import com.gnoemes.bubblenotes.repo_box.model.Note_;
 
 import java.util.List;
 
-import io.objectbox.Box;
 import io.objectbox.BoxStore;
 import io.objectbox.android.AndroidScheduler;
 import io.objectbox.query.Query;
 import io.objectbox.reactive.DataObserver;
 import io.objectbox.reactive.DataSubscription;
-import io.objectbox.rx.RxQuery;
-import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
@@ -33,51 +31,21 @@ public class NotesListPresenter extends MvpPresenter<NotesListView> {
     private LocalRepositoryBox localRepositoryBox;
     Context app;
     DataSubscription subscription;
+    Disposable disposable;
+    BoxStore boxStore;
 
     public NotesListPresenter(Context app, LocalRepositoryBox localRepositoryBox) {
       this.localRepositoryBox = localRepositoryBox;
         this.app = app;
+        boxStore = ((App)(app)).getBoxStore();
     }
 
     @Override
     protected void onFirstViewAttach() {
         super.onFirstViewAttach();
         deleteAll();
-        initObs();
+        //dataObserver();
         loadNotes();
-    }
-
-    private void initObs() {
-        BoxStore boxStore = ((App)(app)).getBoxStore();
-
-        Query<Note> query2 = boxStore.boxFor(Note.class).query().order(Note_.priority).build();
-        subscription = query2.subscribe().on(AndroidScheduler.mainThread())
-        .observer(new DataObserver<List<Note>>() {
-            @Override
-            public void onData(List<Note> data) {
-                Timber.d("onData");
-            }
-        });
-
-//        DataSubscription subscription = ((App)(app)).getBoxStore()
-//                .subscribe()
-//                .on(AndroidScheduler.mainThread())
-//                .observer(new DataObserver<List<Note>>() {
-//                    @Override
-//                    public void onData(List<Note> notes) {
-//                        Timber.d("onData");
-//
-//                    }
-//                });
-
-//        DataObserver<Class<Note>> dataObserver = new DataObserver<Class<Note>>() {
-//            @Override
-//            public void onData(Class<Note> data) {
-//                Timber.d("onData");
-//            }
-//        };
-//        ((App)(app)).getBoxStore().subscribe(Note.class).observer(dataObserver);
-
     }
 
     private void deleteAll() {
@@ -94,12 +62,30 @@ public class NotesListPresenter extends MvpPresenter<NotesListView> {
                 }, throwable -> {}, () -> {});
     }
 
+    private void dataObserver() {
+        BoxStore boxStore = ((App)(app)).getBoxStore();
+
+        Query<Note> query2 = boxStore.boxFor(Note.class).query().order(Note_.priority).build();
+        subscription = query2.subscribe().on(AndroidScheduler.mainThread())
+                .observer(new DataObserver<List<Note>>() {
+                    @Override
+                    public void onData(List<Note> data) {
+                        Timber.d("onData");
+                        NotesListPresenter.this.getViewState().setNotesList(data);
+                    }
+                });
+    }
+
     public void loadNotes() {
-        Disposable disposable = localRepositoryBox.getAllNotesOrderBy(Note_.priority)
+
+        disposable = localRepositoryBox.getAllNotesOrderBy(Note_.priority)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(notes -> {
-                    Timber.d("loadNotes setNotesList");
-                    getViewState().setNotesList(notes);
+                .subscribe(new Consumer<List<Note>>() {
+                    @Override
+                    public void accept(List<Note> notes) throws Exception {
+                        Timber.d("loadNotes setNotesList");
+                        NotesListPresenter.this.getViewState().setNotesList(notes);
+                    }
                 }, throwable -> {
                     throwable.printStackTrace();
                 }, () -> {
@@ -109,5 +95,11 @@ public class NotesListPresenter extends MvpPresenter<NotesListView> {
 
     public void onStop() {
 
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        disposable.dispose();
     }
 }

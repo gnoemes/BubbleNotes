@@ -21,8 +21,9 @@ import com.gnoemes.bubblenotes.App;
 import com.gnoemes.bubblenotes.R;
 import com.gnoemes.bubblenotes.repo_box.LocalRepositoryBox;
 import com.gnoemes.bubblenotes.repo_box.model.Note;
-import com.gnoemes.bubblenotes.ui.note_detail.NoteDetailActivity;
+
 import com.gnoemes.bubblenotes.ui.notes_list.NotesListAdapter;
+import com.gnoemes.bubblenotes.ui_box.note_detail.NoteDetailActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,7 +58,7 @@ public class NotesListFragment extends MvpAppCompatFragment implements NotesList
 
     @ProvidePresenter
     NotesListPresenter providePresenter() {
-        App.getAppComponent().inject(this);
+//        App.getAppComponent().inject(this);
         boxStore = ((App)(getActivity().getApplication())).getBoxStore();
         return new NotesListPresenter(getActivity().getApplication(), new LocalRepositoryBox(boxStore));
     }
@@ -67,9 +68,9 @@ public class NotesListFragment extends MvpAppCompatFragment implements NotesList
         @Override
         public void onClick(Long id) {
             Timber.d("onClick" + id);
-//            Intent intent = new Intent(getActivity(), NoteDetailActivity.class);
-//            intent.putExtra(NoteDetailActivity.EXTRA_NOTE_ID, note_id);
-//            startActivity(intent);
+            Intent intent = new Intent(getActivity(), NoteDetailActivity.class);
+            intent.putExtra(NoteDetailActivity.EXTRA_NOTE_ID, id);
+            startActivity(intent);
         }
     };
 
@@ -86,13 +87,13 @@ public class NotesListFragment extends MvpAppCompatFragment implements NotesList
         ButterKnife.bind(this, view);
 
         fab.setOnClickListener(view1 -> {
-            Note note = new Note();
-            note.setName("dsads");
-            note.setPriority(3);
-            presenter.addNote(note);
+//            Note note = new Note();
+//            note.setName("dsads");
+//            note.setPriority(3);
+//            presenter.addNote(note);
             //presenter.addNote("defsdf", 3);
-//            Intent intent = new Intent(getActivity(), NoteDetailActivity.class);
-//            startActivity(intent);
+            Intent intent = new Intent(getActivity(), NoteDetailActivity.class);
+            startActivity(intent);
         });
 
         drawer_layout = (DrawerLayout) getActivity().findViewById(R.id.drawer_layout);

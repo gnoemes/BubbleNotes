@@ -30,6 +30,7 @@ public class LocalRepositoryBox {
         noteBox = boxStore.boxFor(Note.class);
     }
 
+    //TODO Возращает из io
     public Observable<List<Note>> getAllNotesOrderBy(Property property) {
         Query<Note> query2 = noteBox.query().order(property).build();
         return RxQuery.observable(query2);
@@ -40,15 +41,15 @@ public class LocalRepositoryBox {
     }
 
     public Observable<Long> addOrUpdateNote(Note note) {
-
         return Observable.fromCallable(() -> {
-            CommonUtils.longOperation();
+            //CommonUtils.longOperation();
             return noteBox.put(note);
         });
     }
 
     public Observable<Boolean> deleteNote(long id) {
         return Observable.fromCallable(() -> {
+            //CommonUtils.longOperation();
             noteBox.remove(id);
             return true;
         });

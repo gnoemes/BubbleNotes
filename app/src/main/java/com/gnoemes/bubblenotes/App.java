@@ -42,10 +42,10 @@ public class App extends Application {
         boxStore = MyObjectBox.builder().androidContext(App.this).build();
         //ObjectBoxBrowser.setBoxStore(boxStore);
 
-        initAppComponent(this);
-        getAppComponent().inject(this);
-        realmDatabase.setupRealm();
-        realmDatabase.setupStetho();
+        //initAppComponent(this);
+        //getAppComponent().inject(this);
+//        realmDatabase.setupRealm();
+//        realmDatabase.setupStetho();
 
     }
 
