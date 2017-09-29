@@ -3,8 +3,14 @@ package com.gnoemes.bubblenotes.ui.note_detail;
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
 import com.gnoemes.bubblenotes.repo.local.LocalRepositoryImpl;
+import com.gnoemes.bubblenotes.repo.model.Comment;
+import com.gnoemes.bubblenotes.repo.model.Description;
 import com.gnoemes.bubblenotes.repo.model.Note;
 
+import java.util.List;
+
+import io.objectbox.relation.ToMany;
+import io.objectbox.relation.ToOne;
 import io.reactivex.Scheduler;
 import timber.log.Timber;
 
@@ -31,6 +37,11 @@ public class NoteDetailPresenter extends MvpPresenter<NoteDetailView> {
         super.onFirstViewAttach();
         if (id != -1)
             getNote(id);
+
+        Note note = new Note();
+
+        List<Comment> comments = note.getComments();
+        ToOne<Description> description = note.getDescription();
     }
 
     public void getNote(long id) {

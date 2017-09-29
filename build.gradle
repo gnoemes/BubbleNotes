@@ -23,7 +23,7 @@ allprojects {
     repositories {
         jcenter()
         maven { url "http://objectbox.net/beta-repo/" }
-        maven { url 'https://dl.bintray.com/pracaizlecenia/maven' }
+        maven { url 'https://dl.bintray.com/pracaizlecenia/maven' }//objectbox browser
         maven {
             url 'https://maven.google.com'
         }

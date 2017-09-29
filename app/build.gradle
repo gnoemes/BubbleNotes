@@ -46,7 +46,7 @@ dependencies {
 
     //ObjectBox
     annotationProcessor "io.objectbox:objectbox-processor:1.0.1"
-    compile 'pl.michaltretowicz:debug-db:1.0.4'
+    //compile 'pl.michaltretowicz:debug-db:1.0.4'
     compile 'io.objectbox:objectbox-rxjava:0.9.8-RC4'
 
     //Realm

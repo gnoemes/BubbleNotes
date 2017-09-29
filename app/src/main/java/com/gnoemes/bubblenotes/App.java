@@ -2,7 +2,6 @@ package com.gnoemes.bubblenotes;
 
 import android.app.Application;
 import android.content.Context;
-
 import com.gnoemes.bubblenotes.di.AppComponent;
 import com.gnoemes.bubblenotes.di.AppModule;
 import com.gnoemes.bubblenotes.di.DaggerAppComponent;
@@ -32,11 +31,11 @@ public class App extends Application {
             Timber.plant(new Timber.DebugTree());
         }
         boxStore = MyObjectBox.builder().androidContext(App.this).build();
+//        ObjectBoxBrowser.setBoxStore(boxStore);
+//        ObjectBoxBrowser.showDebugDBAddressLogToast(App.this);
 
         //initAppComponent(this);
         //getAppComponent().inject(this);
-
-
     }
 
     public static Context getAppContext() {
