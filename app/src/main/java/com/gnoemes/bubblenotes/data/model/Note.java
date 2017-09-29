@@ -16,18 +16,18 @@ public class Note {
     public static final String ID = "id";
     public static final String SORT_PRIORITY = "priority";
 
-    @PrimaryKey
-    private String id;
+    @PrimaryKey(autoGenerate = true)
+    private long id;
 
     private String name;
 
     private int priority;
 
-    public String getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(long id) {
         this.id = id;
     }
 

@@ -17,13 +17,13 @@ public interface NoteDao {
     Flowable<List<Note>> getAllNotes();
 
     @Query("SELECT * FROM " + Config.TABLE_NAME + " WHERE id == :id")
-    Flowable<Note> getNoteById(String id);
+    Flowable<Note> getNoteById(long id);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(Note note);
 
     @Query("DELETE FROM " + Config.TABLE_NAME + " WHERE id == :id")
-    void deleteNoteById(String id);
+    void deleteNoteById(long id);
 
     @Query("DELETE FROM " + Config.TABLE_NAME)
     void deleteAllNotes();
