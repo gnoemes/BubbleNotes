@@ -18,7 +18,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.note_detail.NoteDetailActivity"/>
-        <activity android:name=".ui_box.note_detail.NoteDetailActivity"/>
+        <activity android:name="com.gnoemes.bubblenotes.ui.note_detail.NoteDetailActivity"/>
     </application>
 
 

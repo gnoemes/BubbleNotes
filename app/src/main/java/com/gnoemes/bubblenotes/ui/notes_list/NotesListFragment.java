@@ -19,62 +19,56 @@ import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.gnoemes.bubblenotes.App;
 import com.gnoemes.bubblenotes.R;
-import com.gnoemes.bubblenotes.data.model.Note;
-import com.gnoemes.bubblenotes.data.source.DataManager;
-import com.gnoemes.bubblenotes.repo.local.LocalRepository;
+import com.gnoemes.bubblenotes.repo.local.LocalRepositoryImpl;
+import com.gnoemes.bubblenotes.repo.model.Note;
 import com.gnoemes.bubblenotes.ui.note_detail.NoteDetailActivity;
 
-import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.objectbox.BoxStore;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
-import io.realm.OrderedCollectionChangeSet;
-import io.realm.Realm;
-import io.realm.RealmResults;
 import timber.log.Timber;
 
 /**
- * Created by kenji1947 on 25.09.2017.
+ * Created by kenji1947 on 28.09.2017.
  */
 
-public class NotesListFragment extends MvpAppCompatFragment implements NotesListView{
+public class NotesListFragment extends MvpAppCompatFragment implements NotesListView {
     public static final String TAG = NotesListFragment.class.getSimpleName();
 
-    @BindView(R.id.fab) FloatingActionButton fab;
-    @BindView(R.id.listRecyclerView) RecyclerView listRecyclerView;
+    @BindView(R.id.fab)
+    FloatingActionButton fab;
+    @BindView(R.id.listRecyclerView)
+    RecyclerView listRecyclerView;
     DrawerLayout drawer_layout;
-    @BindView(R.id.toolbar) Toolbar toolbar;
-
-    @Inject
-    DataManager dataManager;
-    @Inject
-    LocalRepository localRepository;
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
 
     @InjectPresenter
     NotesListPresenter presenter;
 
+    //@Inject
+    BoxStore boxStore;
+
     @ProvidePresenter
     NotesListPresenter providePresenter() {
-        App.getAppComponent().inject(this);
-        return new NotesListPresenter(Realm.getDefaultInstance(),
-                AndroidSchedulers.mainThread(),
-                Schedulers.io(),
-                dataManager,
-                localRepository);
+//        App.getAppComponent().inject(this);
+        boxStore = ((App) (getActivity().getApplication())).getBoxStore();
+        return new NotesListPresenter(AndroidSchedulers.mainThread(),
+                Schedulers.io(), new LocalRepositoryImpl(boxStore));
     }
 
-    //TODO Choose only one adapter
-    NotesListAdapter adapter;
-    NotesListAdapterRecycler adapterRecycler;
-
+    NotesListAdapter adapterRecycler;
     NotesListAdapter.ItemClickListener adapterClickListener = new NotesListAdapter.ItemClickListener() {
         @Override
-        public void onClick(String note_id) {
-            Timber.d("onClick" + note_id);
+        public void onClick(Long id) {
+            Timber.d("onClick" + id);
             Intent intent = new Intent(getActivity(), NoteDetailActivity.class);
-            intent.putExtra(NoteDetailActivity.EXTRA_NOTE_ID, note_id);
+            intent.putExtra(NoteDetailActivity.EXTRA_NOTE_ID, id);
             startActivity(intent);
         }
     };
@@ -92,7 +86,6 @@ public class NotesListFragment extends MvpAppCompatFragment implements NotesList
         ButterKnife.bind(this, view);
 
         fab.setOnClickListener(view1 -> {
-            //presenter.addNote("defsdf", 3);
             Intent intent = new Intent(getActivity(), NoteDetailActivity.class);
             startActivity(intent);
         });
@@ -101,17 +94,12 @@ public class NotesListFragment extends MvpAppCompatFragment implements NotesList
 
         listRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-
-        adapter = new NotesListAdapter(null, adapterClickListener);
-        adapterRecycler = new NotesListAdapterRecycler(null, adapterClickListener);
+        adapterRecycler = new NotesListAdapter(new ArrayList<>(0), adapterClickListener);
 
         listRecyclerView.setAdapter(adapterRecycler);
-        //listRecyclerView.setAdapter(adapter);
 
         initToolbar();
-        //TODO Объяснить
         syncToolbarWithDrawer();
-
         return view;
     }
 
@@ -137,47 +125,14 @@ public class NotesListFragment extends MvpAppCompatFragment implements NotesList
         }
     }
 
+
     @Override
-    public void setNotesList(RealmResults<Note> notes) {
-        Timber.d("setNotesList");
-        //adapter.updateData(notes);
+    public void setNotesList(List<Note> notes) {
         adapterRecycler.updateData(notes);
     }
 
-
     @Override
-    public void setChangeSet(OrderedCollectionChangeSet orderedCollectionChangeSet) {
-        Timber.d("setChangeSet");
-        notifyAdapter(orderedCollectionChangeSet);
-    }
-
-    private void notifyAdapter(OrderedCollectionChangeSet changeSet) {
-
-//        listRecyclerView.getRecycledViewPool().clear();
-//        adapterRecycler.notifyDataSetChanged();
-
-        Timber.d("notifyAdapter ");
-        // For deletions, the adapter has to be notified in reverse order.
-        if (changeSet == null) {
-            Timber.d("changeSet == null");
-            adapterRecycler.notifyDataSetChanged();
-            return;
-        }
-
-        OrderedCollectionChangeSet.Range[] deletions = changeSet.getDeletionRanges();
-        for (int i = deletions.length - 1; i >= 0; i--) {
-            OrderedCollectionChangeSet.Range range = deletions[i];
-            adapterRecycler.notifyItemRangeRemoved(range.startIndex, range.length);
-        }
-
-        OrderedCollectionChangeSet.Range[] insertions = changeSet.getInsertionRanges();
-        for (OrderedCollectionChangeSet.Range range : insertions) {
-            adapterRecycler.notifyItemRangeInserted(range.startIndex, range.length);
-        }
-
-        OrderedCollectionChangeSet.Range[] modifications = changeSet.getChangeRanges();
-        for (OrderedCollectionChangeSet.Range range : modifications) {
-            adapterRecycler.notifyItemRangeChanged(range.startIndex, range.length);
-        }
+    public void showMessage(String msg) {
+        Timber.d("showMessage " + msg);
     }
 }

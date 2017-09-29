@@ -1,83 +1,59 @@
 package com.gnoemes.bubblenotes.ui.notes_list;
 
-import android.util.Log;
-
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
-import com.gnoemes.bubblenotes.App;
-import com.gnoemes.bubblenotes.data.model.Note;
-import com.gnoemes.bubblenotes.data.source.DataManager;
-import com.gnoemes.bubblenotes.repo.local.LocalRepository;
+import com.gnoemes.bubblenotes.repo.local.LocalRepositoryImpl;
+import com.gnoemes.bubblenotes.repo.model.Note;
+import com.gnoemes.bubblenotes.repo.model.Note_;
 
-import javax.inject.Inject;
+import java.util.List;
 
 import io.reactivex.Scheduler;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
-import io.realm.Realm;
-import io.realm.RealmResults;
-import io.realm.rx.CollectionChange;
 import timber.log.Timber;
 
 /**
- * Created by kenji1947 on 25.09.2017.
+ * Created by kenji1947 on 28.09.2017.
  */
 
 @InjectViewState
 public class NotesListPresenter extends MvpPresenter<NotesListView> {
 
-    DataManager dataManager;
-    LocalRepository localRepository;
-    Realm realm;
-    Scheduler main;
-    Scheduler io;
+    private Scheduler main;
+    private Scheduler io;
+    private LocalRepositoryImpl localRepositoryBox;
+    private Disposable disposable;
 
-    public NotesListPresenter(Realm realm, Scheduler main, Scheduler io,
-                              DataManager dataManager,
-                              LocalRepository localRepository) {
-        this.dataManager = dataManager;
-        this.localRepository = localRepository;
-        this.realm = realm;
+    public NotesListPresenter(Scheduler main, Scheduler io, LocalRepositoryImpl localRepositoryBox) {
         this.main = main;
         this.io = io;
+        this.localRepositoryBox = localRepositoryBox;
     }
 
     @Override
     protected void onFirstViewAttach() {
         super.onFirstViewAttach();
-        App.getAppComponent().inject(this);
-        loadNotesRx();
+        loadNotes();
     }
 
-    //Async Rx version
-    public void loadNotesRx() {
-        localRepository.loadNotesSorted(realm, "priority")
-                .subscribe();
+    private void loadNotes() {
 
-        //TODO Остановить disposable в onDestroy
-        Disposable disposable = localRepository.loadNotesSorted(realm, "priority").subscribe(notes -> {
-            notes.asChangesetObservable()
-                    //.filter(realmResultsCollectionChange -> realmResultsCollectionChange.getCollection().isValid())
-                    .subscribeOn(main)
-                    .subscribe(realmResultsCollectionChange -> {
-                        Timber.d("accept");
-                        if (realmResultsCollectionChange.getCollection().isLoaded()) {
-                            if (realmResultsCollectionChange.getChangeset() == null) {
-                                Timber.d("realmResultsCollectionChange.getChangeset() == null");
-                                getViewState().setNotesList(realmResultsCollectionChange.getCollection());
-                            }
-                        }
-                        getViewState().setChangeSet(realmResultsCollectionChange.getChangeset());
-
-                    }, throwable -> {
-                        Timber.d("Error " + throwable);
-                    });
-        });
-
+        disposable = localRepositoryBox.getAllNotesOrderBy(Note_.priority)
+                .observeOn(main)
+                .subscribe(new Consumer<List<Note>>() {
+                    @Override
+                    public void accept(List<Note> notes) throws Exception {
+                        Timber.d("loadNotes setNotesList");
+                        getViewState().setNotesList(notes);
+                    }
+                }, throwable -> {
+                    throwable.printStackTrace();
+                }, () -> {
+                    Timber.d("onComplete");
+                });
     }
 
-    //Stop all work, because View was stopped. This method NOT be triggered by configuration change.
     public void onStop() {
 
     }
@@ -85,6 +61,6 @@ public class NotesListPresenter extends MvpPresenter<NotesListView> {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        realm.close();
+        disposable.dispose();
     }
 }

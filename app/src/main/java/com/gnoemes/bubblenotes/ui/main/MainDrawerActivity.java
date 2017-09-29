@@ -37,10 +37,7 @@ public class MainDrawerActivity extends
 
         //launch fragment at first start
         if (savedInstanceState == null) {
-            //showFragment(ImportFragment.class, ImportFragment.TAG);
-            //replaceFragment(NotesListFragment.class, NotesListFragment.TAG);
-            replaceFragment(com.gnoemes.bubblenotes.ui_box.notes_list.NotesListFragment.class, NotesListFragment.TAG);
-
+            replaceFragment(NotesListFragment.class, NotesListFragment.TAG);
             navigation_view.setCheckedItem(R.id.nav_notes);
         }
         navigation_view.setNavigationItemSelectedListener(this);
@@ -89,8 +86,6 @@ public class MainDrawerActivity extends
                 break;
             case R.id.nav_settings:
                 Timber.d("nav_settings");
-                replaceFragment(com.gnoemes.bubblenotes.ui_box.notes_list.NotesListFragment.class,
-                        com.gnoemes.bubblenotes.ui_box.notes_list.NotesListFragment.TAG);
                 break;
             case R.id.nav_about:
                 Timber.d("nav_about");

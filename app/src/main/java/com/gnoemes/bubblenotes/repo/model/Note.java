@@ -1,4 +1,4 @@
-package com.gnoemes.bubblenotes.repo_box.model;
+package com.gnoemes.bubblenotes.repo.model;
 
 import io.objectbox.annotation.Entity;
 import io.objectbox.annotation.Id;

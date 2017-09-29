@@ -2,9 +2,6 @@ package com.gnoemes.bubblenotes.di;
 
 import android.content.Context;
 
-import com.amitshekhar.ObjectBoxBrowser;
-import com.gnoemes.bubblenotes.repo_box.model.MyObjectBox;
-
 import javax.inject.Singleton;
 
 import dagger.Module;
