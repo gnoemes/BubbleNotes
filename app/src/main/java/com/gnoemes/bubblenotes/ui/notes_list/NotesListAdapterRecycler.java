@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.gnoemes.bubblenotes.R;
@@ -46,6 +47,16 @@ public class NotesListAdapterRecycler extends RecyclerView.Adapter<NotesListAdap
         Note note = getItem(position);
         holder.id.setText(note.getId());
         holder.name.setText(note.getName());
+        if (note.getPriority() < 4) {
+            holder.itemContainer.setBackgroundColor(holder.itemContainer.getResources().getColor(R.color.softRed));
+            holder.priority.setBackgroundColor(holder.priority.getResources().getColor(R.color.deepRed));
+        } else if (note.getPriority() < 8){
+            holder.itemContainer.setBackgroundColor(holder.itemContainer.getResources().getColor(R.color.softYellow));
+            holder.priority.setBackgroundColor(holder.priority.getResources().getColor(R.color.deepYellow));
+        } else {
+            holder.itemContainer.setBackgroundColor(holder.itemContainer.getResources().getColor(R.color.softGreen));
+            holder.priority.setBackgroundColor(holder.priority.getResources().getColor(R.color.deepGreen));
+        }
         holder.priority.setText(note.getPriority() + "");
     }
 
@@ -71,6 +82,8 @@ public class NotesListAdapterRecycler extends RecyclerView.Adapter<NotesListAdap
 
     //TODO make Holder class static
     public class NoteHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        @BindView(R.id.itemContainer)
+        LinearLayout itemContainer;
         @BindView(R.id.idTextView)
         TextView id;
         @BindView(R.id.nameTextView)

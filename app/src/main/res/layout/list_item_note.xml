@@ -1,10 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:orientation="vertical"
-              android:padding="@dimen/standard_material_padding">
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    app:cardElevation="4dp"
+    app:cardCornerRadius="2dp"
+    app:cardBackgroundColor="@color/softGreen"
+    app:cardUseCompatPadding="true">
+<LinearLayout
+
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+    <TextView
+        android:id="@+id/priorityTextView"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:background="@color/deepGreen"
+        tools:text="Priority"/>
+
+<LinearLayout
+    android:id="@+id/itemContainer"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/activity_vertical_margin"
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/idTextView"
@@ -12,16 +33,14 @@
         android:layout_height="wrap_content"
         tools:text="Id"/>
 
-    <TextView android:id="@+id/nameTextView"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
-              android:textSize="@dimen/standard_text_size"
+    <TextView
+        android:id="@+id/nameTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/list_item_parent_textSize"
         tools:text="Name"/>
 
-    <TextView
-        android:id="@+id/priorityTextView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        tools:text="Priority"/>
 
 </LinearLayout>
+</LinearLayout>
+</android.support.v7.widget.CardView>
