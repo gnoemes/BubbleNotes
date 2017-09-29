@@ -15,4 +15,6 @@ public interface NotesListView extends MvpView {
 
     @StateStrategyType(AddToEndSingleStrategy.class)
     void setNotesList(List<Note> notes);
+
+    void showToast(String s);
 }

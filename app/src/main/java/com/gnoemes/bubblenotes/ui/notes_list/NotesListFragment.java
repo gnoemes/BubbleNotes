@@ -10,9 +10,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.arellomobile.mvp.MvpAppCompatFragment;
 import com.arellomobile.mvp.presenter.InjectPresenter;
@@ -84,6 +86,26 @@ public class NotesListFragment extends MvpAppCompatFragment implements NotesList
         //TODO Объяснить
         syncToolbarWithDrawer();
 
+        ItemTouchHelper.SimpleCallback callback = new ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                final int position = viewHolder.getAdapterPosition();
+                if (direction == ItemTouchHelper.RIGHT) {
+                    adapterRecycler.notifyItemRemoved(position);
+                    String id = adapterRecycler.getItem(position).getId();
+                    presenter.deleteNote(id);
+                }
+            }
+        };
+
+        ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
+        touchHelper.attachToRecyclerView(listRecyclerView);
+
         return view;
     }
 
@@ -113,5 +135,10 @@ public class NotesListFragment extends MvpAppCompatFragment implements NotesList
     public void setNotesList(List<Note> notes) {
         Timber.d("setNotesList");
         adapterRecycler.updateData(notes);
+    }
+
+    @Override
+    public void showToast(String message) {
+        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
     }
 }
