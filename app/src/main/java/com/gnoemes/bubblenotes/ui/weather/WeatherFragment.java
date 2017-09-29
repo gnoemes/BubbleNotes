@@ -7,7 +7,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
@@ -15,8 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.gnoemes.bubblenotes.R;
-import com.gnoemes.bubblenotes.ui.notes_list.NotesListAdapter;
-import com.gnoemes.bubblenotes.ui.notes_list.NotesListFragment;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

@@ -10,21 +10,24 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.arellomobile.mvp.MvpAppCompatFragment;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
+import com.gnoemes.bubblenotes.App;
 import com.gnoemes.bubblenotes.R;
 import com.gnoemes.bubblenotes.data.model.Note;
 import com.gnoemes.bubblenotes.ui.note_detail.NoteDetailActivity;
 
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.realm.OrderedCollectionChangeSet;
-import io.realm.RealmResults;
 import timber.log.Timber;
 
 /**
@@ -39,26 +42,15 @@ public class NotesListFragment extends MvpAppCompatFragment implements NotesList
     DrawerLayout drawer_layout;
     @BindView(R.id.toolbar) Toolbar toolbar;
 
+
     @InjectPresenter
     NotesListPresenter presenter;
     @ProvidePresenter
     NotesListPresenter providePresenter() {
-        return new NotesListPresenter();
+        return new NotesListPresenter(App.getAppComponent().getNoteRepository());
     }
 
-    //TODO Choose only one adapter
-    NotesListAdapter adapter;
     NotesListAdapterRecycler adapterRecycler;
-
-    NotesListAdapter.ItemClickListener adapterClickListener = new NotesListAdapter.ItemClickListener() {
-        @Override
-        public void onClick(String note_id) {
-            Timber.d("onClick" + note_id);
-            Intent intent = new Intent(getActivity(), NoteDetailActivity.class);
-            intent.putExtra(NoteDetailActivity.EXTRA_NOTE_ID, note_id);
-            startActivity(intent);
-        }
-    };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -73,7 +65,6 @@ public class NotesListFragment extends MvpAppCompatFragment implements NotesList
         ButterKnife.bind(this, view);
 
         fab.setOnClickListener(view1 -> {
-            //presenter.addNote("defsdf", 3);
             Intent intent = new Intent(getActivity(), NoteDetailActivity.class);
             startActivity(intent);
         });
@@ -82,16 +73,38 @@ public class NotesListFragment extends MvpAppCompatFragment implements NotesList
 
         listRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-
-        adapter = new NotesListAdapter(null, adapterClickListener);
-        adapterRecycler = new NotesListAdapterRecycler(null, adapterClickListener);
+        adapterRecycler = new NotesListAdapterRecycler(null, id -> {
+            Timber.d("onClick" + id);
+            Intent intent = new Intent(getActivity(), NoteDetailActivity.class);
+            intent.putExtra(NoteDetailActivity.EXTRA_NOTE_ID, id);
+            startActivity(intent);
+        });
 
         listRecyclerView.setAdapter(adapterRecycler);
-        //listRecyclerView.setAdapter(adapter);
 
         initToolbar();
         //TODO Объяснить
         syncToolbarWithDrawer();
+
+        ItemTouchHelper.SimpleCallback callback = new ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                final int position = viewHolder.getAdapterPosition();
+                if (direction == ItemTouchHelper.RIGHT) {
+                    adapterRecycler.notifyItemRemoved(position);
+                    String id = adapterRecycler.getItem(position).getId();
+                    presenter.deleteNote(id);
+                }
+            }
+        };
+
+        ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
+        touchHelper.attachToRecyclerView(listRecyclerView);
 
         return view;
     }
@@ -119,42 +132,13 @@ public class NotesListFragment extends MvpAppCompatFragment implements NotesList
     }
 
     @Override
-    public void setNotesList(RealmResults<Note> notes) {
+    public void setNotesList(List<Note> notes) {
         Timber.d("setNotesList");
-        //adapter.updateData(notes);
         adapterRecycler.updateData(notes);
     }
 
-
     @Override
-    public void setChangeSet(OrderedCollectionChangeSet orderedCollectionChangeSet) {
-        Timber.d("setChangeSet");
-        notifyAdapter(orderedCollectionChangeSet);
-    }
-
-    private void notifyAdapter(OrderedCollectionChangeSet changeSet) {
-        Timber.d("notifyAdapter ");
-        // For deletions, the adapter has to be notified in reverse order.
-        if (changeSet == null) {
-            Timber.d("changeSet == null");
-            adapterRecycler.notifyDataSetChanged();
-            return;
-        }
-
-        OrderedCollectionChangeSet.Range[] deletions = changeSet.getDeletionRanges();
-        for (int i = deletions.length - 1; i >= 0; i--) {
-            OrderedCollectionChangeSet.Range range = deletions[i];
-            adapterRecycler.notifyItemRangeRemoved(range.startIndex, range.length);
-        }
-
-        OrderedCollectionChangeSet.Range[] insertions = changeSet.getInsertionRanges();
-        for (OrderedCollectionChangeSet.Range range : insertions) {
-            adapterRecycler.notifyItemRangeInserted(range.startIndex, range.length);
-        }
-
-        OrderedCollectionChangeSet.Range[] modifications = changeSet.getChangeRanges();
-        for (OrderedCollectionChangeSet.Range range : modifications) {
-            adapterRecycler.notifyItemRangeChanged(range.startIndex, range.length);
-        }
+    public void showToast(String message) {
+        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
     }
 }

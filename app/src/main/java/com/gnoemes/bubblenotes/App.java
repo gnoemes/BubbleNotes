@@ -2,15 +2,11 @@ package com.gnoemes.bubblenotes;
 
 import android.app.Application;
 
-import com.gnoemes.bubblenotes.di.AppComponent;
-import com.gnoemes.bubblenotes.di.AppModule;
-import com.gnoemes.bubblenotes.di.DaggerAppComponent;
-import com.gnoemes.bubblenotes.di.DataManagerModule;
-import com.gnoemes.bubblenotes.di.NetworkModule;
-import com.gnoemes.bubblenotes.di.RealmModule;
-import com.gnoemes.bubblenotes.data.source.local.RealmDatabase;
-
-import javax.inject.Inject;
+import com.gnoemes.bubblenotes.di.components.AppComponent;
+import com.gnoemes.bubblenotes.di.components.DaggerAppComponent;
+import com.gnoemes.bubblenotes.di.modules.AppModule;
+import com.gnoemes.bubblenotes.di.modules.NetworkModule;
+import com.gnoemes.bubblenotes.di.modules.NoteLocalDataSourceModule;
 
 import timber.log.Timber;
 
@@ -20,8 +16,6 @@ import timber.log.Timber;
 
 public class App extends Application {
 
-    @Inject
-    RealmDatabase realmDatabase;
     private static AppComponent appComponent;
 
     @Override
@@ -34,8 +28,6 @@ public class App extends Application {
 
         initAppComponent(this);
         getAppComponent().inject(this);
-        realmDatabase.setupRealm();
-        realmDatabase.setupStetho();
 
     }
 
@@ -46,21 +38,8 @@ public class App extends Application {
     private void initAppComponent(App app) {
         appComponent = DaggerAppComponent.builder()
                 .appModule(new AppModule(app))
-                .realmModule(new RealmModule())
-                .dataManagerModule(new DataManagerModule())
+                .noteLocalDataSourceModule(new NoteLocalDataSourceModule())
                 .networkModule(new NetworkModule())
                 .build();
-    }
-
-    public AppComponent getComponent() {
-        if (appComponent == null) {
-            appComponent = DaggerAppComponent.builder()
-                    .appModule(new AppModule(this))
-                    .realmModule(new RealmModule())
-                    .dataManagerModule(new DataManagerModule())
-                    .networkModule(new NetworkModule())
-                    .build();
-        }
-        return appComponent;
     }
 }

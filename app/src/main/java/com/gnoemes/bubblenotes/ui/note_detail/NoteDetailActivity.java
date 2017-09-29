@@ -13,8 +13,11 @@ import android.widget.Toast;
 import com.arellomobile.mvp.MvpAppCompatActivity;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
+import com.gnoemes.bubblenotes.App;
 import com.gnoemes.bubblenotes.R;
 import com.gnoemes.bubblenotes.data.model.Note;
+
+import java.util.UUID;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -38,10 +41,11 @@ public class NoteDetailActivity extends MvpAppCompatActivity implements NoteDeta
     @BindView(R.id.fab) FloatingActionButton fab;
     @BindView(R.id.fabDelete) FloatingActionButton fabDelete;
 
-    @InjectPresenter NoteDetailPresenter presenter;
+    @InjectPresenter
+    NoteDetailPresenter presenter;
     @ProvidePresenter
     NoteDetailPresenter providePresenter() {
-        return new NoteDetailPresenter(getIntent().getStringExtra(EXTRA_NOTE_ID));
+        return new NoteDetailPresenter(App.getAppComponent().getNoteRepository(),getIntent().getStringExtra(EXTRA_NOTE_ID));
     }
 
     @Override
@@ -82,7 +86,7 @@ public class NoteDetailActivity extends MvpAppCompatActivity implements NoteDeta
     }
 
     private void addNote() {
-        presenter.addNote(nameEditText.getText().toString(), Integer.parseInt(priorityEditText.getText().toString()));
+        presenter.addNote(UUID.randomUUID().toString(),nameEditText.getText().toString(), Integer.parseInt(priorityEditText.getText().toString()));
     }
 
 
