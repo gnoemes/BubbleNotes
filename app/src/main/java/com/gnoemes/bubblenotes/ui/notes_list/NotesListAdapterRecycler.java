@@ -12,6 +12,9 @@ import com.gnoemes.bubblenotes.data.model.Note;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /**
  * Created by kenji1947 on 25.09.2017.
  */
@@ -51,6 +54,7 @@ public class NotesListAdapterRecycler extends RecyclerView.Adapter<NotesListAdap
     public int getItemCount() {
         return isDataValid() ? adapterData.size() : 0;
     }
+
     private boolean isDataValid() {
         return adapterData != null;
     }
@@ -67,16 +71,16 @@ public class NotesListAdapterRecycler extends RecyclerView.Adapter<NotesListAdap
 
     //TODO make Holder class static
     public class NoteHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        @BindView(R.id.idTextView)
         TextView id;
+        @BindView(R.id.nameTextView)
         TextView name;
+        @BindView(R.id.priorityTextView)
         TextView priority;
 
         public NoteHolder(View itemView) {
             super(itemView);
-            id = (TextView) itemView.findViewById(R.id.idTextView);
-            name = (TextView) itemView.findViewById(R.id.nameTextView);
-            priority = (TextView) itemView.findViewById(R.id.priorityTextView);
-
+            ButterKnife.bind(this,itemView);
             itemView.setOnClickListener(this);
         }
 

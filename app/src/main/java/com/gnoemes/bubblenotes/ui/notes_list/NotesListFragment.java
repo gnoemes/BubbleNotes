@@ -26,7 +26,6 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.realm.OrderedCollectionChangeSet;
 import timber.log.Timber;
 
 /**
@@ -49,10 +48,7 @@ public class NotesListFragment extends MvpAppCompatFragment implements NotesList
         return new NotesListPresenter(App.getAppComponent().getNoteRepository());
     }
 
-    //TODO Choose only one adapter
-//    NotesListAdapter adapter;
     NotesListAdapterRecycler adapterRecycler;
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -67,7 +63,6 @@ public class NotesListFragment extends MvpAppCompatFragment implements NotesList
         ButterKnife.bind(this, view);
 
         fab.setOnClickListener(view1 -> {
-            //presenter.addNote("defsdf", 3);
             Intent intent = new Intent(getActivity(), NoteDetailActivity.class);
             startActivity(intent);
         });
@@ -76,20 +71,14 @@ public class NotesListFragment extends MvpAppCompatFragment implements NotesList
 
         listRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-
-//        adapter = new NotesListAdapter(null, adapterClickListener);
-        adapterRecycler = new NotesListAdapterRecycler(null, new NotesListAdapterRecycler.OnItemClickListener() {
-            @Override
-            public void onClick(String id) {
-                Timber.d("onClick" + id);
-                Intent intent = new Intent(getActivity(), NoteDetailActivity.class);
-                intent.putExtra(NoteDetailActivity.EXTRA_NOTE_ID, id);
-                startActivity(intent);
-            }
+        adapterRecycler = new NotesListAdapterRecycler(null, id -> {
+            Timber.d("onClick" + id);
+            Intent intent = new Intent(getActivity(), NoteDetailActivity.class);
+            intent.putExtra(NoteDetailActivity.EXTRA_NOTE_ID, id);
+            startActivity(intent);
         });
 
         listRecyclerView.setAdapter(adapterRecycler);
-        //listRecyclerView.setAdapter(adapter);
 
         initToolbar();
         //TODO Объяснить
@@ -123,40 +112,6 @@ public class NotesListFragment extends MvpAppCompatFragment implements NotesList
     @Override
     public void setNotesList(List<Note> notes) {
         Timber.d("setNotesList");
-        //adapter.updateData(notes);
         adapterRecycler.updateData(notes);
-    }
-
-
-    @Override
-    public void setChangeSet(OrderedCollectionChangeSet orderedCollectionChangeSet) {
-        Timber.d("setChangeSet");
-        notifyAdapter(orderedCollectionChangeSet);
-    }
-
-    private void notifyAdapter(OrderedCollectionChangeSet changeSet) {
-        Timber.d("notifyAdapter ");
-        // For deletions, the adapter has to be notified in reverse order.
-        if (changeSet == null) {
-            Timber.d("changeSet == null");
-            adapterRecycler.notifyDataSetChanged();
-            return;
-        }
-
-        OrderedCollectionChangeSet.Range[] deletions = changeSet.getDeletionRanges();
-        for (int i = deletions.length - 1; i >= 0; i--) {
-            OrderedCollectionChangeSet.Range range = deletions[i];
-            adapterRecycler.notifyItemRangeRemoved(range.startIndex, range.length);
-        }
-
-        OrderedCollectionChangeSet.Range[] insertions = changeSet.getInsertionRanges();
-        for (OrderedCollectionChangeSet.Range range : insertions) {
-            adapterRecycler.notifyItemRangeInserted(range.startIndex, range.length);
-        }
-
-        OrderedCollectionChangeSet.Range[] modifications = changeSet.getChangeRanges();
-        for (OrderedCollectionChangeSet.Range range : modifications) {
-            adapterRecycler.notifyItemRangeChanged(range.startIndex, range.length);
-        }
     }
 }

@@ -108,7 +108,6 @@ public class NoteDetailPresenter extends MvpPresenter<NoteDetailView> {
                 });
     }
     public void deleteNote(String id) {
-
         subscriptions.add(repository.deleteNote(id)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
