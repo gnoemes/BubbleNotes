@@ -11,13 +11,21 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.arellomobile.mvp.MvpAppCompatActivity;
+
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
+import com.gnoemes.bubblenotes.App;
 import com.gnoemes.bubblenotes.R;
-import com.gnoemes.bubblenotes.data.model.Note;
+import com.gnoemes.bubblenotes.repo.local.LocalRepositoryImpl;
+import com.gnoemes.bubblenotes.repo.model.Note;
+
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import io.objectbox.BoxStore;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 /**
@@ -28,7 +36,8 @@ public class NoteDetailActivity extends MvpAppCompatActivity implements NoteDeta
     public final static String EXTRA_NOTE_ID = "note_id";
 
     private boolean isInEditMode;
-    private String note_id;
+    private long note_id;
+    Note note;
 
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.progressBar) ProgressBar progressBar;
@@ -38,20 +47,30 @@ public class NoteDetailActivity extends MvpAppCompatActivity implements NoteDeta
     @BindView(R.id.fab) FloatingActionButton fab;
     @BindView(R.id.fabDelete) FloatingActionButton fabDelete;
 
-    @InjectPresenter NoteDetailPresenter presenter;
+    @InjectPresenter
+    NoteDetailPresenter presenter;
+
+    BoxStore boxStore;
+
     @ProvidePresenter
     NoteDetailPresenter providePresenter() {
-        return new NoteDetailPresenter(getIntent().getStringExtra(EXTRA_NOTE_ID));
+        boxStore = ((App)(getApplication())).getBoxStore();
+        return new NoteDetailPresenter(
+                AndroidSchedulers.mainThread(),
+                Schedulers.io(),
+                new LocalRepositoryImpl(boxStore), getIntent().getLongExtra(EXTRA_NOTE_ID, -1));
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note_detail);
+
+        Timber.d("onCreate");
         ButterKnife.bind(this);
 
-        note_id = getIntent().getStringExtra(EXTRA_NOTE_ID);
-        isInEditMode = note_id != null;
+        note_id = getIntent().getLongExtra(EXTRA_NOTE_ID, -1);
+        isInEditMode = note_id != -1;
 
         disableKeyboardOnStart();
         initToolbar();
@@ -61,7 +80,7 @@ public class NoteDetailActivity extends MvpAppCompatActivity implements NoteDeta
 
     private void initDeleteButton() {
         fabDelete.setOnClickListener(view1 -> {
-            if (note_id != null)
+            if (note_id != -1);
                 presenter.deleteNote(note_id);
         });
     }
@@ -76,16 +95,17 @@ public class NoteDetailActivity extends MvpAppCompatActivity implements NoteDeta
     }
 
     private void updateNote() {
-        presenter.updateNote(idTextView.getText().toString(),
-                nameEditText.getText().toString(),
-                Integer.parseInt(priorityEditText.getText().toString()));
+        note.setName(nameEditText.getText().toString());
+        note.setPriority(Integer.parseInt(priorityEditText.getText().toString()));
+        presenter.addOrUpdateNote(note);
     }
 
     private void addNote() {
-        presenter.addNote(nameEditText.getText().toString(), Integer.parseInt(priorityEditText.getText().toString()));
+        Note note = new Note();
+        note.setName(nameEditText.getText().toString());
+        note.setPriority(Integer.parseInt(priorityEditText.getText().toString()));
+        presenter.addOrUpdateNote(note);
     }
-
-
 
     private void disableKeyboardOnStart() {
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
@@ -112,7 +132,7 @@ public class NoteDetailActivity extends MvpAppCompatActivity implements NoteDeta
     protected void onStop() {
         super.onStop();
         if (!isChangingConfigurations()) {
-            presenter.onStop();
+            //presenter.onStop();
         }
     }
 
@@ -128,9 +148,11 @@ public class NoteDetailActivity extends MvpAppCompatActivity implements NoteDeta
 
     @Override
     public void setNote(Note note) {
-        idTextView.setText(note.getId());
+        this.note = note;
+        idTextView.setText(note.getId() + "");
         nameEditText.setText(note.getName());
         priorityEditText.setText(note.getPriority() + "");
+
     }
 
     @Override

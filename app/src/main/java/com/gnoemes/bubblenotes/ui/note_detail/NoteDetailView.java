@@ -4,14 +4,16 @@ import com.arellomobile.mvp.MvpView;
 import com.arellomobile.mvp.viewstate.strategy.AddToEndSingleStrategy;
 import com.arellomobile.mvp.viewstate.strategy.SkipStrategy;
 import com.arellomobile.mvp.viewstate.strategy.StateStrategyType;
-import com.gnoemes.bubblenotes.data.model.Note;
+import com.gnoemes.bubblenotes.repo.model.Note;
+
 
 /**
- * Created by kenji1947 on 25.09.2017.
+ * Created by kenji1947 on 28.09.2017.
  */
 
-public interface NoteDetailView extends MvpView {
-
+public interface NoteDetailView extends MvpView{
+    @StateStrategyType(SkipStrategy.class)
+    void backPressed();
     @StateStrategyType(AddToEndSingleStrategy.class)
     void setProgressIndicator(boolean refreshing);
 
@@ -20,7 +22,4 @@ public interface NoteDetailView extends MvpView {
 
     @StateStrategyType(SkipStrategy.class)
     void showToast(String message);
-
-    @StateStrategyType(SkipStrategy.class)
-    void backPressed();
 }

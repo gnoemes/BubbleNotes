@@ -15,9 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.gnoemes.bubblenotes.R;
-import com.gnoemes.bubblenotes.ui.notes_list.NotesListAdapter;
-import com.gnoemes.bubblenotes.ui.notes_list.NotesListFragment;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 

@@ -37,7 +37,6 @@ public class MainDrawerActivity extends
 
         //launch fragment at first start
         if (savedInstanceState == null) {
-            //showFragment(ImportFragment.class, ImportFragment.TAG);
             replaceFragment(NotesListFragment.class, NotesListFragment.TAG);
             navigation_view.setCheckedItem(R.id.nav_notes);
         }

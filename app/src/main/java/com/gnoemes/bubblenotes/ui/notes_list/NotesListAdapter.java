@@ -8,45 +8,59 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.gnoemes.bubblenotes.R;
-import com.gnoemes.bubblenotes.data.model.Note;
+import com.gnoemes.bubblenotes.repo.model.Note;
 
-import io.realm.OrderedRealmCollection;
-import io.realm.RealmRecyclerViewAdapter;
+
+import java.util.List;
 
 /**
  * Created by kenji1947 on 25.09.2017.
  */
 
-public class NotesListAdapter extends RealmRecyclerViewAdapter<Note, NotesListAdapter.NoteHolder> {
 
-    private ItemClickListener clickListener;
+public class NotesListAdapter extends RecyclerView.Adapter<NotesListAdapter.NoteHolder> {
+
+    private NotesListAdapter.ItemClickListener clickListener;
+    private List<Note> adapterData;
+
     public interface ItemClickListener {
-        void onClick(String note_id);
+        void onClick(Long id);
     }
 
-    public NotesListAdapter(@Nullable OrderedRealmCollection<Note> data, ItemClickListener clickListener) {
-        //TODO Отключение автообновления
-        //super(data, false, false);
-
-        super(data, true);
-
-        //TODO разобрать конструктор суперкласса
+    public NotesListAdapter(@Nullable List<Note> adapterData,
+                            NotesListAdapter.ItemClickListener clickListener) {
         this.clickListener = clickListener;
+        this.adapterData = adapterData;
     }
 
     @Override
-    public NotesListAdapter.NoteHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public NoteHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.list_item_note, parent, false);
-        return new NoteHolder(view);
+        return new NotesListAdapter.NoteHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(NotesListAdapter.NoteHolder holder, int position) {
+    public void onBindViewHolder(NoteHolder holder, int position) {
         Note note = getItem(position);
-        holder.id.setText(note.getId());
+        holder.id.setText(note.getId() + "");
         holder.name.setText(note.getName());
         holder.priority.setText(note.getPriority() + "");
+    }
+
+
+    @Override
+    public int getItemCount() {
+        return adapterData.size();
+    }
+
+    public Note getItem(int index) {
+        return adapterData.get(index);
+    }
+
+    public void updateData(@Nullable List<Note> data) {
+        adapterData = data;
+        notifyDataSetChanged();
     }
 
     //TODO make Holder class static
