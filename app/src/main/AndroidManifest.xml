@@ -21,9 +21,6 @@
         <activity android:name=".ui.test.TestActivity">
 
         </activity>
-        <activity android:name=".ui.test.Test2Activity">
-
-        </activity>
     </application>
 
 

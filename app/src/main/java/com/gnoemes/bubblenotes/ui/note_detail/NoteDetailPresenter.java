@@ -38,12 +38,6 @@ public class NoteDetailPresenter extends MvpPresenter<NoteDetailView> {
         Timber.d("onFirstViewAttach");
         if (id != -1)
             getNote(id);
-
-        //Note note = new Note();
-
-//        List<Comment> comments = note.getComments();
-//        ToOne<Description> description = note.getDescription();
-
     }
 
     public void getNote(long id) {

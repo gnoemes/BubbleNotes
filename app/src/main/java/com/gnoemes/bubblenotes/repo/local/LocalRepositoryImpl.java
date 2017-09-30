@@ -2,6 +2,7 @@ package com.gnoemes.bubblenotes.repo.local;
 
 import com.gnoemes.bubblenotes.repo.local.LocalRepository;
 import com.gnoemes.bubblenotes.repo.model.Note;
+import com.gnoemes.bubblenotes.repo.model.Note_;
 import com.gnoemes.bubblenotes.util.CommonUtils;
 
 import java.util.List;
@@ -30,7 +31,10 @@ public class LocalRepositoryImpl implements LocalRepository {
     //TODO Возращает из io
     public Observable<List<Note>> getAllNotesOrderBy(Property property) {
         Timber.d("getAllNotesOrderBy");
-        Query<Note> query2 = noteBox.query().order(property).build();
+        Query<Note> query2 = noteBox.query()
+                .order(property)
+                .eager(Note_.description, Note_.comments)
+                .build();
         return RxQuery.observable(query2);
     }
 
