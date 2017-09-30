@@ -1,5 +1,8 @@
 package com.gnoemes.bubblenotes.ui.notes_list;
 
+import android.os.SystemClock;
+import android.provider.Settings;
+
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
 import com.gnoemes.bubblenotes.repo.local.LocalRepositoryImpl;
@@ -34,12 +37,13 @@ public class NotesListPresenter extends MvpPresenter<NotesListView> {
     @Override
     protected void onFirstViewAttach() {
         super.onFirstViewAttach();
+
         loadNotes();
     }
 
     private void loadNotes() {
 
-        disposable = localRepositoryBox.getAllNotesOrderBy(Note_.priority)
+        disposable = localRepositoryBox.getAllNotesOrderBy(Note_.unixTime)
                 .observeOn(main)
                 .subscribe(new Consumer<List<Note>>() {
                     @Override

@@ -53,7 +53,7 @@ public class DetailPresenterTest {
         Note note = new Note();
         note.setId(1);
         note.setName("asd");
-        note.setPriority(3);
+        note.setUnixTime(3);
 
         when(localRepositoryBox.getNote(1)).thenReturn(Observable.just(note));
         presenter.getNote(note.getId());

@@ -42,6 +42,7 @@ public class NoteDetailPresenter extends MvpPresenter<NoteDetailView> {
 
         List<Comment> comments = note.getComments();
         ToOne<Description> description = note.getDescription();
+
     }
 
     public void getNote(long id) {

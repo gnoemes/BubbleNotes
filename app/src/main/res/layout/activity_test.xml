@@ -40,7 +40,8 @@
             android:layout_marginLeft="8dp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginTop="8dp"/>
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="8dp"/>
 
         <TextView
             android:id="@+id/idTextView"
@@ -61,7 +62,8 @@
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
             app:layout_constraintTop_toTopOf="@+id/nameEditText"
-            app:layout_constraintBottom_toBottomOf="@+id/nameEditText"/>
+            app:layout_constraintBottom_toBottomOf="@+id/nameEditText"
+            android:layout_marginStart="8dp"/>
 
         <EditText
             android:id="@+id/nameEditText"
@@ -69,10 +71,12 @@
             android:layout_height="wrap_content"
             android:ems="10"
             android:inputType="textPersonName"
+            android:hint="Note name"
             android:layout_marginTop="8dp"
             app:layout_constraintTop_toBottomOf="@+id/idTextView"
             android:layout_marginLeft="8dp"
-            app:layout_constraintLeft_toRightOf="@+id/priorityTextView"/>
+            app:layout_constraintLeft_toRightOf="@+id/priorityTextView"
+            android:layout_marginStart="8dp"/>
 
         <EditText
             android:id="@+id/priorityEditText"
@@ -80,10 +84,11 @@
             android:layout_height="wrap_content"
             android:ems="10"
             android:inputType="number"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="7dp"
             app:layout_constraintTop_toBottomOf="@+id/nameEditText"
             app:layout_constraintLeft_toRightOf="@+id/priorityTextView"
-            android:layout_marginLeft="8dp"/>
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"/>
 
         <TextView
             android:id="@+id/priorityTextView"
@@ -93,20 +98,50 @@
             android:layout_marginLeft="8dp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="@+id/priorityEditText"
-            android:layout_marginTop="0dp"
             app:layout_constraintBottom_toBottomOf="@+id/priorityEditText"
-            android:layout_marginBottom="8dp"/>
+            android:layout_marginBottom="8dp"
+            android:layout_marginStart="8dp"/>
 
-        <NumberPicker
-            android:id="@+id/numberPicker"
-            android:layout_width="wrap_content"
+        <Spinner
+            android:id="@+id/spinner"
+            android:layout_width="336dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:layout_marginRight="8dp"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/priorityEditText"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"/>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/nameTextInput"
+            android:layout_width="336dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            app:layout_constraintTop_toBottomOf="@+id/priorityEditText"
+            app:layout_constraintTop_toBottomOf="@+id/spinner"
             android:layout_marginRight="8dp"
             app:layout_constraintRight_toRightOf="parent"
             android:layout_marginLeft="8dp"
-            app:layout_constraintLeft_toLeftOf="parent"/>
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp">
+
+            <EditText
+                android:id="@+id/nameInputEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:inputType="text"
+                android:hint="Enter something"/>
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.v7.widget.CardView
+            android:layout_width="336dp"
+            android:layout_height="wrap_content"
+            tools:layout_editor_absoluteX="8dp"
+            tools:layout_editor_absoluteY="418dp"/>
+
 
     </android.support.constraint.ConstraintLayout>
 

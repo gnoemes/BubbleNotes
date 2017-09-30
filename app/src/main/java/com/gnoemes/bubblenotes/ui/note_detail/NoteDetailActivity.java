@@ -2,6 +2,7 @@ package com.gnoemes.bubblenotes.ui.note_detail;
 
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.WindowManager;
@@ -41,11 +42,11 @@ public class NoteDetailActivity extends MvpAppCompatActivity implements NoteDeta
 
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.progressBar) ProgressBar progressBar;
-    @BindView(R.id.nameEditText) EditText nameEditText;
-    @BindView(R.id.priorityEditText) EditText priorityEditText;
     @BindView(R.id.idTextView) TextView idTextView;
     @BindView(R.id.fab) FloatingActionButton fab;
     @BindView(R.id.fabDelete) FloatingActionButton fabDelete;
+    @BindView(R.id.nameEditText) EditText nameEditText;
+    @BindView(R.id.descriptionEditText) EditText descriptionEditText;
 
     @InjectPresenter
     NoteDetailPresenter presenter;
@@ -76,6 +77,7 @@ public class NoteDetailActivity extends MvpAppCompatActivity implements NoteDeta
         initToolbar();
         initSaveButton();
         initDeleteButton();
+
     }
 
     private void initDeleteButton() {
@@ -96,14 +98,12 @@ public class NoteDetailActivity extends MvpAppCompatActivity implements NoteDeta
 
     private void updateNote() {
         note.setName(nameEditText.getText().toString());
-        note.setPriority(Integer.parseInt(priorityEditText.getText().toString()));
         presenter.addOrUpdateNote(note);
     }
 
     private void addNote() {
         Note note = new Note();
         note.setName(nameEditText.getText().toString());
-        note.setPriority(Integer.parseInt(priorityEditText.getText().toString()));
         presenter.addOrUpdateNote(note);
     }
 
@@ -151,8 +151,6 @@ public class NoteDetailActivity extends MvpAppCompatActivity implements NoteDeta
         this.note = note;
         idTextView.setText(note.getId() + "");
         nameEditText.setText(note.getName());
-        priorityEditText.setText(note.getPriority() + "");
-
     }
 
     @Override

@@ -11,6 +11,7 @@ public class Description {
     @Id
     long id;
     private String name;
+    int priority;
 
     public long getId() {
         return id;

@@ -11,14 +11,15 @@
         android:theme="@style/AppTheme.NoActionBar"
         android:name=".App">
         <activity android:name=".ui.main.MainDrawerActivity">
-        </activity>
-        <activity android:name=".ui.note_detail.NoteDetailActivity"/>
-        <activity android:name=".ui.test.TestActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+        </activity>
+        <activity android:name=".ui.note_detail.NoteDetailActivity"/>
+        <activity android:name=".ui.test.TestActivity">
+
         </activity>
     </application>
 

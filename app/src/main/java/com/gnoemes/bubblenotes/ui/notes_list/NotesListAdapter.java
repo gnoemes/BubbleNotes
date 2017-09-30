@@ -45,7 +45,7 @@ public class NotesListAdapter extends RecyclerView.Adapter<NotesListAdapter.Note
         Note note = getItem(position);
         holder.id.setText(note.getId() + "");
         holder.name.setText(note.getName());
-        holder.priority.setText(note.getPriority() + "");
+        holder.priority.setText(note.getUnixTime() + "");
     }
 
 

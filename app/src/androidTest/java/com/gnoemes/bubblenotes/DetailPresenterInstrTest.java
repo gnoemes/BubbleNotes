@@ -74,7 +74,7 @@ public class DetailPresenterInstrTest {
     public void name() throws Exception {
         Note note = new Note();
         note.setName("asd");
-        note.setPriority(3);
+        note.setUnixTime(3);
         noteBox.put(note);
 
         presenter.getNote(1);

@@ -13,7 +13,8 @@ public class Note {
     @Id
     long id;
     private String name;
-    private int priority;
+    private long unixTime;
+    boolean complete;
 
     ToOne<Description> description;
     ToMany<Comment> comments;
@@ -42,11 +43,19 @@ public class Note {
         this.name = name;
     }
 
-    public int getPriority() {
-        return priority;
+    public long getUnixTime() {
+        return unixTime;
     }
 
-    public void setPriority(int priority) {
-        this.priority = priority;
+    public void setUnixTime(long unixTime) {
+        this.unixTime = unixTime;
+    }
+
+    public boolean isComplete() {
+        return complete;
+    }
+
+    public void setComplete(boolean complete) {
+        this.complete = complete;
     }
 }
