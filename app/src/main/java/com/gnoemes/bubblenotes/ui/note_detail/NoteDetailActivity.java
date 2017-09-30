@@ -83,7 +83,7 @@ public class NoteDetailActivity extends MvpAppCompatActivity implements NoteDeta
         note_id = getIntent().getLongExtra(EXTRA_NOTE_ID, -1);
         isInEditMode = note_id != -1;
 
-        disableKeyboardOnStart();
+        //disableKeyboardOnStart();
         initToolbar();
         initSaveButton();
         initDeleteButton();
