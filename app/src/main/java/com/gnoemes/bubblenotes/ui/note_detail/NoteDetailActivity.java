@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,12 +22,17 @@ import com.gnoemes.bubblenotes.repo.local.LocalRepositoryImpl;
 import com.gnoemes.bubblenotes.repo.model.Note;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import io.objectbox.BoxStore;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
+import me.srodrigo.androidhintspinner.HintAdapter;
+import me.srodrigo.androidhintspinner.HintSpinner;
 import timber.log.Timber;
 
 /**
@@ -47,6 +53,10 @@ public class NoteDetailActivity extends MvpAppCompatActivity implements NoteDeta
     @BindView(R.id.fabDelete) FloatingActionButton fabDelete;
     @BindView(R.id.nameEditText) EditText nameEditText;
     @BindView(R.id.descriptionEditText) EditText descriptionEditText;
+    @BindView(R.id.prioritySpinner)
+    Spinner prioritySpinner;
+
+    HintSpinner<String> defaultHintSpinner;
 
     @InjectPresenter
     NoteDetailPresenter presenter;
@@ -77,7 +87,25 @@ public class NoteDetailActivity extends MvpAppCompatActivity implements NoteDeta
         initToolbar();
         initSaveButton();
         initDeleteButton();
+        initSpinner();
+    }
 
+    private void initSpinner() {
+        List<String> priorityList = new ArrayList<>();
+        priorityList.add("High");
+        priorityList.add("Medium");
+        priorityList.add("Low");
+
+        defaultHintSpinner = new HintSpinner<>(prioritySpinner,
+                new HintAdapter<String>(this, R.string.app_name, priorityList),
+                new HintSpinner.Callback<String>() {
+                    @Override
+                    public void onItemSelected(int position, String itemAtPosition) {
+                        Timber.d("prioritySpinner.getSelectedItemPosition() " + prioritySpinner.getSelectedItemPosition());
+                        // Here you handle the on item selected event (this skips the hint selected event)
+                    }
+                });
+        defaultHintSpinner.init();
     }
 
     private void initDeleteButton() {
@@ -150,7 +178,7 @@ public class NoteDetailActivity extends MvpAppCompatActivity implements NoteDeta
     public void setNote(Note note) {
         this.note = note;
         idTextView.setText(note.getId() + "");
-        nameEditText.setText(note.getName());
+        nameEditText.append(note.getName());
     }
 
     @Override

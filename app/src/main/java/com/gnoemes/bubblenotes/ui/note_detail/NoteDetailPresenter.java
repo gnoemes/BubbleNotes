@@ -35,17 +35,19 @@ public class NoteDetailPresenter extends MvpPresenter<NoteDetailView> {
     @Override
     protected void onFirstViewAttach() {
         super.onFirstViewAttach();
+        Timber.d("onFirstViewAttach");
         if (id != -1)
             getNote(id);
 
-        Note note = new Note();
+        //Note note = new Note();
 
-        List<Comment> comments = note.getComments();
-        ToOne<Description> description = note.getDescription();
+//        List<Comment> comments = note.getComments();
+//        ToOne<Description> description = note.getDescription();
 
     }
 
     public void getNote(long id) {
+        Timber.d("getNote");
         localRepositoryBox.getNote(id)
                 .subscribeOn(io)
                 .observeOn(main)
