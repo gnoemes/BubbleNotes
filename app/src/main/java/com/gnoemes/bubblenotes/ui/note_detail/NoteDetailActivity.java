@@ -75,7 +75,7 @@ public class NoteDetailActivity extends MvpAppCompatActivity implements NoteDeta
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_note_detail);
+        setContentView(R.layout.activity_note_detail2);
 
         Timber.d("onCreate");
         ButterKnife.bind(this);
