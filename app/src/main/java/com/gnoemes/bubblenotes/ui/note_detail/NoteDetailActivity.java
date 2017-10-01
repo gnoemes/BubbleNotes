@@ -2,11 +2,16 @@ package com.gnoemes.bubblenotes.ui.note_detail;
 
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -26,10 +31,12 @@ import com.gnoemes.bubblenotes.repo.model.Note;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import io.objectbox.Box;
 import io.objectbox.BoxStore;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -52,13 +59,22 @@ public class NoteDetailActivity extends MvpAppCompatActivity implements NoteDeta
     @BindView(R.id.progressBar) ProgressBar progressBar;
     @BindView(R.id.idTextView) TextView idTextView;
     @BindView(R.id.fab) FloatingActionButton fab;
-    @BindView(R.id.fabDelete) FloatingActionButton fabDelete;
     @BindView(R.id.nameEditText) EditText nameEditText;
     @BindView(R.id.descriptionEditText) EditText descriptionEditText;
     @BindView(R.id.prioritySpinner) Spinner prioritySpinner;
     @BindView(R.id.completeCheckBox) CheckBox completeCheckBox;
+    @BindView(R.id.addCommentButton) ImageButton addCommentButton;
+    @BindView(R.id.commentsRecyclerView) RecyclerView commentsRecyclerView;
 
     HintSpinner<String> defaultHintSpinner;
+
+    CommentsListAdapter commentsListAdapter;
+    CommentsListAdapter.ItemClickListener commentListClickListener = new CommentsListAdapter.ItemClickListener() {
+        @Override
+        public void onClick(Long id) {
+            Timber.d("Delete comment " + id);
+        }
+    };
 
     @InjectPresenter
     NoteDetailPresenter presenter;
@@ -88,8 +104,34 @@ public class NoteDetailActivity extends MvpAppCompatActivity implements NoteDeta
         disableKeyboardOnStart();
         initToolbar();
         initSaveButton();
-        initDeleteButton();
+        initAddCommentButton();
+        initCommentsList();
         initSpinner();
+    }
+
+    private void initCommentsList() {
+        if(!isInEditMode) {
+            commentsRecyclerView.setVisibility(View.GONE);
+            return;
+        }
+        commentsRecyclerView.setVisibility(View.VISIBLE);
+        commentsRecyclerView.setLayoutManager(new LinearLayoutManager(NoteDetailActivity.this));
+        commentsListAdapter = new CommentsListAdapter(commentListClickListener, new ArrayList<Comment>());
+        commentsRecyclerView.setAdapter(commentsListAdapter);
+    }
+
+    private void initAddCommentButton() {
+        if (!isInEditMode) {
+            addCommentButton.setVisibility(View.GONE);
+            return;
+        }
+        addCommentButton.setVisibility(View.VISIBLE);
+        addCommentButton.setOnClickListener(view -> {
+            Comment comment = new Comment();
+            comment.setBody(UUID.randomUUID().toString().substring(0, 7));
+            note.getComments().add(comment);
+            commentsListAdapter.updateData(note.getComments());
+        });
     }
 
     private void initSpinner() {
@@ -107,19 +149,6 @@ public class NoteDetailActivity extends MvpAppCompatActivity implements NoteDeta
         defaultHintSpinner.init();
     }
 
-    private void initDeleteButton() {
-        if (isInEditMode) {
-            fabDelete.setVisibility(View.VISIBLE);
-            fabDelete.setOnClickListener(view1 -> {
-                if (note_id != -1);
-                presenter.deleteNote(note_id);
-            });
-        } else {
-            fabDelete.setVisibility(View.GONE);
-        }
-
-    }
-
     private void initSaveButton() {
         if (isInEditMode) {
             fab.setOnClickListener((v) -> updateNote());
@@ -134,13 +163,13 @@ public class NoteDetailActivity extends MvpAppCompatActivity implements NoteDeta
         note.setComplete(completeCheckBox.isChecked());
 
         //description
-        note.getDescription().getTarget().setName(descriptionEditText.getText().toString());
-        note.getDescription().getTarget().setPriority(prioritySpinner.getSelectedItemPosition());
+        Description description = note.getDescription().getTarget();
+        description.setName(descriptionEditText.getText().toString());
+        description.setPriority(prioritySpinner.getSelectedItemPosition());
 
         //adapter get data
-        //note.getComments().
 
-        presenter.addOrUpdateNote(note);
+        presenter.updateNote(note);
     }
 
     private void addNote() {
@@ -156,10 +185,11 @@ public class NoteDetailActivity extends MvpAppCompatActivity implements NoteDeta
         description.setName(descriptionEditText.getText().toString());
 
         //comments fill
+        //TODO STACK!
         List<Comment> comments = new ArrayList<>();
         note.getComments().addAll(comments);
 
-        presenter.addOrUpdateNote(note);
+        presenter.addNote(note);
     }
 
     private void disableKeyboardOnStart() {
@@ -175,6 +205,28 @@ public class NoteDetailActivity extends MvpAppCompatActivity implements NoteDeta
             else
                 getSupportActionBar().setTitle("New Note");
         }
+    }
+
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if (isInEditMode) {
+            getMenuInflater().inflate(R.menu.notedetail_activity_menu, menu);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_delete:
+                if (note_id != -1);
+                    presenter.deleteNote(note_id);
+                return true;
+        }
+        return false;
     }
 
     @Override
@@ -211,6 +263,7 @@ public class NoteDetailActivity extends MvpAppCompatActivity implements NoteDeta
         descriptionEditText.append(note.getDescription().getTarget().getName());
         prioritySpinner.setSelection(note.getDescription().getTarget().getPriority());
 
+        commentsListAdapter.updateData(note.getComments());
         //adapter
         //note.getComments().get(1).getBody();
 

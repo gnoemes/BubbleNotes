@@ -1,5 +1,6 @@
 package com.gnoemes.bubblenotes.repo.model;
 
+import io.objectbox.annotation.Backlink;
 import io.objectbox.annotation.Entity;
 import io.objectbox.annotation.Id;
 import io.objectbox.relation.ToMany;
@@ -19,10 +20,14 @@ public class Note {
     ToOne<Description> description;
     ToMany<Comment> comments;
 
+
     public ToOne<Description> getDescription() {
         return description;
     }
 
+    public void setDescription(ToOne<Description> description) {
+        this.description = description;
+    }
 
     public ToMany<Comment> getComments() {
         return comments;

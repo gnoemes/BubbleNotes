@@ -3,14 +3,8 @@ package com.gnoemes.bubblenotes.ui.note_detail;
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
 import com.gnoemes.bubblenotes.repo.local.LocalRepositoryImpl;
-import com.gnoemes.bubblenotes.repo.model.Comment;
-import com.gnoemes.bubblenotes.repo.model.Description;
 import com.gnoemes.bubblenotes.repo.model.Note;
 
-import java.util.List;
-
-import io.objectbox.relation.ToMany;
-import io.objectbox.relation.ToOne;
 import io.reactivex.Scheduler;
 import timber.log.Timber;
 
@@ -53,15 +47,30 @@ public class NoteDetailPresenter extends MvpPresenter<NoteDetailView> {
                 });
     }
 
-    public void addOrUpdateNote(Note note) {
-        localRepositoryBox.addOrUpdateNote(note)
+    public void addNote(Note note) {
+        localRepositoryBox.addNote(note)
                 .subscribeOn(io)
                 .observeOn(main)
                 .subscribe(id -> {
-                    Timber.d("addNote showMessage");
+                    Timber.d("addNote onNext");
                     getViewState().showToast("Note added " + id);
                     getViewState().backPressed();
-                }, throwable -> {}, () -> {});
+                }, throwable -> {
+                    Timber.d("addNote onError " + throwable);
+                }, () -> {});
+    }
+
+    public void updateNote(Note note) {
+        localRepositoryBox.UpdateNote(note)
+                .subscribeOn(io)
+                .observeOn(main)
+                .subscribe(id -> {
+                    Timber.d("UpdateNote onNext");
+                    getViewState().showToast("Note updated " + id);
+                    getViewState().backPressed();
+                }, throwable -> {
+                    Timber.d("UpdateNote onError " + throwable);
+                }, () -> {});
     }
 
     public void deleteNote(long id) {

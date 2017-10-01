@@ -62,6 +62,7 @@ public class LocalRepositoryImpl implements LocalRepository {
     }
 
     //TODO Возращает из io
+    @Override
     public Observable<List<Note>> getAllNotesOrderBy(Property property) {
         Timber.d("getAllNotesOrderBy");
         Query<Note> query2 = noteBox.query()
@@ -72,7 +73,7 @@ public class LocalRepositoryImpl implements LocalRepository {
     }
 
 
-
+    @Override
     public Observable<Note> getNote(long id) {
         Timber.d("getNote");
         return Observable.<Note>fromCallable(() -> {
@@ -80,14 +81,33 @@ public class LocalRepositoryImpl implements LocalRepository {
             return noteBox.get(id);});
     }
 
-    public Observable<Long> addOrUpdateNote(Note note) {
-        Timber.d("addOrUpdateNote");
+    @Override
+    public Observable<Long> addNote(Note note) {
+        Timber.d("addNote");
         return Observable.fromCallable(() -> {
             //CommonUtils.longOperation();
             return noteBox.put(note);
         });
     }
 
+    //TODO Спросить как записывать зависимые сущности
+    // Приходиться записывать зависимые сущности явно так как
+    // ObjectBox не может обновить всю зависимости через noteBox.put(note);
+    @Override
+    public Observable<Long> UpdateNote(Note note) {
+        Timber.d("UpdateNote");
+        return Observable.fromCallable(() -> {
+            //CommonUtils.longOperation();
+            descriptionBox.put(note.getDescription().getTarget());
+
+            //note.getComments().reset();
+
+
+            return noteBox.put(note);
+        });
+
+    }
+    @Override
     public Observable<Boolean> deleteNote(long id) {
         Timber.d("deleteNote");
         return Observable.fromCallable(() -> {

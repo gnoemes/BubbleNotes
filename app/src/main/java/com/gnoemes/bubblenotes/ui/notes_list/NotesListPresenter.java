@@ -1,8 +1,5 @@
 package com.gnoemes.bubblenotes.ui.notes_list;
 
-import android.os.SystemClock;
-import android.provider.Settings;
-
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
 import com.gnoemes.bubblenotes.repo.local.LocalRepositoryImpl;
@@ -69,11 +66,11 @@ public class NotesListPresenter extends MvpPresenter<NotesListView> {
     }
 
     public void addOrUpdateNote(Note note) {
-        localRepositoryBox.addOrUpdateNote(note)
+        localRepositoryBox.addNote(note)
                 .subscribeOn(io)
                 .observeOn(main)
                 .subscribe(id -> {
-                    Timber.d("addOrUpdateNote onComplete");
+                    Timber.d("addNote onComplete");
                 }, throwable -> {}, () -> {});
     }
 

@@ -165,6 +165,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/textView5"/>
 
             <android.support.v7.widget.RecyclerView
+                android:id="@+id/commentsRecyclerView"
                 android:layout_width="0dp"
                 android:layout_height="300dp"
                 android:layout_marginRight="8dp"
@@ -172,12 +173,12 @@
                 android:layout_marginLeft="8dp"
                 app:layout_constraintLeft_toLeftOf="parent"
                 android:layout_marginTop="8dp"
-                app:layout_constraintTop_toBottomOf="@+id/imageButton"
+                app:layout_constraintTop_toBottomOf="@+id/addCommentButton"
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"/>
 
             <ImageButton
-                android:id="@+id/imageButton"
+                android:id="@+id/addCommentButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="8dp"
@@ -208,14 +209,5 @@
         android:layout_margin="16dp"
         android:clickable="true"
         app:srcCompat="@android:drawable/ic_menu_save" />
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fabDelete"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:clickable="true"
-        android:layout_margin="16dp"
-        android:layout_gravity="bottom|start"
-        app:srcCompat="@android:drawable/ic_menu_delete"/>
 
 </android.support.design.widget.CoordinatorLayout>

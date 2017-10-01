@@ -21,6 +21,9 @@ public interface LocalRepository {
 
     Observable<List<Note>> getAllNotesOrderBy(Property property);
     Observable<Note> getNote(long id);
-    Observable<Long> addOrUpdateNote(Note note);
+    Observable<Long> addNote(Note note);
+
+    Observable<Long> UpdateNote(Note note);
+
     Observable<Boolean> deleteNote(long id);
 }

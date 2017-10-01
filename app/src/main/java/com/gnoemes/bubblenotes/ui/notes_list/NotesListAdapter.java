@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.gnoemes.bubblenotes.R;
@@ -12,6 +13,8 @@ import com.gnoemes.bubblenotes.repo.model.Note;
 
 
 import java.util.List;
+
+import timber.log.Timber;
 
 /**
  * Created by kenji1947 on 25.09.2017.
@@ -36,16 +39,21 @@ public class NotesListAdapter extends RecyclerView.Adapter<NotesListAdapter.Note
     @Override
     public NoteHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.list_item_note, parent, false);
+                .inflate(R.layout.list_item_note_new, parent, false);
         return new NotesListAdapter.NoteHolder(view);
     }
 
     @Override
     public void onBindViewHolder(NoteHolder holder, int position) {
+        Timber.d("onBindViewHolder " + position);
         Note note = getItem(position);
-        holder.id.setText(note.getId() + "");
+
         holder.name.setText(note.getName());
-        holder.priority.setText(note.getUnixTime() + "");
+        holder.isComplete.setChecked(note.isComplete());
+
+        //TODO Заменить на массив
+        holder.priority.setText(note.getDescription().getTarget().getPriority() + "");
+        holder.commentsNumber.setText(note.getComments().size() + "");
     }
 
 
@@ -59,21 +67,30 @@ public class NotesListAdapter extends RecyclerView.Adapter<NotesListAdapter.Note
     }
 
     public void updateData(@Nullable List<Note> data) {
+//        adapterData.clear();
+//        adapterData.addAll(data);
         adapterData = data;
         notifyDataSetChanged();
     }
 
     //TODO make Holder class static
     public class NoteHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        TextView id;
+        //Note entity
         TextView name;
+        CheckBox isComplete;
+
+        //Description entity
         TextView priority;
+
+        //Comment entity
+        TextView commentsNumber;
 
         public NoteHolder(View itemView) {
             super(itemView);
-            id = (TextView) itemView.findViewById(R.id.idTextView);
-            name = (TextView) itemView.findViewById(R.id.nameTextView);
-            priority = (TextView) itemView.findViewById(R.id.priorityTextView);
+            name = itemView.findViewById(R.id.nameTextView);
+            isComplete = itemView.findViewById(R.id.completeCheckBox);
+            priority = itemView.findViewById(R.id.priorityTextView);
+            commentsNumber = itemView.findViewById(R.id.commentsNumberTextview);
 
             itemView.setOnClickListener(this);
         }

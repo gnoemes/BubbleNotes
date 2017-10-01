@@ -11,6 +11,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -71,17 +72,6 @@ public class NotesListFragment extends MvpAppCompatFragment implements NotesList
         @Override
         public void onClick(Long id) {
             Timber.d("onClick" + id);
-
-//            Note note = new Note();
-//            note.setName("name");
-//
-//            Description description = new Description();
-//            description.setName("desc");
-//
-//            note.getDescription().setTarget(description);
-//
-//            presenter.addOrUpdateNote(note);
-
             Intent intent = new Intent(getActivity(), NoteDetailActivity.class);
             intent.putExtra(NoteDetailActivity.EXTRA_NOTE_ID, id);
             startActivity(intent);
@@ -101,18 +91,6 @@ public class NotesListFragment extends MvpAppCompatFragment implements NotesList
         ButterKnife.bind(this, view);
 
         fab.setOnClickListener(view1 -> {
-
-//            if (notes.get(3).getDescription().getTarget() == null) {
-//                Description description = new Description();
-//                description.setName(UUID.randomUUID().toString());
-//                notes.get(3).getDescription().setTarget(description);
-//            } else {
-//                notes.get(3).getDescription().getTarget().setName(UUID.randomUUID().toString());
-//
-//            }
-//            notes.get(3).getDescription().getTarget().setName("awesome desc");
-//            presenter.addOrUpdateNote(notes.get(3));
-
             Intent intent = new Intent(getActivity(), NoteDetailActivity.class);
             startActivity(intent);
         });
@@ -120,6 +98,7 @@ public class NotesListFragment extends MvpAppCompatFragment implements NotesList
         drawer_layout = (DrawerLayout) getActivity().findViewById(R.id.drawer_layout);
 
         listRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        //listRecyclerView.setNestedScrollingEnabled(false);
 
         adapterRecycler = new NotesListAdapter(new ArrayList<>(0), adapterClickListener);
 
