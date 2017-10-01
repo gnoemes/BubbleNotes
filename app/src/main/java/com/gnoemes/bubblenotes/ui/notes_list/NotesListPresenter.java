@@ -39,6 +39,16 @@ public class NotesListPresenter extends MvpPresenter<NotesListView> {
         super.onFirstViewAttach();
 
         loadNotes();
+        //listenDescriptionChanges();
+    }
+
+    private void listenDescriptionChanges() {
+        localRepositoryBox.getDescriptionByNoteId(1)
+                .observeOn(main)
+                .subscribe(descriptions -> {
+                    Timber.d("listenDescriptionChanges onComplete");
+                    getViewState().notifyDescriptionChanged(descriptions);
+                });
     }
 
     private void loadNotes() {
@@ -48,7 +58,7 @@ public class NotesListPresenter extends MvpPresenter<NotesListView> {
                 .subscribe(new Consumer<List<Note>>() {
                     @Override
                     public void accept(List<Note> notes) throws Exception {
-                        Timber.d("loadNotes setNotesList");
+                        Timber.d("loadNotes onComplete");
                         getViewState().setNotesList(notes);
                     }
                 }, throwable -> {
@@ -56,6 +66,15 @@ public class NotesListPresenter extends MvpPresenter<NotesListView> {
                 }, () -> {
                     Timber.d("onComplete");
                 });
+    }
+
+    public void addOrUpdateNote(Note note) {
+        localRepositoryBox.addOrUpdateNote(note)
+                .subscribeOn(io)
+                .observeOn(main)
+                .subscribe(id -> {
+                    Timber.d("addOrUpdateNote onComplete");
+                }, throwable -> {}, () -> {});
     }
 
     public void onStop() {

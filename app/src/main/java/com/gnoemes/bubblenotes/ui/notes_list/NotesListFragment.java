@@ -20,11 +20,13 @@ import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.gnoemes.bubblenotes.App;
 import com.gnoemes.bubblenotes.R;
 import com.gnoemes.bubblenotes.repo.local.LocalRepositoryImpl;
+import com.gnoemes.bubblenotes.repo.model.Description;
 import com.gnoemes.bubblenotes.repo.model.Note;
 import com.gnoemes.bubblenotes.ui.note_detail.NoteDetailActivity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -54,6 +56,8 @@ public class NotesListFragment extends MvpAppCompatFragment implements NotesList
     //@Inject
     BoxStore boxStore;
 
+    List<Note> notes;
+
     @ProvidePresenter
     NotesListPresenter providePresenter() {
 //        App.getAppComponent().inject(this);
@@ -67,6 +71,17 @@ public class NotesListFragment extends MvpAppCompatFragment implements NotesList
         @Override
         public void onClick(Long id) {
             Timber.d("onClick" + id);
+
+//            Note note = new Note();
+//            note.setName("name");
+//
+//            Description description = new Description();
+//            description.setName("desc");
+//
+//            note.getDescription().setTarget(description);
+//
+//            presenter.addOrUpdateNote(note);
+
             Intent intent = new Intent(getActivity(), NoteDetailActivity.class);
             intent.putExtra(NoteDetailActivity.EXTRA_NOTE_ID, id);
             startActivity(intent);
@@ -86,6 +101,18 @@ public class NotesListFragment extends MvpAppCompatFragment implements NotesList
         ButterKnife.bind(this, view);
 
         fab.setOnClickListener(view1 -> {
+
+//            if (notes.get(3).getDescription().getTarget() == null) {
+//                Description description = new Description();
+//                description.setName(UUID.randomUUID().toString());
+//                notes.get(3).getDescription().setTarget(description);
+//            } else {
+//                notes.get(3).getDescription().getTarget().setName(UUID.randomUUID().toString());
+//
+//            }
+//            notes.get(3).getDescription().getTarget().setName("awesome desc");
+//            presenter.addOrUpdateNote(notes.get(3));
+
             Intent intent = new Intent(getActivity(), NoteDetailActivity.class);
             startActivity(intent);
         });
@@ -128,7 +155,14 @@ public class NotesListFragment extends MvpAppCompatFragment implements NotesList
 
     @Override
     public void setNotesList(List<Note> notes) {
+        Timber.d("setNotesList");
+        this.notes = notes;
         adapterRecycler.updateData(notes);
+    }
+
+    @Override
+    public void notifyDescriptionChanged(List<Description> descriptions) {
+        Timber.d("notifyDescriptionChanged");
     }
 
     @Override

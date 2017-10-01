@@ -99,22 +99,25 @@ public class NoteDetailActivity extends MvpAppCompatActivity implements NoteDeta
         priorityList.add("Low");
 
         defaultHintSpinner = new HintSpinner<>(prioritySpinner,
-                new HintAdapter<String>(this, R.string.app_name, priorityList),
-                new HintSpinner.Callback<String>() {
-                    @Override
-                    public void onItemSelected(int position, String itemAtPosition) {
-                        Timber.d("prioritySpinner.getSelectedItemPosition() " + prioritySpinner.getSelectedItemPosition());
-                        // Here you handle the on item selected event (this skips the hint selected event)
-                    }
+                new HintAdapter<String>(this, R.string.spinner_priority_hint, priorityList),
+                (position, itemAtPosition) -> {
+                    Timber.d("prioritySpinner.getSelectedItemPosition() " + prioritySpinner.getSelectedItemPosition());
+                    // Here you handle the on item selected event (this skips the hint selected event)
                 });
         defaultHintSpinner.init();
     }
 
     private void initDeleteButton() {
-        fabDelete.setOnClickListener(view1 -> {
-            if (note_id != -1);
+        if (isInEditMode) {
+            fabDelete.setVisibility(View.VISIBLE);
+            fabDelete.setOnClickListener(view1 -> {
+                if (note_id != -1);
                 presenter.deleteNote(note_id);
-        });
+            });
+        } else {
+            fabDelete.setVisibility(View.GONE);
+        }
+
     }
 
     private void initSaveButton() {
@@ -210,6 +213,7 @@ public class NoteDetailActivity extends MvpAppCompatActivity implements NoteDeta
 
         //adapter
         //note.getComments().get(1).getBody();
+
     }
 
     @Override

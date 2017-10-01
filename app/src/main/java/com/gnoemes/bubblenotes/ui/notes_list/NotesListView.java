@@ -4,6 +4,7 @@ import com.arellomobile.mvp.MvpView;
 import com.arellomobile.mvp.viewstate.strategy.AddToEndSingleStrategy;
 import com.arellomobile.mvp.viewstate.strategy.SkipStrategy;
 import com.arellomobile.mvp.viewstate.strategy.StateStrategyType;
+import com.gnoemes.bubblenotes.repo.model.Description;
 import com.gnoemes.bubblenotes.repo.model.Note;
 
 import java.util.List;
@@ -15,6 +16,9 @@ import java.util.List;
 public interface NotesListView extends MvpView {
     @StateStrategyType(AddToEndSingleStrategy.class)
     void setNotesList(List<Note> notes);
+    @StateStrategyType(AddToEndSingleStrategy.class)
+    void notifyDescriptionChanged(List<Description> descriptions);
+
     @StateStrategyType(SkipStrategy.class)
     void showMessage(String msg);
 }

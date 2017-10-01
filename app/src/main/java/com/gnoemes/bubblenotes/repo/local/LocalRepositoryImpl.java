@@ -1,6 +1,8 @@
 package com.gnoemes.bubblenotes.repo.local;
 
 import com.gnoemes.bubblenotes.repo.local.LocalRepository;
+import com.gnoemes.bubblenotes.repo.model.Comment;
+import com.gnoemes.bubblenotes.repo.model.Description;
 import com.gnoemes.bubblenotes.repo.model.Note;
 import com.gnoemes.bubblenotes.repo.model.Note_;
 import com.gnoemes.bubblenotes.util.CommonUtils;
@@ -11,8 +13,10 @@ import io.objectbox.Box;
 import io.objectbox.BoxStore;
 import io.objectbox.Property;
 import io.objectbox.query.Query;
+import io.objectbox.rx.RxBoxStore;
 import io.objectbox.rx.RxQuery;
 import io.reactivex.Observable;
+import io.reactivex.Observer;
 import timber.log.Timber;
 
 /**
@@ -22,21 +26,52 @@ import timber.log.Timber;
 public class LocalRepositoryImpl implements LocalRepository {
     private BoxStore boxStore;
     private Box<Note> noteBox;
+    private Box<Comment> commentBox;
+    private Box<Description> descriptionBox;
 
     public LocalRepositoryImpl(BoxStore boxStore) {
         this.boxStore = boxStore;
         noteBox = boxStore.boxFor(Note.class);
+        commentBox = boxStore.boxFor(Comment.class);
+        descriptionBox = boxStore.boxFor(Description.class);
+    }
+
+    public void testMethod() {
+        //TODO Подумать над одиночными данными
+//        RxQuery.single();
+//        RxQuery.flowableOneByOne();
+//        RxQuery.observable();
+
+        RxBoxStore.<Note>observable(boxStore).subscribe(aClass -> {
+
+        });
+
+//        Observable.merge(getAllCommentsByNoteId(1), getAllNotesOrderBy(null))
+//                .subscribe(new Observer<List<? extends Object>>() {});
+    }
+    @Override
+    public Observable<List<Comment>> getAllCommentsByNoteId(long id) {
+        Query<Comment> commentQuery = commentBox.query().equal(Note_.id, id).build();
+        return RxQuery.observable(commentQuery);
+    }
+
+    @Override
+    public Observable<List<Description>> getDescriptionByNoteId(long id) {
+        Query<Description> descriptionQuery = descriptionBox.query().build();
+        return RxQuery.observable(descriptionQuery);
     }
 
     //TODO Возращает из io
     public Observable<List<Note>> getAllNotesOrderBy(Property property) {
         Timber.d("getAllNotesOrderBy");
         Query<Note> query2 = noteBox.query()
-                .order(property)
+                .orderDesc(property)
                 .eager(Note_.description, Note_.comments)
                 .build();
         return RxQuery.observable(query2);
     }
+
+
 
     public Observable<Note> getNote(long id) {
         Timber.d("getNote");
