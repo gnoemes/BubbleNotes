@@ -2,6 +2,7 @@ package com.gnoemes.bubblenotes.ui.notes_list;
 
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
+import com.gnoemes.bubblenotes.repo.local.LocalRepository;
 import com.gnoemes.bubblenotes.repo.local.LocalRepositoryImpl;
 import com.gnoemes.bubblenotes.repo.model.Note;
 import com.gnoemes.bubblenotes.repo.model.Note_;
@@ -22,10 +23,14 @@ public class NotesListPresenter extends MvpPresenter<NotesListView> {
 
     private Scheduler main;
     private Scheduler io;
-    private LocalRepositoryImpl localRepositoryBox;
+    private LocalRepository localRepositoryBox;
     private Disposable disposable;
+    private Disposable disposableDescriptions;
+    private Disposable disposableComments;
+    private Disposable listenerManager;
+    private boolean listenForeignUpdates = true;
 
-    public NotesListPresenter(Scheduler main, Scheduler io, LocalRepositoryImpl localRepositoryBox) {
+    public NotesListPresenter(Scheduler main, Scheduler io, LocalRepository localRepositoryBox) {
         this.main = main;
         this.io = io;
         this.localRepositoryBox = localRepositoryBox;
@@ -36,20 +41,46 @@ public class NotesListPresenter extends MvpPresenter<NotesListView> {
         super.onFirstViewAttach();
 
         loadNotes();
-        //listenDescriptionChanges();
+        listenForeignEntities();
+        listenCommentsChanges();
+        listenDescriptionChanges();
+
+    }
+
+    public void listenForeignEntities() {
+        listenerManager = localRepositoryBox.subscribeToChangeListenerManager()
+                .observeOn(main)
+                .subscribe(aBoolean -> {
+                    Timber.d("listenForeignEntities " + aBoolean);
+                    listenForeignUpdates = aBoolean;
+                }, throwable -> {
+                    Timber.d("listenForeignEntities onError " + throwable);
+                }, () -> {
+                    Timber.d("listenForeignEntities onComplete");
+                });
+    }
+
+    private void listenCommentsChanges() {
+        disposableComments = localRepositoryBox.getAllComments()
+                .observeOn(main)
+                .subscribe(descriptions -> {
+                    if (listenForeignUpdates)
+                        Timber.d("listenCommentsChanges onComplete");
+                    //getViewState().notifyDescriptionChanged(descriptions);
+                });
     }
 
     private void listenDescriptionChanges() {
-        localRepositoryBox.getDescriptionByNoteId(1)
+        disposableDescriptions = localRepositoryBox.getAllDescription()
                 .observeOn(main)
                 .subscribe(descriptions -> {
-                    Timber.d("listenDescriptionChanges onComplete");
-                    getViewState().notifyDescriptionChanged(descriptions);
+                    if (listenForeignUpdates)
+                        Timber.d("listenDescriptionChanges onComplete");
+                    //getViewState().notifyDescriptionChanged(descriptions);
                 });
     }
 
     private void loadNotes() {
-
         disposable = localRepositoryBox.getAllNotesOrderBy(Note_.unixTime)
                 .observeOn(main)
                 .subscribe(new Consumer<List<Note>>() {
@@ -57,6 +88,7 @@ public class NotesListPresenter extends MvpPresenter<NotesListView> {
                     public void accept(List<Note> notes) throws Exception {
                         Timber.d("loadNotes onComplete");
                         getViewState().setNotesList(notes);
+                        listenForeignUpdates = true;
                     }
                 }, throwable -> {
                     throwable.printStackTrace();
@@ -82,5 +114,8 @@ public class NotesListPresenter extends MvpPresenter<NotesListView> {
     public void onDestroy() {
         super.onDestroy();
         disposable.dispose();
+        disposableComments.dispose();
+        disposableDescriptions.dispose();
+        listenerManager.dispose();
     }
 }

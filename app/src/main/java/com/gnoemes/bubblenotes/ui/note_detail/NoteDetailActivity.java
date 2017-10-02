@@ -2,6 +2,7 @@ package com.gnoemes.bubblenotes.ui.note_detail;
 
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -24,9 +25,12 @@ import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.gnoemes.bubblenotes.App;
 import com.gnoemes.bubblenotes.R;
 import com.gnoemes.bubblenotes.repo.local.LocalRepositoryImpl;
+import com.gnoemes.bubblenotes.repo.local.RepoDi;
 import com.gnoemes.bubblenotes.repo.model.Comment;
 import com.gnoemes.bubblenotes.repo.model.Description;
 import com.gnoemes.bubblenotes.repo.model.Note;
+import com.gnoemes.bubblenotes.ui.notes_list.NotesDiff;
+import com.gnoemes.bubblenotes.util.CommonUtils;
 
 
 import java.util.ArrayList;
@@ -71,8 +75,10 @@ public class NoteDetailActivity extends MvpAppCompatActivity implements NoteDeta
     CommentsListAdapter commentsListAdapter;
     CommentsListAdapter.ItemClickListener commentListClickListener = new CommentsListAdapter.ItemClickListener() {
         @Override
-        public void onClick(Long id) {
-            Timber.d("Delete comment " + id);
+        public void onClick(int pos) {
+            Timber.d("Delete comment " + pos);
+            note.getComments().remove(pos);
+            commentsListAdapter.updateData(note.getComments());
         }
     };
 
@@ -87,7 +93,7 @@ public class NoteDetailActivity extends MvpAppCompatActivity implements NoteDeta
         return new NoteDetailPresenter(
                 AndroidSchedulers.mainThread(),
                 Schedulers.io(),
-                new LocalRepositoryImpl(boxStore), getIntent().getLongExtra(EXTRA_NOTE_ID, -1));
+                RepoDi.getLocalRepo(boxStore), getIntent().getLongExtra(EXTRA_NOTE_ID, -1));
     }
 
     @Override
@@ -135,13 +141,8 @@ public class NoteDetailActivity extends MvpAppCompatActivity implements NoteDeta
     }
 
     private void initSpinner() {
-        List<String> priorityList = new ArrayList<>();
-        priorityList.add("High");
-        priorityList.add("Medium");
-        priorityList.add("Low");
-
         defaultHintSpinner = new HintSpinner<>(prioritySpinner,
-                new HintAdapter<String>(this, R.string.spinner_priority_hint, priorityList),
+                new HintAdapter<String>(this, R.string.spinner_priority_hint, CommonUtils.getPriorityNames(getResources())),
                 (position, itemAtPosition) -> {
                     Timber.d("prioritySpinner.getSelectedItemPosition() " + prioritySpinner.getSelectedItemPosition());
                     // Here you handle the on item selected event (this skips the hint selected event)
@@ -168,7 +169,6 @@ public class NoteDetailActivity extends MvpAppCompatActivity implements NoteDeta
         description.setPriority(prioritySpinner.getSelectedItemPosition());
 
         //adapter get data
-
         presenter.updateNote(note);
     }
 
@@ -213,9 +213,9 @@ public class NoteDetailActivity extends MvpAppCompatActivity implements NoteDeta
     public boolean onCreateOptionsMenu(Menu menu) {
         if (isInEditMode) {
             getMenuInflater().inflate(R.menu.notedetail_activity_menu, menu);
-            return true;
+            //return true;
         }
-        return false;
+        return true;
     }
 
     @Override
@@ -225,8 +225,9 @@ public class NoteDetailActivity extends MvpAppCompatActivity implements NoteDeta
                 if (note_id != -1);
                     presenter.deleteNote(note_id);
                 return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return false;
     }
 
     @Override
@@ -255,6 +256,7 @@ public class NoteDetailActivity extends MvpAppCompatActivity implements NoteDeta
 
     @Override
     public void setNote(Note note) {
+
         this.note = note;
         idTextView.setText(note.getId() + "");
         nameEditText.append(note.getName());

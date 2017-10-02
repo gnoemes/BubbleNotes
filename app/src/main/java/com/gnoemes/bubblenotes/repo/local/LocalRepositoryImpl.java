@@ -17,6 +17,8 @@ import io.objectbox.rx.RxBoxStore;
 import io.objectbox.rx.RxQuery;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
+import io.reactivex.subjects.PublishSubject;
+import io.reactivex.subjects.Subject;
 import timber.log.Timber;
 
 /**
@@ -29,11 +31,14 @@ public class LocalRepositoryImpl implements LocalRepository {
     private Box<Comment> commentBox;
     private Box<Description> descriptionBox;
 
+    PublishSubject<Boolean> obs;
+
     public LocalRepositoryImpl(BoxStore boxStore) {
         this.boxStore = boxStore;
         noteBox = boxStore.boxFor(Note.class);
         commentBox = boxStore.boxFor(Comment.class);
         descriptionBox = boxStore.boxFor(Description.class);
+        obs = PublishSubject.create();
     }
 
     public void testMethod() {
@@ -46,17 +51,22 @@ public class LocalRepositoryImpl implements LocalRepository {
 
         });
 
-//        Observable.merge(getAllCommentsByNoteId(1), getAllNotesOrderBy(null))
+//        Observable.merge(getAllComments(1), getAllNotesOrderBy(null))
 //                .subscribe(new Observer<List<? extends Object>>() {});
     }
     @Override
-    public Observable<List<Comment>> getAllCommentsByNoteId(long id) {
-        Query<Comment> commentQuery = commentBox.query().equal(Note_.id, id).build();
+    public Observable<Boolean> subscribeToChangeListenerManager() {
+        return obs;
+    }
+
+    @Override
+    public Observable<List<Comment>> getAllComments() {
+        Query<Comment> commentQuery = commentBox.query().build();
         return RxQuery.observable(commentQuery);
     }
 
     @Override
-    public Observable<List<Description>> getDescriptionByNoteId(long id) {
+    public Observable<List<Description>> getAllDescription() {
         Query<Description> descriptionQuery = descriptionBox.query().build();
         return RxQuery.observable(descriptionQuery);
     }
@@ -84,13 +94,16 @@ public class LocalRepositoryImpl implements LocalRepository {
     @Override
     public Observable<Long> addNote(Note note) {
         Timber.d("addNote");
+        obs.onNext(false);
         return Observable.fromCallable(() -> {
             //CommonUtils.longOperation();
             return noteBox.put(note);
         });
     }
 
+    //TODO Баг: Создать запись - Добавить,Удалить коммент - Записать
     //TODO Спросить как записывать зависимые сущности
+    //TODO Записывает зависимые сущности при добавлении/удалениеи, но не записывает их при их изменении?
     // Приходиться записывать зависимые сущности явно так как
     // ObjectBox не может обновить всю зависимости через noteBox.put(note);
     @Override
@@ -99,10 +112,7 @@ public class LocalRepositoryImpl implements LocalRepository {
         return Observable.fromCallable(() -> {
             //CommonUtils.longOperation();
             descriptionBox.put(note.getDescription().getTarget());
-
             //note.getComments().reset();
-
-
             return noteBox.put(note);
         });
 
@@ -110,6 +120,7 @@ public class LocalRepositoryImpl implements LocalRepository {
     @Override
     public Observable<Boolean> deleteNote(long id) {
         Timber.d("deleteNote");
+        obs.onNext(false);
         return Observable.fromCallable(() -> {
             //CommonUtils.longOperation();
             noteBox.remove(id);

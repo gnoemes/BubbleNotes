@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.gnoemes.bubblenotes.R;
 import com.gnoemes.bubblenotes.repo.model.Note;
+import com.gnoemes.bubblenotes.util.CommonUtils;
 
 
 import java.util.List;
@@ -25,6 +26,12 @@ public class NotesListAdapter extends RecyclerView.Adapter<NotesListAdapter.Note
 
     private NotesListAdapter.ItemClickListener clickListener;
     private List<Note> adapterData;
+    private List<String> priorityNames;
+
+
+    public List<Note> getData() {
+        return adapterData;
+    }
 
     public interface ItemClickListener {
         void onClick(Long id);
@@ -34,6 +41,7 @@ public class NotesListAdapter extends RecyclerView.Adapter<NotesListAdapter.Note
                             NotesListAdapter.ItemClickListener clickListener) {
         this.clickListener = clickListener;
         this.adapterData = adapterData;
+
     }
 
     @Override
@@ -51,8 +59,11 @@ public class NotesListAdapter extends RecyclerView.Adapter<NotesListAdapter.Note
         holder.name.setText(note.getName());
         holder.isComplete.setChecked(note.isComplete());
 
-        //TODO Заменить на массив
-        holder.priority.setText(note.getDescription().getTarget().getPriority() + "");
+        //TODO Отрефакторить:
+        List<String> list = CommonUtils.getPriorityNames(holder.itemView.getContext().getResources());
+        int p = note.getDescription().getTarget().getPriority();
+        if (p < list.size())
+            holder.priority.setText(list.get(p));
         holder.commentsNumber.setText(note.getComments().size() + "");
     }
 
@@ -70,7 +81,7 @@ public class NotesListAdapter extends RecyclerView.Adapter<NotesListAdapter.Note
 //        adapterData.clear();
 //        adapterData.addAll(data);
         adapterData = data;
-        notifyDataSetChanged();
+        //notifyDataSetChanged();
     }
 
     //TODO make Holder class static

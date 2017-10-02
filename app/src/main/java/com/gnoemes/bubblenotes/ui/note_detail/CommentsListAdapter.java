@@ -21,8 +21,9 @@ import java.util.List;
 
 public class CommentsListAdapter extends RecyclerView.Adapter<CommentsListAdapter.CommentsHolder> {
     private CommentsListAdapter.ItemClickListener clickListener;
+
     public interface ItemClickListener {
-        void onClick(Long id);
+        void onClick(int pos);
     }
     private List<Comment> adapterData;
 
@@ -71,7 +72,7 @@ public class CommentsListAdapter extends RecyclerView.Adapter<CommentsListAdapte
 
         @Override
         public void onClick(View view) {
-            clickListener.onClick(getItem(getAdapterPosition()).getId());
+            clickListener.onClick(getAdapterPosition());
         }
     }
 }

@@ -2,6 +2,7 @@ package com.gnoemes.bubblenotes.ui.note_detail;
 
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
+import com.gnoemes.bubblenotes.repo.local.LocalRepository;
 import com.gnoemes.bubblenotes.repo.local.LocalRepositoryImpl;
 import com.gnoemes.bubblenotes.repo.model.Note;
 
@@ -16,10 +17,10 @@ import timber.log.Timber;
 public class NoteDetailPresenter extends MvpPresenter<NoteDetailView> {
     private Scheduler main;
     private Scheduler io;
-    private LocalRepositoryImpl localRepositoryBox;
+    private LocalRepository localRepositoryBox;
     private long id;
 
-    public NoteDetailPresenter(Scheduler main, Scheduler io, LocalRepositoryImpl localRepositoryBox, long id) {
+    public NoteDetailPresenter(Scheduler main, Scheduler io, LocalRepository localRepositoryBox, long id) {
         this.main = main;
         this.io = io;
         this.localRepositoryBox = localRepositoryBox;

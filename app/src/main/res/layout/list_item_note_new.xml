@@ -44,12 +44,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAllCaps="false"
-        android:textSize="30sp"
+        android:textSize="24sp"
         tools:text="5"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="8dp"
-        android:layout_marginRight="30dp"
-        app:layout_constraintRight_toRightOf="parent"/>
+        app:layout_constraintTop_toTopOf="@+id/nameTextView"
+        android:layout_marginTop="0dp"
+        android:layout_marginRight="28dp"
+        app:layout_constraintRight_toRightOf="parent"
+        />
 
     <TextView
         android:id="@+id/commentsTextView"
@@ -62,5 +63,13 @@
         android:layout_marginTop="8dp"
         app:layout_constraintRight_toLeftOf="@+id/commentsNumberTextview"
         android:layout_marginRight="8dp"
-        app:layout_constraintVertical_bias="0.666"/>
+        />
+
+    <View style="@style/Divider"
+          android:layout_marginTop="8dp"
+          app:layout_constraintRight_toRightOf="parent"
+          app:layout_constraintLeft_toLeftOf="parent"
+          android:id="@+id/view"
+          app:layout_constraintTop_toBottomOf="@+id/priorityTextView"/>
+
 </android.support.constraint.ConstraintLayout>

@@ -7,6 +7,8 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.util.DiffUtil;
+import android.support.v7.util.ListUpdateCallback;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -21,6 +23,7 @@ import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.gnoemes.bubblenotes.App;
 import com.gnoemes.bubblenotes.R;
 import com.gnoemes.bubblenotes.repo.local.LocalRepositoryImpl;
+import com.gnoemes.bubblenotes.repo.local.RepoDi;
 import com.gnoemes.bubblenotes.repo.model.Description;
 import com.gnoemes.bubblenotes.repo.model.Note;
 import com.gnoemes.bubblenotes.ui.note_detail.NoteDetailActivity;
@@ -64,7 +67,7 @@ public class NotesListFragment extends MvpAppCompatFragment implements NotesList
 //        App.getAppComponent().inject(this);
         boxStore = ((App) (getActivity().getApplication())).getBoxStore();
         return new NotesListPresenter(AndroidSchedulers.mainThread(),
-                Schedulers.io(), new LocalRepositoryImpl(boxStore));
+                Schedulers.io(), RepoDi.getLocalRepo(boxStore));
     }
 
     NotesListAdapter adapterRecycler;
@@ -131,17 +134,23 @@ public class NotesListFragment extends MvpAppCompatFragment implements NotesList
         }
     }
 
-
     @Override
     public void setNotesList(List<Note> notes) {
         Timber.d("setNotesList");
         this.notes = notes;
+
+        //TODO Method priority matters?
+        //TODO Доделать DiffUtil. Выгрузить в фоновый поток.
+        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new NotesDiff(notes, adapterRecycler.getData()));
         adapterRecycler.updateData(notes);
+        diffResult.dispatchUpdatesTo(adapterRecycler);
+
     }
 
     @Override
     public void notifyDescriptionChanged(List<Description> descriptions) {
         Timber.d("notifyDescriptionChanged");
+
     }
 
     @Override
