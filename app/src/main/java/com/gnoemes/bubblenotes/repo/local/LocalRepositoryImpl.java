@@ -1,11 +1,9 @@
 package com.gnoemes.bubblenotes.repo.local;
 
-import com.gnoemes.bubblenotes.repo.local.LocalRepository;
 import com.gnoemes.bubblenotes.repo.model.Comment;
 import com.gnoemes.bubblenotes.repo.model.Description;
 import com.gnoemes.bubblenotes.repo.model.Note;
 import com.gnoemes.bubblenotes.repo.model.Note_;
-import com.gnoemes.bubblenotes.util.CommonUtils;
 
 import java.util.List;
 
@@ -16,9 +14,7 @@ import io.objectbox.query.Query;
 import io.objectbox.rx.RxBoxStore;
 import io.objectbox.rx.RxQuery;
 import io.reactivex.Observable;
-import io.reactivex.Observer;
 import io.reactivex.subjects.PublishSubject;
-import io.reactivex.subjects.Subject;
 import timber.log.Timber;
 
 /**
@@ -31,32 +27,27 @@ public class LocalRepositoryImpl implements LocalRepository {
     private Box<Comment> commentBox;
     private Box<Description> descriptionBox;
 
-    PublishSubject<Boolean> obs;
+    PublishSubject<Boolean> subjectUpdateListener;
+    PublishSubject<List<Comment>> subjectComments;
+    PublishSubject<Description> subjectDescription;
 
     public LocalRepositoryImpl(BoxStore boxStore) {
         this.boxStore = boxStore;
         noteBox = boxStore.boxFor(Note.class);
         commentBox = boxStore.boxFor(Comment.class);
         descriptionBox = boxStore.boxFor(Description.class);
-        obs = PublishSubject.create();
+        subjectUpdateListener = PublishSubject.create();
+        subjectComments = PublishSubject.create();
+        subjectDescription = PublishSubject.create();
+
+
     }
 
-    public void testMethod() {
-        //TODO Подумать над одиночными данными
-//        RxQuery.single();
-//        RxQuery.flowableOneByOne();
-//        RxQuery.observable();
-
-        RxBoxStore.<Note>observable(boxStore).subscribe(aClass -> {
-
-        });
-
-//        Observable.merge(getAllComments(1), getAllNotesOrderBy(null))
-//                .subscribe(new Observer<List<? extends Object>>() {});
-    }
+    //Change listeners
+    //--------------------------------------------------------------------------------
     @Override
     public Observable<Boolean> subscribeToChangeListenerManager() {
-        return obs;
+        return subjectUpdateListener;
     }
 
     @Override
@@ -71,15 +62,37 @@ public class LocalRepositoryImpl implements LocalRepository {
         return RxQuery.observable(descriptionQuery);
     }
 
+
+    @Override
+    public Observable<List<Comment>> addComments(List<Comment> comments) {
+        return Observable.fromCallable(() -> {
+            commentBox.put(comments);
+            List<Comment> newList= commentBox.getAll();
+            subjectComments.onNext(newList);
+            return newList;
+        });
+    }
+    @Override
+    public Observable<Description> addDescription(Description description) {
+        return Observable.fromCallable(() -> {
+            long id = descriptionBox.put(description);
+            Description d = descriptionBox.get(id);
+            subjectDescription.onNext(d);
+            return d;
+        });
+    }
+
+   //---------------------------------------------------------------------------------
+
     //TODO Возращает из io
     @Override
     public Observable<List<Note>> getAllNotesOrderBy(Property property) {
         Timber.d("getAllNotesOrderBy");
-        Query<Note> query2 = noteBox.query()
+        Query<Note> query = noteBox.query()
                 .orderDesc(property)
                 .eager(Note_.description, Note_.comments)
                 .build();
-        return RxQuery.observable(query2);
+        return RxQuery.observable(query);
     }
 
 
@@ -94,13 +107,22 @@ public class LocalRepositoryImpl implements LocalRepository {
     @Override
     public Observable<Long> addNote(Note note) {
         Timber.d("addNote");
-        obs.onNext(false);
+        subjectUpdateListener.onNext(false);
         return Observable.fromCallable(() -> {
             //CommonUtils.longOperation();
             return noteBox.put(note);
         });
     }
-
+    @Override
+    public Observable<Boolean> deleteNote(long id) {
+        Timber.d("deleteNote");
+        subjectUpdateListener.onNext(false);
+        return Observable.fromCallable(() -> {
+            //CommonUtils.longOperation();
+            noteBox.remove(id);
+            return true;
+        });
+    }
     //TODO Баг: Создать запись - Добавить,Удалить коммент - Записать
     //TODO Спросить как записывать зависимые сущности
     //TODO Записывает зависимые сущности при добавлении/удалениеи, но не записывает их при их изменении?
@@ -117,15 +139,6 @@ public class LocalRepositoryImpl implements LocalRepository {
         });
 
     }
-    @Override
-    public Observable<Boolean> deleteNote(long id) {
-        Timber.d("deleteNote");
-        obs.onNext(false);
-        return Observable.fromCallable(() -> {
-            //CommonUtils.longOperation();
-            noteBox.remove(id);
-            return true;
-        });
-    }
+
 }
 

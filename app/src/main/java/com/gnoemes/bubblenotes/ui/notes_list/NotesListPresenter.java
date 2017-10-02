@@ -3,7 +3,6 @@ package com.gnoemes.bubblenotes.ui.notes_list;
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
 import com.gnoemes.bubblenotes.repo.local.LocalRepository;
-import com.gnoemes.bubblenotes.repo.local.LocalRepositoryImpl;
 import com.gnoemes.bubblenotes.repo.model.Note;
 import com.gnoemes.bubblenotes.repo.model.Note_;
 
@@ -41,22 +40,22 @@ public class NotesListPresenter extends MvpPresenter<NotesListView> {
         super.onFirstViewAttach();
 
         loadNotes();
-        listenForeignEntities();
+        listenForeignEntitiesUpdateStatus();
         listenCommentsChanges();
         listenDescriptionChanges();
 
     }
 
-    public void listenForeignEntities() {
+    public void listenForeignEntitiesUpdateStatus() {
         listenerManager = localRepositoryBox.subscribeToChangeListenerManager()
                 .observeOn(main)
                 .subscribe(aBoolean -> {
-                    Timber.d("listenForeignEntities " + aBoolean);
+                    Timber.d("listenForeignEntitiesUpdateStatus " + aBoolean);
                     listenForeignUpdates = aBoolean;
                 }, throwable -> {
-                    Timber.d("listenForeignEntities onError " + throwable);
+                    Timber.d("listenForeignEntitiesUpdateStatus onError " + throwable);
                 }, () -> {
-                    Timber.d("listenForeignEntities onComplete");
+                    Timber.d("listenForeignEntitiesUpdateStatus onComplete");
                 });
     }
 
@@ -95,15 +94,6 @@ public class NotesListPresenter extends MvpPresenter<NotesListView> {
                 }, () -> {
                     Timber.d("onComplete");
                 });
-    }
-
-    public void addOrUpdateNote(Note note) {
-        localRepositoryBox.addNote(note)
-                .subscribeOn(io)
-                .observeOn(main)
-                .subscribe(id -> {
-                    Timber.d("addNote onComplete");
-                }, throwable -> {}, () -> {});
     }
 
     public void onStop() {

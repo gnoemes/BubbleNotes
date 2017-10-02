@@ -19,6 +19,10 @@ public interface LocalRepository {
 
     Observable<List<Comment>> getAllComments();
 
+    Observable<List<Comment>> addComments(List<Comment> comments);
+
+    Observable<Description> addDescription(Description description);
+
     Observable<List<Description>> getAllDescription();
 
     Observable<List<Note>> getAllNotesOrderBy(Property property);

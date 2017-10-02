@@ -24,6 +24,7 @@ import com.gnoemes.bubblenotes.App;
 import com.gnoemes.bubblenotes.R;
 import com.gnoemes.bubblenotes.repo.local.LocalRepositoryImpl;
 import com.gnoemes.bubblenotes.repo.local.RepoDi;
+import com.gnoemes.bubblenotes.repo.model.Comment;
 import com.gnoemes.bubblenotes.repo.model.Description;
 import com.gnoemes.bubblenotes.repo.model.Note;
 import com.gnoemes.bubblenotes.ui.note_detail.NoteDetailActivity;
@@ -150,6 +151,11 @@ public class NotesListFragment extends MvpAppCompatFragment implements NotesList
     @Override
     public void notifyDescriptionChanged(List<Description> descriptions) {
         Timber.d("notifyDescriptionChanged");
+
+    }
+
+    public void notifyCommentsChanged(List<Comment> comments) {
+        Timber.d("notifyCommentsChanged");
 
     }
 
