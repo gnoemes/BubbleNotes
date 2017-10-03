@@ -46,4 +46,18 @@
         android:src="@android:drawable/ic_input_add"
         android:tint="@android:color/white"
         app:elevation="6dp"/>
+
+    <Button
+        android:id="@+id/changeDescription"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|left"
+        android:text="Change desc"/>
+
+    <Button
+        android:id="@+id/changeComment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:text="Change comm"/>
 </android.support.design.widget.CoordinatorLayout>

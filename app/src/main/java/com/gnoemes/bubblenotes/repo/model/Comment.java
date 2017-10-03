@@ -2,6 +2,7 @@ package com.gnoemes.bubblenotes.repo.model;
 
 import io.objectbox.annotation.Entity;
 import io.objectbox.annotation.Id;
+import io.objectbox.relation.ToOne;
 
 /**
  * Created by kenji1947 on 29.09.2017.
@@ -14,7 +15,6 @@ public class Comment {
 
     String body;
     long unixTime;
-
 
     public long getId() {
         return id;

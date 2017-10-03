@@ -17,6 +17,7 @@ public class Note {
     private long unixTime;
     boolean complete;
 
+
     ToOne<Description> description;
     ToMany<Comment> comments;
 

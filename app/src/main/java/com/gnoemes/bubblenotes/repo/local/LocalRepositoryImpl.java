@@ -1,6 +1,7 @@
 package com.gnoemes.bubblenotes.repo.local;
 
 import com.gnoemes.bubblenotes.repo.model.Comment;
+import com.gnoemes.bubblenotes.repo.model.Comment_;
 import com.gnoemes.bubblenotes.repo.model.Description;
 import com.gnoemes.bubblenotes.repo.model.Note;
 import com.gnoemes.bubblenotes.repo.model.Note_;
@@ -11,6 +12,7 @@ import io.objectbox.Box;
 import io.objectbox.BoxStore;
 import io.objectbox.Property;
 import io.objectbox.query.Query;
+import io.objectbox.query.QueryBuilder;
 import io.objectbox.rx.RxBoxStore;
 import io.objectbox.rx.RxQuery;
 import io.reactivex.Observable;
@@ -40,7 +42,14 @@ public class LocalRepositoryImpl implements LocalRepository {
         subjectComments = PublishSubject.create();
         subjectDescription = PublishSubject.create();
 
+        //clearAllEntities();
 
+    }
+
+    private void clearAllEntities() {
+        noteBox.removeAll();
+        commentBox.removeAll();;
+        descriptionBox.removeAll();
     }
 
     //Change listeners
@@ -104,40 +113,78 @@ public class LocalRepositoryImpl implements LocalRepository {
             return noteBox.get(id);});
     }
 
+    //TODO Создаст объект со всеми зависимыми сущностями
+    //Будут вызваны обезреверы всех зависимых сущностей
     @Override
     public Observable<Long> addNote(Note note) {
         Timber.d("addNote");
-        subjectUpdateListener.onNext(false);
+        //subjectUpdateListener.onNext(false);
         return Observable.fromCallable(() -> {
             //CommonUtils.longOperation();
             return noteBox.put(note);
         });
     }
+    //TODO Delete cascade NOT supported
+    //Будут вызваны обезреверы всех зависимых сущностей
     @Override
     public Observable<Boolean> deleteNote(long id) {
         Timber.d("deleteNote");
-        subjectUpdateListener.onNext(false);
+        //subjectUpdateListener.onNext(false);
         return Observable.fromCallable(() -> {
             //CommonUtils.longOperation();
+            Note note = noteBox.get(id);
+
+            descriptionBox.remove(note.getDescription().getTargetId());
+            commentBox.remove(note.getComments());
+
             noteBox.remove(id);
             return true;
         });
     }
+
+    //TODO ObjectBox не может обновить всю зависимости через noteBox.put(note);
     //TODO Баг: Создать запись - Добавить,Удалить коммент - Записать
-    //TODO Спросить как записывать зависимые сущности
-    //TODO Записывает зависимые сущности при добавлении/удалениеи, но не записывает их при их изменении?
-    // Приходиться записывать зависимые сущности явно так как
-    // ObjectBox не может обновить всю зависимости через noteBox.put(note);
+
+    //Запишет каскадно зависимые сущности только при изменениях типа: добавление/удаление
+    //Записывает зависимые сущности при добавлении/удалениеи, но не записывает их при их изменении?
+    //Будут вызваны обезреверы всех зависимых сущностей
     @Override
     public Observable<Long> UpdateNote(Note note) {
         Timber.d("UpdateNote");
         return Observable.fromCallable(() -> {
             //CommonUtils.longOperation();
+
+            //remove all old comments from db
+            //List<Comment> oldComments = noteBox.get(note.getId()).getComments();
+            //commentBox.remove(oldComments);
+
+            //save new comments in db
+            //commentBox.put(note.getComments());
+
+            //update desc
             descriptionBox.put(note.getDescription().getTarget());
-            //note.getComments().reset();
+
             return noteBox.put(note);
         });
 
+    }
+
+    //----------------------------------
+    public void addNoteNew() {
+
+        getAllComments();
+        getAllDescription();
+
+    }
+    //TODO Возращает из io
+
+    public Observable<List<Note>> getAllNotesOrderBy2(Property property) {
+        Timber.d("getAllNotesOrderBy");
+        Query<Note> query = noteBox.query()
+                .orderDesc(property)
+                .eager(Note_.description, Note_.comments)
+                .build();
+        return RxQuery.observable(query);
     }
 
 }
