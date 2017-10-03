@@ -6,7 +6,7 @@ import android.arch.persistence.room.RoomDatabase;
 import com.gnoemes.bubblenotes.data.model.Note;
 import com.gnoemes.bubblenotes.data.model.NoteDao;
 
-@Database(entities = Note.class, version = 1)
+@Database(entities = Note.class, version = 2)
 public abstract class NoteDb extends RoomDatabase{
 
     public abstract NoteDao noteDao();

@@ -12,8 +12,8 @@ import io.reactivex.Flowable;
  */
 
 public interface NoteDataSource {
-    Flowable<Note> loadNoteById(String id);
+    Flowable<Note> loadNoteById(long id);
     Flowable<List<Note>> loadNotes();
     Completable addOrUpdateNote(Note note);
-    Completable deleteNote(String id);
+    Completable deleteNote(long id);
 }

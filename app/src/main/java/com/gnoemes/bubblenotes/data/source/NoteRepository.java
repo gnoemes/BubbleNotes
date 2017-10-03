@@ -35,7 +35,7 @@ public class NoteRepository implements NoteDataSource {
     }
 
     @Override
-    public Flowable<Note> loadNoteById(String id) {
+    public Flowable<Note> loadNoteById(long id) {
         return localDataSource.loadNoteById(id);
     }
 
@@ -50,7 +50,7 @@ public class NoteRepository implements NoteDataSource {
     }
 
     @Override
-    public Completable deleteNote(String id) {
+    public Completable deleteNote(long id) {
         return localDataSource.deleteNote(id);
     }
 }

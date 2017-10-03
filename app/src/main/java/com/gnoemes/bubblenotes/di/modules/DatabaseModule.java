@@ -27,7 +27,9 @@ public class DatabaseModule {
     @Provides
     @Singleton
     NoteDb provideNoteDb(Context context, @Named(DATABASE) String databaseName) {
-        return Room.databaseBuilder(context,NoteDb.class, databaseName).build();
+        return Room.databaseBuilder(context,NoteDb.class, databaseName)
+                .fallbackToDestructiveMigration()
+                .build();
     }
 
     @Provides

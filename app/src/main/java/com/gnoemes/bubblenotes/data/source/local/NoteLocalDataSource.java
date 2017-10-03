@@ -20,7 +20,7 @@ public class NoteLocalDataSource implements NoteDataSource {
     }
 
     @Override
-    public Flowable<Note> loadNoteById(String id) {
+    public Flowable<Note> loadNoteById(long id) {
         return noteDao.getNoteById(id);
     }
 
@@ -34,7 +34,7 @@ public class NoteLocalDataSource implements NoteDataSource {
         return Completable.fromAction(() -> noteDao.insert(note));
     }
 
-    public Completable deleteNote(String id) {
+    public Completable deleteNote(long id) {
         return Completable.fromAction(() -> noteDao.deleteNoteById(id));
     }
 }

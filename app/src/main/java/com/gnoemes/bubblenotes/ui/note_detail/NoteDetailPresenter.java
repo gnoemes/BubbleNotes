@@ -28,10 +28,10 @@ public class NoteDetailPresenter extends MvpPresenter<NoteDetailView> {
     private CompositeDisposable subscriptions = new CompositeDisposable();
     private NoteRepository repository;
 
-    private String id;
+    private long id;
 
     @Inject
-    public NoteDetailPresenter(NoteRepository repository, String id) {
+    public NoteDetailPresenter(NoteRepository repository, long id) {
         this.repository = repository;
         this.id = id;
     }
@@ -41,7 +41,7 @@ public class NoteDetailPresenter extends MvpPresenter<NoteDetailView> {
         Timber.d("onFirstViewAttach id: " + id);
         initComponent();
         //TODO Is in edit mode
-        if (id != null)
+        if (id != 0)
             getNote(id);
     }
 
@@ -52,15 +52,15 @@ public class NoteDetailPresenter extends MvpPresenter<NoteDetailView> {
         repositoryComponent.inject(this);
     }
 
-    public void getNote(String id) {
+    public void getNote(long id) {
         subscriptions.add(repository.loadNoteById(id)
                     .compose(RxUtil.applyFlowableSchedulers())
                     .subscribe(note -> getViewState().setNote(note)));
 
     }
 
-    public void addNote(String id,String name, int priority) {
-            repository.addOrUpdateNote(NoteMapper.createNoteFromData(id,name,priority))
+    public void addNote(String name, int priority) {
+            repository.addOrUpdateNote(NoteMapper.createNoteFromData(name,priority))
 //                    .filter(note -> note.isLoaded())
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -84,8 +84,8 @@ public class NoteDetailPresenter extends MvpPresenter<NoteDetailView> {
                     });
     }
 
-    public void updateNote(String id, String name, int priority) {
-       repository.addOrUpdateNote((NoteMapper.createNoteFromData(id,name,priority)))
+    public void updateNote(long id, String name, int priority) {
+       repository.addOrUpdateNote((NoteMapper.createNoteFromDataWithId(id,name,priority)))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new CompletableObserver() {
@@ -107,7 +107,7 @@ public class NoteDetailPresenter extends MvpPresenter<NoteDetailView> {
                     }
                 });
     }
-    public void deleteNote(String id) {
+    public void deleteNote(long id) {
         subscriptions.add(repository.deleteNote(id)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

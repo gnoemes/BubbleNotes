@@ -11,7 +11,7 @@ import io.reactivex.Flowable;
 public class RemoteDataSource implements NoteDataSource {
 
     @Override
-    public Flowable<Note> loadNoteById(String id) {
+    public Flowable<Note> loadNoteById(long id) {
         throw  new UnsupportedOperationException();
     }
 
@@ -26,7 +26,7 @@ public class RemoteDataSource implements NoteDataSource {
     }
 
     @Override
-    public Completable deleteNote(String id) {
+    public Completable deleteNote(long id) {
         throw  new UnsupportedOperationException();
     }
 }

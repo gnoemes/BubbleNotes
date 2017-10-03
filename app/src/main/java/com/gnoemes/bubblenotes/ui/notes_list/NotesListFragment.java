@@ -97,7 +97,7 @@ public class NotesListFragment extends MvpAppCompatFragment implements NotesList
                 final int position = viewHolder.getAdapterPosition();
                 if (direction == ItemTouchHelper.RIGHT) {
                     adapterRecycler.notifyItemRemoved(position);
-                    String id = adapterRecycler.getItem(position).getId();
+                    long id = adapterRecycler.getItem(position).getId();
                     presenter.deleteNote(id);
                 }
             }

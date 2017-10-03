@@ -27,7 +27,7 @@ public class NotesListAdapterRecycler extends RecyclerView.Adapter<NotesListAdap
     private List<Note> adapterData;
 
     public interface OnItemClickListener {
-        void onClick(String id);
+        void onClick(long id);
     }
 
     public NotesListAdapterRecycler(@Nullable List<Note> adapterData, OnItemClickListener clickListener) {
@@ -45,7 +45,7 @@ public class NotesListAdapterRecycler extends RecyclerView.Adapter<NotesListAdap
     @Override
     public void onBindViewHolder(NoteHolder holder, int position) {
         Note note = getItem(position);
-        holder.id.setText(note.getId());
+        holder.id.setText(String.valueOf(note.getId()));
         holder.name.setText(note.getName());
         if (note.getPriority() < 4) {
             holder.itemContainer.setBackgroundColor(holder.itemContainer.getResources().getColor(R.color.softRed));

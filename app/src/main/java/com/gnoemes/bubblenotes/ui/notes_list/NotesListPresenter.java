@@ -40,7 +40,7 @@ public class NotesListPresenter extends MvpPresenter<NotesListView> {
                     .subscribe(notes -> getViewState().setNotesList(notes)));
     }
 
-    public void deleteNote(String id) {
+    public void deleteNote(long id) {
         subscriptions.add(repository.deleteNote(id)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
