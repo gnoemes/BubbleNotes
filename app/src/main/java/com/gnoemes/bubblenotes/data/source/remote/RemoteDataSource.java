@@ -5,8 +5,8 @@ import com.gnoemes.bubblenotes.data.source.NoteDataSource;
 
 import java.util.List;
 
-import io.reactivex.Completable;
 import io.reactivex.Flowable;
+import io.reactivex.Observable;
 
 public class RemoteDataSource implements NoteDataSource {
 
@@ -21,12 +21,12 @@ public class RemoteDataSource implements NoteDataSource {
     }
 
     @Override
-    public Completable addOrUpdateNote(Note note) {
-        throw  new UnsupportedOperationException();
+    public Observable<Boolean> addOrUpdateNote(Note note) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public Completable deleteNote(long id) {
+    public Observable<Boolean> deleteNote(long id) {
         throw  new UnsupportedOperationException();
     }
 }

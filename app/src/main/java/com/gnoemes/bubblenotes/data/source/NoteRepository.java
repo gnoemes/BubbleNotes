@@ -12,8 +12,8 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import io.reactivex.Completable;
 import io.reactivex.Flowable;
+import io.reactivex.Observable;
 
 /**
  * NoteRepository which controls Database, API
@@ -45,12 +45,12 @@ public class NoteRepository implements NoteDataSource {
     }
 
     @Override
-    public Completable addOrUpdateNote(Note note) {
+    public Observable<Boolean> addOrUpdateNote(Note note) {
         return localDataSource.addOrUpdateNote(note);
     }
 
     @Override
-    public Completable deleteNote(long id) {
+    public Observable<Boolean> deleteNote(long id) {
         return localDataSource.deleteNote(id);
     }
 }

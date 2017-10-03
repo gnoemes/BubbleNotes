@@ -8,12 +8,13 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import io.reactivex.Completable;
 import io.reactivex.Flowable;
+import io.reactivex.Observable;
 
 public class NoteLocalDataSource implements NoteDataSource {
 
     private NoteDao noteDao;
+
     @Inject
     public NoteLocalDataSource(NoteDao noteDao) {
         this.noteDao = noteDao;
@@ -30,11 +31,11 @@ public class NoteLocalDataSource implements NoteDataSource {
     }
 
     @Override
-    public Completable addOrUpdateNote(Note note) {
-        return Completable.fromAction(() -> noteDao.insert(note));
+    public Observable<Boolean> addOrUpdateNote(Note note) {
+        return Observable.fromCallable(() -> noteDao.insert(note) != -1);
     }
 
-    public Completable deleteNote(long id) {
-        return Completable.fromAction(() -> noteDao.deleteNoteById(id));
+    public Observable<Boolean> deleteNote(long id) {
+        return Observable.fromCallable(() -> noteDao.deleteNoteById(id) != -1);
     }
 }

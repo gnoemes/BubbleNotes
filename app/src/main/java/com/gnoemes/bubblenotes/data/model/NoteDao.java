@@ -20,10 +20,10 @@ public interface NoteDao {
     Flowable<Note> getNoteById(long id);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insert(Note note);
+    long insert(Note note);
 
     @Query("DELETE FROM " + Config.TABLE_NAME + " WHERE id == :id")
-    void deleteNoteById(long id);
+    int deleteNoteById(long id);
 
     @Query("DELETE FROM " + Config.TABLE_NAME)
     void deleteAllNotes();

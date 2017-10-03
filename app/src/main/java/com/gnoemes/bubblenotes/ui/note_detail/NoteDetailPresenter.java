@@ -11,12 +11,7 @@ import com.gnoemes.bubblenotes.utils.RxUtil;
 
 import javax.inject.Inject;
 
-import io.reactivex.CompletableObserver;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 /**
@@ -60,66 +55,52 @@ public class NoteDetailPresenter extends MvpPresenter<NoteDetailView> {
     }
 
     public void addNote(String name, int priority) {
-            repository.addOrUpdateNote(NoteMapper.createNoteFromData(name,priority))
-//                    .filter(note -> note.isLoaded())
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new CompletableObserver() {
-                        @Override
-                        public void onSubscribe(@NonNull Disposable d) {
-
-                        }
-
-                        @Override
-                        public void onComplete() {
-                            getViewState().showToast("Note saved ");
-                            getViewState().backPressed();
-                        }
-
-                        @Override
-                        public void onError(@NonNull Throwable e) {
-                            e.printStackTrace();
-                            getViewState().showToast("Error when saving");
-                        }
-                    });
+           subscriptions.add(repository.addOrUpdateNote(NoteMapper.createNoteFromData(name,priority))
+                   .compose(RxUtil.applySchedulers())
+                   .subscribe(aBoolean -> {
+                       if (aBoolean) {
+                           getViewState().showToast("Note saved ");
+                           getViewState().backPressed();
+                       }
+                       else {
+                           getViewState().showToast("Error when saving");
+                       }
+                   },Throwable::printStackTrace));
     }
 
     public void updateNote(long id, String name, int priority) {
-       repository.addOrUpdateNote((NoteMapper.createNoteFromDataWithId(id,name,priority)))
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new CompletableObserver() {
-                    @Override
-                    public void onSubscribe(@NonNull Disposable d) {
-
-                    }
-
-                    @Override
-                    public void onComplete() {
+        subscriptions.add(repository.addOrUpdateNote((NoteMapper.createNoteFromDataWithId(id,name,priority)))
+                .compose(RxUtil.applySchedulers())
+                .subscribe(aBoolean -> {
+                    if (aBoolean) {
                         getViewState().showToast("Note updated");
                         getViewState().backPressed();
                     }
-
-                    @Override
-                    public void onError(@NonNull Throwable e) {
-                        e.printStackTrace();
+                    else {
                         getViewState().showToast("Error when updating");
                     }
-                });
+                },Throwable::printStackTrace));
+
     }
     public void deleteNote(long id) {
-        subscriptions.add(repository.deleteNote(id)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(() -> {
+      subscriptions.add(repository.deleteNote(id)
+                .compose(RxUtil.applySchedulers())
+                .subscribe(aBoolean -> {
+                    if (aBoolean) {
                         getViewState().showToast("Note deleted");
                         getViewState().backPressed();
-                    }, Throwable::printStackTrace));
+                    } else  {
+                        getViewState().showToast("Error");
+                    }
+                },Throwable::printStackTrace));
     }
+
     void onStop() {
         Timber.d("onStop");
 
     }
+
+
 
     @Override
     public void onDestroy() {

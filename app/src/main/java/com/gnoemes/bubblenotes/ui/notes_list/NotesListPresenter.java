@@ -7,9 +7,7 @@ import com.gnoemes.bubblenotes.utils.RxUtil;
 
 import javax.inject.Inject;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by kenji1947 on 25.09.2017.
@@ -34,7 +32,7 @@ public class NotesListPresenter extends MvpPresenter<NotesListView> {
 
 
     //Async Rx version
-    private void loadNotesRx() {
+    public void loadNotesRx() {
       subscriptions.add(repository.loadNotes()
                     .compose(RxUtil.applyFlowableSchedulers())
                     .subscribe(notes -> getViewState().setNotesList(notes)));
@@ -42,11 +40,15 @@ public class NotesListPresenter extends MvpPresenter<NotesListView> {
 
     public void deleteNote(long id) {
         subscriptions.add(repository.deleteNote(id)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(() -> {
-                    getViewState().showToast("Note deleted");
-                }, Throwable::printStackTrace));
+                .compose(RxUtil.applySchedulers())
+                .subscribe(aBoolean -> {
+                    if(aBoolean) {
+                        getViewState().showToast("Note deleted");
+                    } else {
+                        getViewState().showToast("Error");
+                    }
+                },Throwable::printStackTrace)
+        );
     }
 
     //Stop all work, because View was stopped. This method NOT be triggered by configuration change.
