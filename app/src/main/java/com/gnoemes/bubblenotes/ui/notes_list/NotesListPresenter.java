@@ -2,7 +2,8 @@ package com.gnoemes.bubblenotes.ui.notes_list;
 
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
-import com.gnoemes.bubblenotes.data.source.NoteRepository;
+import com.gnoemes.bubblenotes.data.note.local.NoteDataSource;
+import com.gnoemes.bubblenotes.utils.NoteMapper;
 import com.gnoemes.bubblenotes.utils.RxUtil;
 
 import javax.inject.Inject;
@@ -16,11 +17,11 @@ import io.reactivex.disposables.CompositeDisposable;
 @InjectViewState
 public class NotesListPresenter extends MvpPresenter<NotesListView> {
 
-    private NoteRepository repository;
+    private NoteDataSource repository;
     private CompositeDisposable subscriptions = new CompositeDisposable();
 
     @Inject
-    public NotesListPresenter(NoteRepository repository) {
+    public NotesListPresenter(NoteDataSource repository) {
         this.repository = repository;
     }
 
@@ -47,8 +48,19 @@ public class NotesListPresenter extends MvpPresenter<NotesListView> {
                     } else {
                         getViewState().showToast("Error");
                     }
-                },Throwable::printStackTrace)
-        );
+                },Throwable::printStackTrace));
+    }
+
+    public void updateNoteState(long id, String name,String description, int priority,String date,boolean complete) {
+        subscriptions.add(repository.addOrUpdateNote(NoteMapper.createNoteFromDataWithId(id, name, description, priority, date, complete))
+                        .compose(RxUtil.applySchedulers())
+                        .subscribe(aBoolean -> {
+                            if(aBoolean) {
+                                getViewState().showToast("Completed");
+                            } else {
+                                getViewState().showToast("Error");
+                            }
+                        },Throwable::printStackTrace));
     }
 
     //Stop all work, because View was stopped. This method NOT be triggered by configuration change.

@@ -21,7 +21,7 @@ import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.gnoemes.bubblenotes.App;
 import com.gnoemes.bubblenotes.R;
-import com.gnoemes.bubblenotes.data.model.Note;
+import com.gnoemes.bubblenotes.data.note.model.Note;
 import com.gnoemes.bubblenotes.ui.note_detail.NoteDetailActivity;
 
 import java.util.List;
@@ -78,9 +78,9 @@ public class NotesListFragment extends MvpAppCompatFragment implements NotesList
             Intent intent = new Intent(getActivity(), NoteDetailActivity.class);
             intent.putExtra(NoteDetailActivity.EXTRA_NOTE_ID, id);
             startActivity(intent);
-        });
+        }, (id, name, description, priority, date, complete) -> presenter.updateNoteState(id, name, description, priority, date, complete));
 
-        listRecyclerView.setAdapter(adapterRecycler);
+                listRecyclerView.setAdapter(adapterRecycler);
 
         initToolbar();
         //TODO Объяснить

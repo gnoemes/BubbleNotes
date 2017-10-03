@@ -3,9 +3,8 @@ package com.gnoemes.bubblenotes.notes;
 import android.support.test.annotation.UiThreadTest;
 import android.support.test.runner.AndroidJUnit4;
 
-import com.gnoemes.bubblenotes.data.model.Note;
-import com.gnoemes.bubblenotes.data.source.local.NoteLocalDataSource;
-import com.gnoemes.bubblenotes.utils.NoteMapper;
+import com.gnoemes.bubblenotes.data.note.model.Note;
+import com.gnoemes.bubblenotes.data.note.local.NoteLocalDataSource;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -36,8 +35,8 @@ public class NoteLocalDataSourceTest {
     @Test
     @UiThreadTest
     public void addedOrUpdateShouldStorage2() {
-        Note note1 = NoteMapper.createNoteFromData("1","name",1);
-        Note note2 = NoteMapper.createNoteFromData("2","name",2);
+//        Note note1 = NoteMapper.createNoteFromData("1","name",1);
+//        Note note2 = NoteMapper.createNoteFromData("2","name",2);
 //        TestObserver<Note> testObserver = source.addOrUpdateNote(note1).test();
 //        testObserver.assertNoErrors();
 //
@@ -50,10 +49,10 @@ public class NoteLocalDataSourceTest {
     @Test
     @UiThreadTest
     public void addedOrUpdateShouldOverrideNote1() {
-        Note note1 = NoteMapper.createNoteFromData("1","name",1);
-        Note note2 = NoteMapper.createNoteFromData("1","name",2);
-
-        saveInDb(note1);
+//        Note note1 = NoteMapper.createNoteFromData("1","name",1);
+//        Note note2 = NoteMapper.createNoteFromData("1","name",2);
+//
+//        saveInDb(note1);
 
 //        TestObserver<Note> testObserver = source.addOrUpdateNote(note2).test();
 //        testObserver.assertNoErrors();

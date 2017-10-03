@@ -3,7 +3,7 @@ package com.gnoemes.bubblenotes.ui.note_detail;
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
 import com.gnoemes.bubblenotes.App;
-import com.gnoemes.bubblenotes.data.source.NoteRepository;
+import com.gnoemes.bubblenotes.data.note.local.NoteDataSource;
 import com.gnoemes.bubblenotes.di.components.DaggerRepositoryComponent;
 import com.gnoemes.bubblenotes.di.components.RepositoryComponent;
 import com.gnoemes.bubblenotes.utils.NoteMapper;
@@ -21,12 +21,12 @@ import timber.log.Timber;
 @InjectViewState
 public class NoteDetailPresenter extends MvpPresenter<NoteDetailView> {
     private CompositeDisposable subscriptions = new CompositeDisposable();
-    private NoteRepository repository;
+    private NoteDataSource repository;
 
     private long id;
 
     @Inject
-    public NoteDetailPresenter(NoteRepository repository, long id) {
+    public NoteDetailPresenter(NoteDataSource repository, long id) {
         this.repository = repository;
         this.id = id;
     }
@@ -54,8 +54,8 @@ public class NoteDetailPresenter extends MvpPresenter<NoteDetailView> {
 
     }
 
-    public void addNote(String name, int priority) {
-           subscriptions.add(repository.addOrUpdateNote(NoteMapper.createNoteFromData(name,priority))
+    public void addNote(String name,String description, int priority, String date) {
+           subscriptions.add(repository.addOrUpdateNote(NoteMapper.createNoteFromData(name,description,priority,date,false))
                    .compose(RxUtil.applySchedulers())
                    .subscribe(aBoolean -> {
                        if (aBoolean) {
@@ -68,8 +68,8 @@ public class NoteDetailPresenter extends MvpPresenter<NoteDetailView> {
                    },Throwable::printStackTrace));
     }
 
-    public void updateNote(long id, String name, int priority) {
-        subscriptions.add(repository.addOrUpdateNote((NoteMapper.createNoteFromDataWithId(id,name,priority)))
+    public void updateNote(long id, String name,String description, int priority,String date) {
+        subscriptions.add(repository.addOrUpdateNote((NoteMapper.createNoteFromDataWithId(id,name,description,priority,date,false)))
                 .compose(RxUtil.applySchedulers())
                 .subscribe(aBoolean -> {
                     if (aBoolean) {

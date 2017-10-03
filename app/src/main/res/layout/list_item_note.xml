@@ -8,8 +8,8 @@
     app:cardCornerRadius="2dp"
     app:cardBackgroundColor="@color/softGreen"
     app:cardUseCompatPadding="true">
-<LinearLayout
-
+<RelativeLayout
+    android:id="@+id/relativeContainer"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
@@ -19,19 +19,22 @@
         android:layout_height="20dp"
         android:background="@color/deepGreen"
         tools:text="Priority"/>
+    <TextView
+        android:id="@+id/dateItemTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_margin="2dp"
+        tools:text="28.04.18 15:30" />
 
 <LinearLayout
     android:id="@+id/itemContainer"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="@dimen/activity_vertical_margin"
+    android:layout_below="@id/priorityTextView"
     android:orientation="vertical">
-
-    <TextView
-        android:id="@+id/idTextView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        tools:text="Id"/>
 
     <TextView
         android:id="@+id/nameTextView"
@@ -39,8 +42,23 @@
         android:layout_height="wrap_content"
         android:textSize="@dimen/list_item_parent_textSize"
         tools:text="Name"/>
-
-
+    <TextView
+        android:id="@+id/descriptionTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxLines="5"
+        android:ellipsize="start"
+        tools:text="Description" />
 </LinearLayout>
-</LinearLayout>
+    <CheckBox
+        android:id="@+id/checkBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:layout_margin="@dimen/abc_dialog_list_padding_vertical_material"
+        android:layout_alignBottom="@id/itemContainer"
+        android:layout_alignTop="@id/itemContainer"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true" />
+</RelativeLayout>
 </android.support.v7.widget.CardView>

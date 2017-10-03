@@ -4,7 +4,7 @@ import com.arellomobile.mvp.MvpView;
 import com.arellomobile.mvp.viewstate.strategy.AddToEndSingleStrategy;
 import com.arellomobile.mvp.viewstate.strategy.SkipStrategy;
 import com.arellomobile.mvp.viewstate.strategy.StateStrategyType;
-import com.gnoemes.bubblenotes.data.model.Note;
+import com.gnoemes.bubblenotes.data.note.model.Note;
 
 import java.util.List;
 

@@ -15,7 +15,8 @@ import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.gnoemes.bubblenotes.App;
 import com.gnoemes.bubblenotes.R;
-import com.gnoemes.bubblenotes.data.model.Note;
+import com.gnoemes.bubblenotes.data.note.model.Note;
+import com.gnoemes.bubblenotes.utils.DateUtil;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -35,9 +36,11 @@ public class NoteDetailActivity extends MvpAppCompatActivity implements NoteDeta
     @BindView(R.id.progressBar) ProgressBar progressBar;
     @BindView(R.id.nameEditText) EditText nameEditText;
     @BindView(R.id.priorityEditText) EditText priorityEditText;
-    @BindView(R.id.idTextView) TextView idTextView;
     @BindView(R.id.fab) FloatingActionButton fab;
     @BindView(R.id.fabDelete) FloatingActionButton fabDelete;
+    @BindView(R.id.actionType) TextView actionTypeTextView;
+    @BindView(R.id.dateTextView) TextView dateTextView;
+    @BindView(R.id.descriptionEditText) EditText descriptionEditText;
 
     @InjectPresenter
     NoteDetailPresenter presenter;
@@ -78,13 +81,13 @@ public class NoteDetailActivity extends MvpAppCompatActivity implements NoteDeta
     }
 
     private void updateNote() {
-        presenter.updateNote(Integer.parseInt(idTextView.getText().toString()),
-                nameEditText.getText().toString(),
-                Integer.parseInt(priorityEditText.getText().toString()));
+        presenter.updateNote(note_id,nameEditText.getText().toString(),descriptionEditText.getText().toString(),
+                Integer.parseInt(priorityEditText.getText().toString()),DateUtil.getCurrentDate());
     }
 
     private void addNote() {
-        presenter.addNote(nameEditText.getText().toString(), Integer.parseInt(priorityEditText.getText().toString()));
+        String date = DateUtil.getCurrentDate();
+        presenter.addNote(nameEditText.getText().toString(),descriptionEditText.getText().toString(), Integer.parseInt(priorityEditText.getText().toString()),date);
     }
 
 
@@ -97,10 +100,17 @@ public class NoteDetailActivity extends MvpAppCompatActivity implements NoteDeta
         if (toolbar != null) {
             setSupportActionBar(toolbar);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            if (isInEditMode)
-                getSupportActionBar().setTitle("Edit Note: " + note_id);
-            else
-                getSupportActionBar().setTitle("New Note");
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+            if (isInEditMode) {
+                nameEditText.setFocusable(false);
+                actionTypeTextView.setText(R.string.msg_action_edit);
+//                getSupportActionBar().setTitle("Edit Note: " + note_id);
+            }
+            else {
+                actionTypeTextView.setText(R.string.msg_action_create);
+                nameEditText.setFocusable(true);
+//                getSupportActionBar().setTitle("New Note");
+            }
         }
     }
 
@@ -130,9 +140,10 @@ public class NoteDetailActivity extends MvpAppCompatActivity implements NoteDeta
 
     @Override
     public void setNote(Note note) {
-        idTextView.setText(String.valueOf(note.getId()));
         nameEditText.setText(note.getName());
-        priorityEditText.setText(note.getPriority() + "");
+        priorityEditText.setText(String.valueOf(note.getPriority()));
+        descriptionEditText.setText(note.getDescription());
+        dateTextView.setText(note.getDate());
     }
 
     @Override

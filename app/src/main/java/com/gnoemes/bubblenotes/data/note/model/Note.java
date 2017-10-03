@@ -1,9 +1,9 @@
-package com.gnoemes.bubblenotes.data.model;
+package com.gnoemes.bubblenotes.data.note.model;
 
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
 
-import com.gnoemes.bubblenotes.data.source.local.Config;
+import com.gnoemes.bubblenotes.data.note.model.room.Config;
 
 
 /**
@@ -15,6 +15,7 @@ public class Note {
 
     public static final String ID = "id";
     public static final String SORT_PRIORITY = "priority";
+    public static final String SORT_COMPLETE = "complete";
 
     @PrimaryKey(autoGenerate = true)
     private long id;
@@ -22,6 +23,12 @@ public class Note {
     private String name;
 
     private int priority;
+
+    private String description;
+
+    private String date;
+
+    private boolean complete;
 
     public long getId() {
         return id;
@@ -45,5 +52,29 @@ public class Note {
 
     public void setPriority(int priority) {
         this.priority = priority;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public boolean isComplete() {
+        return complete;
+    }
+
+    public void setComplete(boolean complete) {
+        this.complete = complete;
     }
 }

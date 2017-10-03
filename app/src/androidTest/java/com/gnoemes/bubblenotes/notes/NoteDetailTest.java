@@ -1,9 +1,5 @@
-package com.gnoemes.bubblenotes;
+package com.gnoemes.bubblenotes.notes;
 
-import android.support.test.InstrumentationRegistry;
-import android.util.Log;
-
-import com.gnoemes.bubblenotes.data.model.Note;
 import com.gnoemes.bubblenotes.ui.note_detail.NoteDetailPresenter;
 import com.gnoemes.bubblenotes.ui.note_detail.NoteDetailView$$State;
 
@@ -12,12 +8,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
-import io.realm.Realm;
-import io.realm.RealmConfiguration;
-
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 
 
@@ -31,7 +21,7 @@ public class NoteDetailTest {
         MockitoAnnotations.initMocks(this);
 
 
-        presenter = new NoteDetailPresenter(null,"1");
+//        presenter = new NoteDetailPresenter(null,"1");
         presenter.setViewState(stateView);
     }
     @After

@@ -3,4 +3,6 @@
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="msg.action.edit">Edit</string>
+    <string name="msg_action_create">Create</string>
 </resources>

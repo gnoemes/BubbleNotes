@@ -1,8 +1,7 @@
-package com.gnoemes.bubblenotes.data.source.local;
+package com.gnoemes.bubblenotes.data.note.local;
 
-import com.gnoemes.bubblenotes.data.model.Note;
-import com.gnoemes.bubblenotes.data.model.NoteDao;
-import com.gnoemes.bubblenotes.data.source.NoteDataSource;
+import com.gnoemes.bubblenotes.data.note.model.Note;
+import com.gnoemes.bubblenotes.data.note.model.NoteDao;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.gnoemes.bubblenotes.data.source.local;
+package com.gnoemes.bubblenotes.data.note.model.room;
 
 public final class Config {
     public static final String DATABASE_NAME = "Note.db";

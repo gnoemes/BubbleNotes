@@ -3,9 +3,9 @@ package com.gnoemes.bubblenotes.di.modules;
 import android.arch.persistence.room.Room;
 import android.content.Context;
 
-import com.gnoemes.bubblenotes.data.model.NoteDao;
-import com.gnoemes.bubblenotes.data.source.local.Config;
-import com.gnoemes.bubblenotes.data.source.local.NoteDb;
+import com.gnoemes.bubblenotes.data.note.model.NoteDao;
+import com.gnoemes.bubblenotes.data.note.model.room.Config;
+import com.gnoemes.bubblenotes.data.note.model.room.NoteDb;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
