@@ -8,6 +8,8 @@ import com.gnoemes.bubblenotes.repo.model.Note_;
 
 import java.util.List;
 
+
+import io.reactivex.Observable;
 import io.reactivex.Scheduler;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
@@ -27,7 +29,7 @@ public class NotesListPresenter extends MvpPresenter<NotesListView> {
     private Disposable disposableDescriptions;
     private Disposable disposableComments;
     private Disposable listenerManager;
-    private boolean listenForeignUpdates = true;
+    private volatile boolean listenForeignUpdates = false;
 
     public NotesListPresenter(Scheduler main, Scheduler io, LocalRepository localRepositoryBox) {
         this.main = main;
@@ -39,43 +41,122 @@ public class NotesListPresenter extends MvpPresenter<NotesListView> {
     protected void onFirstViewAttach() {
         super.onFirstViewAttach();
 
-        loadNotes();
+        //loadNotes();
+        loadNotesAndListenForChanges();
         listenForeignEntitiesUpdateStatus();
-        listenCommentsChanges();
-        listenDescriptionChanges();
+        //listenCommentsChanges();
+        //listenDescriptionChanges();
 
+    }
+    public Observable<List<Note>> listenChangesComments() {
+        return localRepositoryBox.getAllComments()
+                .flatMap(comments -> {
+                    if (listenForeignUpdates) {
+                        Timber.d("listenChangesComments NOTIFY");
+                        //return localRepositoryBox.getAllNotesOrderBy(Note_.unixTime);
+                        return Observable.fromCallable(() ->
+                                localRepositoryBox.getAllNotesOrderByData(Note_.unixTime));
+                    }
+                    else {
+                        Timber.d("listenChangesComments CUT");
+                        return Observable.never();
+                    }
+                });
+    }
+
+    public Observable<List<Note>> listenChangesDescription() {
+        return localRepositoryBox.getAllDescription()
+                .flatMap(descriptions -> {
+                    if (listenForeignUpdates) {
+                        Timber.d("listenChangesDescription NOTIFY");
+                        //return localRepositoryBox.getAllNotesOrderBy(Note_.unixTime);
+                        return Observable.fromCallable(() ->
+                                localRepositoryBox.getAllNotesOrderByData(Note_.unixTime));
+                    }
+                    else {
+                        Timber.d("listenChangesDescription CUT");
+                        return Observable.never();
+                    }
+
+                });
+    }
+
+    private Observable<List<Note>> listenChangesNotes() {
+        return localRepositoryBox.getAllNotesOrderBy(Note_.unixTime);
+    }
+
+    private void loadNotesAndListenForChanges() {
+        disposable = Observable.merge(listenChangesComments(), listenChangesDescription(), listenChangesNotes())
+                //.debounce(5, TimeUnit.MILLISECONDS)
+                .observeOn(main)
+                .subscribe(notes -> {
+                    if (notes != null) {
+                        Timber.d("loadNotes onNext");
+                        getViewState().setNotesList(notes);
+                        listenForeignUpdates = true;
+                    } else {
+                    }
+                }, throwable -> { throwable.printStackTrace();}, () -> {Timber.d("onComplete");});
     }
 
     public void listenForeignEntitiesUpdateStatus() {
         listenerManager = localRepositoryBox.subscribeToChangeListenerManager()
                 .observeOn(main)
                 .subscribe(aBoolean -> {
-                    Timber.d("listenForeignEntitiesUpdateStatus " + aBoolean);
                     listenForeignUpdates = aBoolean;
-                }, throwable -> {
-                    Timber.d("listenForeignEntitiesUpdateStatus onError " + throwable);
-                }, () -> {
-                    Timber.d("listenForeignEntitiesUpdateStatus onComplete");
-                });
+                }, throwable -> {Timber.d("listenForeignEntitiesUpdateStatus onError " + throwable);
+                }, () -> {Timber.d("listenForeignEntitiesUpdateStatus onComplete");});
     }
 
+    //TODO OLD
+    //------------------------------------------------------------------------
     private void listenCommentsChanges() {
+
         disposableComments = localRepositoryBox.getAllComments()
+                .flatMap(comments -> {
+                    if (listenForeignUpdates) {
+                        Timber.d("listenChangesDescription GO");
+                        return localRepositoryBox.getAllNotesOrderBy(Note_.unixTime);
+                    } else {
+                        Timber.d("listenChangesDescription CUT");
+                        return Observable.never();
+                    }
+                })
                 .observeOn(main)
                 .subscribe(descriptions -> {
-                    if (listenForeignUpdates)
-                        Timber.d("listenCommentsChanges onComplete");
-                    //getViewState().notifyDescriptionChanged(descriptions);
+                    Timber.d("listenCommentsChanges onNext");
+                    if (listenForeignUpdates) {
+                        Timber.d("listenCommentsChanges onNext notifyViewState");
+                        //getViewState().notifyDescriptionChanged(descriptions);
+                    }
                 });
     }
 
     private void listenDescriptionChanges() {
         disposableDescriptions = localRepositoryBox.getAllDescription()
+                .flatMap(descriptions -> {
+                    Timber.d("listenChangesDescription Fire");
+                    return Observable.just(descriptions);
+                })
+                .flatMap(comments -> {
+                    if (listenForeignUpdates) {
+                        Timber.d("listenChangesDescription GO");
+                        return Observable.fromCallable(() -> {
+                            return localRepositoryBox.getAllNotesOrderByData(Note_.unixTime);
+                        });
+                        //return localRepositoryBox.getAllNotesOrderBy(Note_.unixTime);
+                    } else {
+                        Timber.d("listenChangesDescription CUT");
+                        return Observable.never();
+                    }
+                })
                 .observeOn(main)
                 .subscribe(descriptions -> {
-                    if (listenForeignUpdates)
-                        Timber.d("listenDescriptionChanges onComplete");
-                    //getViewState().notifyDescriptionChanged(descriptions);
+                    Timber.d("listenChangesDescription onNext");
+                    if (listenForeignUpdates) {
+                        Timber.d("listenChangesDescription onNext notifyViewState");
+                        //getViewState().notifyDescriptionChanged(descriptions);
+                    }
                 });
     }
 
@@ -96,6 +177,7 @@ public class NotesListPresenter extends MvpPresenter<NotesListView> {
                 });
     }
 
+    //----------------------------------------------------------------------------------
     public void onStop() {
 
     }

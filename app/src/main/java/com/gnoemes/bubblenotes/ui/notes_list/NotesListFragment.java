@@ -165,7 +165,7 @@ public class NotesListFragment extends MvpAppCompatFragment implements NotesList
 
             case R.id.menu_update_description:
                 Timber.d("Button changeDescription");
-                Description description = descriptions.get(0);
+                Description description = descriptions.get(1);
                 description.setPriority(1);
                 description.setName("Name from frag");
                 descriptionBox.put(description);

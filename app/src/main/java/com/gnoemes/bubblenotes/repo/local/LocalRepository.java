@@ -15,6 +15,8 @@ import io.reactivex.Observable;
 
 public interface LocalRepository {
 
+    List<Note> getAllNotesOrderByData(Property property);
+
     Observable<Boolean> subscribeToChangeListenerManager();
 
     Observable<List<Comment>> getAllComments();
@@ -22,6 +24,8 @@ public interface LocalRepository {
     Observable<List<Comment>> addComments(List<Comment> comments);
 
     Observable<Description> addDescription(Description description);
+
+    Observable<List<Comment>> getCommentsById(long note_id);
 
     Observable<List<Description>> getAllDescription();
 

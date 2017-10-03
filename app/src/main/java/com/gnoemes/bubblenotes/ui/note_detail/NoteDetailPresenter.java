@@ -35,6 +35,9 @@ public class NoteDetailPresenter extends MvpPresenter<NoteDetailView> {
             getNote(id);
     }
 
+    public void deleteComment(long id) {
+
+    }
     public void getNote(long id) {
         Timber.d("getNote");
         localRepositoryBox.getNote(id)

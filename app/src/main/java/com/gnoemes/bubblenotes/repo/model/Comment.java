@@ -15,6 +15,15 @@ public class Comment {
 
     String body;
     long unixTime;
+    ToOne<Note> noteToOne;
+
+    public ToOne<Note> getNoteToOne() {
+        return noteToOne;
+    }
+
+    public void setNoteToOne(ToOne<Note> noteToOne) {
+        this.noteToOne = noteToOne;
+    }
 
     public long getId() {
         return id;

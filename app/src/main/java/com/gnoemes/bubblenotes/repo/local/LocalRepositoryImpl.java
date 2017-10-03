@@ -35,9 +35,11 @@ public class LocalRepositoryImpl implements LocalRepository {
 
     public LocalRepositoryImpl(BoxStore boxStore) {
         this.boxStore = boxStore;
+
         noteBox = boxStore.boxFor(Note.class);
         commentBox = boxStore.boxFor(Comment.class);
         descriptionBox = boxStore.boxFor(Description.class);
+
         subjectUpdateListener = PublishSubject.create();
         subjectComments = PublishSubject.create();
         subjectDescription = PublishSubject.create();
@@ -52,7 +54,17 @@ public class LocalRepositoryImpl implements LocalRepository {
         descriptionBox.removeAll();
     }
 
-    //Change listeners
+
+    @Override
+    public List<Note> getAllNotesOrderByData(Property property) {
+        Timber.d("getAllNotesOrderBy");
+        Query<Note> query = noteBox.query()
+                .orderDesc(property)
+                .eager(Note_.description, Note_.comments)
+                .build();
+        return query.find();
+    }
+
     //--------------------------------------------------------------------------------
     @Override
     public Observable<Boolean> subscribeToChangeListenerManager() {
@@ -70,29 +82,7 @@ public class LocalRepositoryImpl implements LocalRepository {
         Query<Description> descriptionQuery = descriptionBox.query().build();
         return RxQuery.observable(descriptionQuery);
     }
-
-
-    @Override
-    public Observable<List<Comment>> addComments(List<Comment> comments) {
-        return Observable.fromCallable(() -> {
-            commentBox.put(comments);
-            List<Comment> newList= commentBox.getAll();
-            subjectComments.onNext(newList);
-            return newList;
-        });
-    }
-    @Override
-    public Observable<Description> addDescription(Description description) {
-        return Observable.fromCallable(() -> {
-            long id = descriptionBox.put(description);
-            Description d = descriptionBox.get(id);
-            subjectDescription.onNext(d);
-            return d;
-        });
-    }
-
-   //---------------------------------------------------------------------------------
-
+    
     //TODO Возращает из io
     @Override
     public Observable<List<Note>> getAllNotesOrderBy(Property property) {
@@ -118,7 +108,7 @@ public class LocalRepositoryImpl implements LocalRepository {
     @Override
     public Observable<Long> addNote(Note note) {
         Timber.d("addNote");
-        //subjectUpdateListener.onNext(false);
+        subjectUpdateListener.onNext(false);
         return Observable.fromCallable(() -> {
             //CommonUtils.longOperation();
             return noteBox.put(note);
@@ -129,15 +119,17 @@ public class LocalRepositoryImpl implements LocalRepository {
     @Override
     public Observable<Boolean> deleteNote(long id) {
         Timber.d("deleteNote");
-        //subjectUpdateListener.onNext(false);
+        subjectUpdateListener.onNext(false);
         return Observable.fromCallable(() -> {
             //CommonUtils.longOperation();
-            Note note = noteBox.get(id);
+            boxStore.runInTx(() -> {
+                Note note = noteBox.get(id);
 
-            descriptionBox.remove(note.getDescription().getTargetId());
-            commentBox.remove(note.getComments());
+                descriptionBox.remove(note.getDescription().getTargetId());
+                commentBox.remove(note.getComments());
 
-            noteBox.remove(id);
+                noteBox.remove(id);
+            });
             return true;
         });
     }
@@ -146,46 +138,65 @@ public class LocalRepositoryImpl implements LocalRepository {
     //TODO Баг: Создать запись - Добавить,Удалить коммент - Записать
 
     //Запишет каскадно зависимые сущности только при изменениях типа: добавление/удаление
-    //Записывает зависимые сущности при добавлении/удалениеи, но не записывает их при их изменении?
+    //Записывает зависимые сущности при добавлении/удалении, но не записывает их при их изменении?
+    //Чтобы записать изменения нужно явно вызывать put()
     //Будут вызваны обезреверы всех зависимых сущностей
     @Override
     public Observable<Long> UpdateNote(Note note) {
         Timber.d("UpdateNote");
+        subjectUpdateListener.onNext(false);
         return Observable.fromCallable(() -> {
             //CommonUtils.longOperation();
 
-            //remove all old comments from db
-            //List<Comment> oldComments = noteBox.get(note.getId()).getComments();
-            //commentBox.remove(oldComments);
+            boxStore.runInTx(() -> {
+                //update desc
+                descriptionBox.put(note.getDescription().getTarget());
 
-            //save new comments in db
-            //commentBox.put(note.getComments());
+                //Add new comments
+                noteBox.put(note);
 
-            //update desc
-            descriptionBox.put(note.getDescription().getTarget());
+                //TODO Уродское удаление unmanaged relation
+                List<Comment> list = commentBox.getAll();
+                for (Comment c: list) {
+                    if (c.getNoteToOne().getTarget() == null) {
+                        commentBox.remove(c);
+                    }
+                }
+            });
 
-            return noteBox.put(note);
+            return note.getId();
         });
 
     }
 
-    //----------------------------------
-    public void addNoteNew() {
-
-        getAllComments();
-        getAllDescription();
-
+    //TODO Not used
+    //------------------------------------------------------------------------------
+    @Override
+    public Observable<List<Comment>> getCommentsById(long note_id) {
+        Query<Comment> commentQuery = commentBox.query().equal(Comment_.noteToOneId, note_id).build();
+        return RxQuery.observable(commentQuery);
     }
-    //TODO Возращает из io
 
-    public Observable<List<Note>> getAllNotesOrderBy2(Property property) {
-        Timber.d("getAllNotesOrderBy");
-        Query<Note> query = noteBox.query()
-                .orderDesc(property)
-                .eager(Note_.description, Note_.comments)
-                .build();
-        return RxQuery.observable(query);
+    @Override
+    public Observable<List<Comment>> addComments(List<Comment> comments) {
+        return Observable.fromCallable(() -> {
+            commentBox.put(comments);
+            List<Comment> newList= commentBox.getAll();
+            subjectComments.onNext(newList);
+            return newList;
+        });
     }
+    @Override
+    public Observable<Description> addDescription(Description description) {
+        return Observable.fromCallable(() -> {
+            long id = descriptionBox.put(description);
+            Description d = descriptionBox.get(id);
+            subjectDescription.onNext(d);
+            return d;
+        });
+    }
+
+    //---------------------------------------------------------------------------------
 
 }
 

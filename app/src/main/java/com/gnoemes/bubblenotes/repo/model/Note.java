@@ -17,8 +17,9 @@ public class Note {
     private long unixTime;
     boolean complete;
 
-
+    @Backlink
     ToOne<Description> description;
+    @Backlink
     ToMany<Comment> comments;
 
 
