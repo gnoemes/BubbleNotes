@@ -82,7 +82,7 @@ public class LocalRepositoryImpl implements LocalRepository {
         Query<Description> descriptionQuery = descriptionBox.query().build();
         return RxQuery.observable(descriptionQuery);
     }
-    
+
     //TODO Возращает из io
     @Override
     public Observable<List<Note>> getAllNotesOrderBy(Property property) {
