@@ -2,6 +2,7 @@ package com.gnoemes.bubblenotes.ui.notes_list;
 
 import com.arellomobile.mvp.MvpView;
 import com.arellomobile.mvp.viewstate.strategy.AddToEndSingleStrategy;
+import com.arellomobile.mvp.viewstate.strategy.SkipStrategy;
 import com.arellomobile.mvp.viewstate.strategy.StateStrategyType;
 import com.gnoemes.bubblenotes.data.model.Note;
 
@@ -16,5 +17,6 @@ public interface NotesListView extends MvpView {
     @StateStrategyType(AddToEndSingleStrategy.class)
     void setNotesList(List<Note> notes);
 
+    @StateStrategyType(SkipStrategy.class)
     void showToast(String s);
 }
