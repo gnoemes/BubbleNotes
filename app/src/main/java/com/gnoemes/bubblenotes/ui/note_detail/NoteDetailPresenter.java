@@ -5,6 +5,7 @@ import com.arellomobile.mvp.MvpPresenter;
 import com.gnoemes.bubblenotes.repo.local.LocalRepository;
 import com.gnoemes.bubblenotes.repo.local.LocalRepositoryImpl;
 import com.gnoemes.bubblenotes.repo.model.Note;
+import com.gnoemes.bubblenotes.util.EspressoIdlingResource;
 
 import io.reactivex.Scheduler;
 import timber.log.Timber;
@@ -52,15 +53,20 @@ public class NoteDetailPresenter extends MvpPresenter<NoteDetailView> {
     }
 
     public void addNote(Note note) {
+        EspressoIdlingResource.increment();
+
         localRepositoryBox.addNote(note)
                 .subscribeOn(io)
                 .observeOn(main)
                 .subscribe(id -> {
                     Timber.d("addNote onNext");
+                    EspressoIdlingResource.decrement();
+
                     getViewState().showToast("Note added " + id);
                     getViewState().backPressed();
                 }, throwable -> {
                     Timber.d("addNote onError " + throwable);
+                    EspressoIdlingResource.decrement();
                 }, () -> {});
     }
 

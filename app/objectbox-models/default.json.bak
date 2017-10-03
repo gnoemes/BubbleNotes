@@ -1,0 +1,98 @@
+{
+  "_note1": "KEEP THIS FILE! Check it into a version control system (VCS) like git.",
+  "_note2": "ObjectBox manages crucial IDs for your object model. See docs for details.",
+  "_note3": "If you have VCS merge conflicts, you must resolve them according to ObjectBox docs.",
+  "entities": [
+    {
+      "id": "1:1636595234304801455",
+      "lastPropertyId": "4:7434914226185362221",
+      "name": "Comment",
+      "properties": [
+        {
+          "id": "1:4361640145653178230",
+          "name": "id"
+        },
+        {
+          "id": "2:4811107467306956780",
+          "name": "body"
+        },
+        {
+          "id": "3:4562411307031653482",
+          "name": "unixTime"
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "2:7481972756436226496",
+      "lastPropertyId": "4:4407493939903234259",
+      "name": "Description",
+      "properties": [
+        {
+          "id": "1:2527596073110109141",
+          "name": "id"
+        },
+        {
+          "id": "2:6334045330994934499",
+          "name": "name"
+        },
+        {
+          "id": "3:8185318808372329131",
+          "name": "priority"
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "3:6621844249777401903",
+      "lastPropertyId": "5:4194997182116505463",
+      "name": "Note",
+      "properties": [
+        {
+          "id": "1:6993734772837565521",
+          "name": "id"
+        },
+        {
+          "id": "2:6774361425630122413",
+          "name": "name"
+        },
+        {
+          "id": "3:7977415584952009426",
+          "name": "unixTime"
+        },
+        {
+          "id": "4:396807975026306461",
+          "name": "complete"
+        },
+        {
+          "id": "5:4194997182116505463",
+          "indexId": "1:5899562191034127585",
+          "name": "descriptionId"
+        }
+      ],
+      "relations": [
+        {
+          "id": "1:8130078345505973009",
+          "name": "comments"
+        }
+      ]
+    }
+  ],
+  "lastEntityId": "3:6621844249777401903",
+  "lastIndexId": "3:5125492641370436648",
+  "lastRelationId": "1:8130078345505973009",
+  "lastSequenceId": "0:0",
+  "modelVersion": 4,
+  "modelVersionParserMinimum": 4,
+  "retiredEntityUids": [],
+  "retiredIndexUids": [
+    5125492641370436648,
+    5891143246587393636
+  ],
+  "retiredPropertyUids": [
+    4407493939903234259,
+    7434914226185362221
+  ],
+  "retiredRelationUids": [],
+  "version": 1
+}

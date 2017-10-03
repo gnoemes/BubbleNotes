@@ -5,6 +5,7 @@ import com.gnoemes.bubblenotes.repo.model.Comment_;
 import com.gnoemes.bubblenotes.repo.model.Description;
 import com.gnoemes.bubblenotes.repo.model.Note;
 import com.gnoemes.bubblenotes.repo.model.Note_;
+import com.gnoemes.bubblenotes.util.CommonUtils;
 
 import java.util.List;
 
@@ -87,6 +88,7 @@ public class LocalRepositoryImpl implements LocalRepository {
     @Override
     public Observable<List<Note>> getAllNotesOrderBy(Property property) {
         Timber.d("getAllNotesOrderBy");
+        CommonUtils.longOperation();
         Query<Note> query = noteBox.query()
                 .orderDesc(property)
                 .eager(Note_.description, Note_.comments)
@@ -110,7 +112,7 @@ public class LocalRepositoryImpl implements LocalRepository {
         Timber.d("addNote");
         subjectUpdateListener.onNext(false);
         return Observable.fromCallable(() -> {
-            //CommonUtils.longOperation();
+            CommonUtils.longOperation();
             return noteBox.put(note);
         });
     }

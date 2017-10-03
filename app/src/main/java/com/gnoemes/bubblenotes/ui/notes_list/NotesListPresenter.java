@@ -5,6 +5,7 @@ import com.arellomobile.mvp.MvpPresenter;
 import com.gnoemes.bubblenotes.repo.local.LocalRepository;
 import com.gnoemes.bubblenotes.repo.model.Note;
 import com.gnoemes.bubblenotes.repo.model.Note_;
+import com.gnoemes.bubblenotes.util.EspressoIdlingResource;
 
 import java.util.List;
 
@@ -86,17 +87,26 @@ public class NotesListPresenter extends MvpPresenter<NotesListView> {
     }
 
     private void loadNotesAndListenForChanges() {
+        EspressoIdlingResource.increment();
         disposable = Observable.merge(listenChangesComments(), listenChangesDescription(), listenChangesNotes())
                 //.debounce(5, TimeUnit.MILLISECONDS)
                 .observeOn(main)
                 .subscribe(notes -> {
                     if (notes != null) {
                         Timber.d("loadNotes onNext");
+
+                        if(!EspressoIdlingResource.getIdlingResource().isIdleNow())
+                            EspressoIdlingResource.decrement();
+
                         getViewState().setNotesList(notes);
                         listenForeignUpdates = true;
                     } else {
                     }
-                }, throwable -> { throwable.printStackTrace();}, () -> {Timber.d("onComplete");});
+                }, throwable -> {
+                    throwable.printStackTrace();
+                    if(!EspressoIdlingResource.getIdlingResource().isIdleNow())
+                        EspressoIdlingResource.decrement();
+                }, () -> {Timber.d("onComplete");});
     }
 
     public void listenForeignEntitiesUpdateStatus() {
@@ -186,8 +196,8 @@ public class NotesListPresenter extends MvpPresenter<NotesListView> {
     public void onDestroy() {
         super.onDestroy();
         disposable.dispose();
-        disposableComments.dispose();
-        disposableDescriptions.dispose();
+//        disposableComments.dispose();
+       // disposableDescriptions.dispose();
         listenerManager.dispose();
     }
 }
