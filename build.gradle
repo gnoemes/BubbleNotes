@@ -1,40 +1,23 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
-buildscript {
-    repositories {
-        jcenter()
-        maven { url "http://objectbox.net/beta-repo/" }
-        maven { url 'https://dl.bintray.com/pracaizlecenia/maven' }
-        maven {
-            url 'http://oss.jfrog.org/artifactory/oss-snapshot-local'
+allprojects {
+    buildscript {
+        repositories {
+            maven { url "http://objectbox.net/beta-repo/" }
+            jcenter()
+            mavenCentral()
         }
     }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.3'
-        classpath 'me.tatarka:gradle-retrolambda:3.6.1'
-        classpath "io.objectbox:objectbox-gradle-plugin:1.0.1"
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
-    }
-}
 
-allprojects {
     repositories {
-        jcenter()
         maven { url "http://objectbox.net/beta-repo/" }
-        maven { url 'https://dl.bintray.com/pracaizlecenia/maven' }//objectbox browser
+        jcenter()
+        mavenCentral()
         maven {
             url 'https://maven.google.com'
         }
-        maven {
-            url 'https://github.com/uPhyca/stetho-realm/raw/master/maven-repo'
-        }
-        maven {
-            url 'http://oss.jfrog.org/artifactory/oss-snapshot-local'
-        }
     }
 }
-
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
