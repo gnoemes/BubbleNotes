@@ -1,7 +1,7 @@
 buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:2.3.3'
-        classpath "io.objectbox:objectbox-gradle-plugin:1.1.0"
+        classpath "io.objectbox:objectbox-gradle-plugin:$objectboxVersion"
         classpath 'me.tatarka:gradle-retrolambda:3.6.1'
     }
 }
@@ -10,12 +10,12 @@ apply plugin: 'com.android.application'
 apply plugin: 'me.tatarka.retrolambda'
 
 dependencies {
-    debugCompile "io.objectbox:objectbox-android-objectbrowser:1.1.0"
-    releaseCompile "io.objectbox:objectbox-android:1.1.0"
+    debugCompile "io.objectbox:objectbox-android-objectbrowser:$objectboxVersion"
+    releaseCompile "io.objectbox:objectbox-android:$objectboxVersion"
 }
 apply plugin: 'io.objectbox'
 
-//uploadArchives.enabled = false
+uploadArchives.enabled = false
 
 android {
     compileSdkVersion 26

@@ -33,23 +33,20 @@ public class App extends Application {
     private Box<Note> noteBox;
     private Box<Comment> commentBox;
     private Box<Description> descriptionBox;
-    AndroidObjectBrowser browser;
-
 
     @Override
     public void onCreate() {
         super.onCreate();
+        boxStore = MyObjectBox.builder().androidContext(App.this).build();
+        if (BuildConfig.DEBUG) {
+            new AndroidObjectBrowser(boxStore).start(this);
+        }
 
         context = getApplicationContext();
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());
         }
-        boxStore = MyObjectBox.builder().androidContext(App.this).build();
 
-        if (BuildConfig.DEBUG) {
-            browser = new AndroidObjectBrowser(boxStore);
-            browser.start(App.this);
-        }
         //ObjectBoxBrowser.setBoxStore(boxStore);
 //        ObjectBoxBrowser.showDebugDBAddressLogToast(App.this);
 
