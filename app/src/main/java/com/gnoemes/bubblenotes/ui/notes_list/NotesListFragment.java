@@ -60,30 +60,25 @@ public class NotesListFragment extends MvpAppCompatFragment implements NotesList
     Toolbar toolbar;
 
     @InjectPresenter
-    NotesListPresenter presenter;
+    private NotesListPresenter presenter;
 
-    //@Inject
-    BoxStore boxStore;
+    private BoxStore boxStore;
 
-    List<Note> notes;
+    private List<Note> notes;
 
     @ProvidePresenter
     NotesListPresenter providePresenter() {
-//        App.getAppComponent().inject(this);
         boxStore = ((App) (getActivity().getApplication())).getBoxStore();
         return new NotesListPresenter(AndroidSchedulers.mainThread(),
                 Schedulers.io(), RepoDi.getLocalRepo(boxStore));
     }
 
     NotesListAdapter adapterRecycler;
-    NotesListAdapter.ItemClickListener adapterClickListener = new NotesListAdapter.ItemClickListener() {
-        @Override
-        public void onClick(Long id) {
-            Timber.d("onClick" + id);
-            Intent intent = new Intent(getActivity(), NoteDetailActivity.class);
-            intent.putExtra(NoteDetailActivity.EXTRA_NOTE_ID, id);
-            startActivity(intent);
-        }
+    NotesListAdapter.ItemClickListener adapterClickListener = id -> {
+        Timber.d("onClick" + id);
+        Intent intent = new Intent(getActivity(), NoteDetailActivity.class);
+        intent.putExtra(NoteDetailActivity.EXTRA_NOTE_ID, id);
+        startActivity(intent);
     };
 
     @Override
@@ -107,7 +102,6 @@ public class NotesListFragment extends MvpAppCompatFragment implements NotesList
         drawer_layout = (DrawerLayout) getActivity().findViewById(R.id.drawer_layout);
 
         listRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        //listRecyclerView.setNestedScrollingEnabled(false);
 
         adapterRecycler = new NotesListAdapter(new ArrayList<>(0), adapterClickListener);
 
@@ -216,23 +210,9 @@ public class NotesListFragment extends MvpAppCompatFragment implements NotesList
     public void setNotesList(List<Note> notes) {
         Timber.d("setNotesList");
         this.notes = notes;
-
-        //TODO Method priority matters?
-        //TODO Доделать DiffUtil. Выгрузить в фоновый поток.
         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new NotesDiff(notes, adapterRecycler.getData()));
         adapterRecycler.updateData(notes);
         diffResult.dispatchUpdatesTo(adapterRecycler);
-
-    }
-
-    @Override
-    public void notifyDescriptionChanged(List<Description> descriptions) {
-        Timber.d("notifyDescriptionChanged");
-
-    }
-
-    public void notifyCommentsChanged(List<Comment> comments) {
-        Timber.d("notifyCommentsChanged");
 
     }
 

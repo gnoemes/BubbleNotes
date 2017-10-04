@@ -168,13 +168,11 @@ public class NoteDetailActivity extends MvpAppCompatActivity implements NoteDeta
         description.setName(descriptionEditText.getText().toString());
         description.setPriority(prioritySpinner.getSelectedItemPosition());
 
-        //adapter get data
         presenter.updateNote(note);
     }
 
     private void addNote() {
         Note note = new Note();
-        //Todo Обязательное
         note.setName(nameEditText.getText().toString());
         note.setComplete(completeCheckBox.isChecked());
 
@@ -185,7 +183,6 @@ public class NoteDetailActivity extends MvpAppCompatActivity implements NoteDeta
         description.setName(descriptionEditText.getText().toString());
 
         //comments fill
-        //TODO STACK!
         List<Comment> comments = new ArrayList<>();
         note.getComments().addAll(comments);
 
@@ -207,13 +204,10 @@ public class NoteDetailActivity extends MvpAppCompatActivity implements NoteDeta
         }
     }
 
-
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         if (isInEditMode) {
             getMenuInflater().inflate(R.menu.notedetail_activity_menu, menu);
-            //return true;
         }
         return true;
     }
@@ -266,9 +260,6 @@ public class NoteDetailActivity extends MvpAppCompatActivity implements NoteDeta
         prioritySpinner.setSelection(note.getDescription().getTarget().getPriority());
 
         commentsListAdapter.updateData(note.getComments());
-        //adapter
-        //note.getComments().get(1).getBody();
-
     }
 
     @Override

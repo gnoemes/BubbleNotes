@@ -47,7 +47,7 @@ public class NotesListAdapter extends RecyclerView.Adapter<NotesListAdapter.Note
     @Override
     public NoteHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.list_item_note_new, parent, false);
+                .inflate(R.layout.list_item_note, parent, false);
         return new NotesListAdapter.NoteHolder(view);
     }
 
@@ -78,10 +78,7 @@ public class NotesListAdapter extends RecyclerView.Adapter<NotesListAdapter.Note
     }
 
     public void updateData(@Nullable List<Note> data) {
-//        adapterData.clear();
-//        adapterData.addAll(data);
         adapterData = data;
-        //notifyDataSetChanged();
     }
 
     //TODO make Holder class static

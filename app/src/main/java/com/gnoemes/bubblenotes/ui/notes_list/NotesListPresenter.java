@@ -25,12 +25,16 @@ public class NotesListPresenter extends MvpPresenter<NotesListView> {
 
     private Scheduler main;
     private Scheduler io;
+
     private LocalRepository localRepositoryBox;
-    private Disposable disposable;
+
+    private Disposable disposableNotes;
+    private Disposable listenerManager;
+
+    private volatile boolean listenForeignUpdates = false;
+
     private Disposable disposableDescriptions;
     private Disposable disposableComments;
-    private Disposable listenerManager;
-    private volatile boolean listenForeignUpdates = false;
 
     public NotesListPresenter(Scheduler main, Scheduler io, LocalRepository localRepositoryBox) {
         this.main = main;
@@ -42,9 +46,10 @@ public class NotesListPresenter extends MvpPresenter<NotesListView> {
     protected void onFirstViewAttach() {
         super.onFirstViewAttach();
 
-        //loadNotes();
         loadNotesAndListenForChanges();
         listenForeignEntitiesUpdateStatus();
+
+        //loadNotes();
         //listenCommentsChanges();
         //listenDescriptionChanges();
 
@@ -54,9 +59,8 @@ public class NotesListPresenter extends MvpPresenter<NotesListView> {
                 .flatMap(comments -> {
                     if (listenForeignUpdates) {
                         Timber.d("listenChangesComments NOTIFY");
-                        //return localRepositoryBox.getAllNotesOrderBy(Note_.unixTime);
                         return Observable.fromCallable(() ->
-                                localRepositoryBox.getAllNotesOrderByData(Note_.unixTime));
+                                localRepositoryBox.getAllNotesOrderBy(Note_.unixTime));
                     }
                     else {
                         Timber.d("listenChangesComments CUT");
@@ -70,9 +74,8 @@ public class NotesListPresenter extends MvpPresenter<NotesListView> {
                 .flatMap(descriptions -> {
                     if (listenForeignUpdates) {
                         Timber.d("listenChangesDescription NOTIFY");
-                        //return localRepositoryBox.getAllNotesOrderBy(Note_.unixTime);
                         return Observable.fromCallable(() ->
-                                localRepositoryBox.getAllNotesOrderByData(Note_.unixTime));
+                                localRepositoryBox.getAllNotesOrderBy(Note_.unixTime));
                     }
                     else {
                         Timber.d("listenChangesDescription CUT");
@@ -83,13 +86,12 @@ public class NotesListPresenter extends MvpPresenter<NotesListView> {
     }
 
     private Observable<List<Note>> listenChangesNotes() {
-        return localRepositoryBox.getAllNotesOrderBy(Note_.unixTime);
+        return localRepositoryBox.getAllNotesOrderByObservable(Note_.unixTime);
     }
 
     private void loadNotesAndListenForChanges() {
         EspressoIdlingResource.increment();
-        disposable = Observable.merge(listenChangesComments(), listenChangesDescription(), listenChangesNotes())
-                //.debounce(5, TimeUnit.MILLISECONDS)
+        disposableNotes = Observable.merge(listenChangesComments(), listenChangesDescription(), listenChangesNotes())
                 .observeOn(main)
                 .subscribe(notes -> {
                     if (notes != null) {
@@ -118,6 +120,18 @@ public class NotesListPresenter extends MvpPresenter<NotesListView> {
                 }, () -> {Timber.d("listenForeignEntitiesUpdateStatus onComplete");});
     }
 
+
+    public void onStop() {
+
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        disposableNotes.dispose();
+        listenerManager.dispose();
+    }
+
     //TODO OLD
     //------------------------------------------------------------------------
     private void listenCommentsChanges() {
@@ -126,7 +140,7 @@ public class NotesListPresenter extends MvpPresenter<NotesListView> {
                 .flatMap(comments -> {
                     if (listenForeignUpdates) {
                         Timber.d("listenChangesDescription GO");
-                        return localRepositoryBox.getAllNotesOrderBy(Note_.unixTime);
+                        return localRepositoryBox.getAllNotesOrderByObservable(Note_.unixTime);
                     } else {
                         Timber.d("listenChangesDescription CUT");
                         return Observable.never();
@@ -152,9 +166,9 @@ public class NotesListPresenter extends MvpPresenter<NotesListView> {
                     if (listenForeignUpdates) {
                         Timber.d("listenChangesDescription GO");
                         return Observable.fromCallable(() -> {
-                            return localRepositoryBox.getAllNotesOrderByData(Note_.unixTime);
+                            return localRepositoryBox.getAllNotesOrderBy(Note_.unixTime);
                         });
-                        //return localRepositoryBox.getAllNotesOrderBy(Note_.unixTime);
+                        //return localRepositoryBox.getAllNotesOrderByObservable(Note_.unixTime);
                     } else {
                         Timber.d("listenChangesDescription CUT");
                         return Observable.never();
@@ -171,7 +185,7 @@ public class NotesListPresenter extends MvpPresenter<NotesListView> {
     }
 
     private void loadNotes() {
-        disposable = localRepositoryBox.getAllNotesOrderBy(Note_.unixTime)
+        disposableNotes = localRepositoryBox.getAllNotesOrderByObservable(Note_.unixTime)
                 .observeOn(main)
                 .subscribe(new Consumer<List<Note>>() {
                     @Override
@@ -185,19 +199,5 @@ public class NotesListPresenter extends MvpPresenter<NotesListView> {
                 }, () -> {
                     Timber.d("onComplete");
                 });
-    }
-
-    //----------------------------------------------------------------------------------
-    public void onStop() {
-
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        disposable.dispose();
-//        disposableComments.dispose();
-       // disposableDescriptions.dispose();
-        listenerManager.dispose();
     }
 }

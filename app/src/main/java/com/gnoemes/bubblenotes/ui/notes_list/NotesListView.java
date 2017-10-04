@@ -16,8 +16,6 @@ import java.util.List;
 public interface NotesListView extends MvpView {
     @StateStrategyType(AddToEndSingleStrategy.class)
     void setNotesList(List<Note> notes);
-    @StateStrategyType(AddToEndSingleStrategy.class)
-    void notifyDescriptionChanged(List<Description> descriptions);
 
     @StateStrategyType(SkipStrategy.class)
     void showMessage(String msg);

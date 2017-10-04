@@ -18,9 +18,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.note_detail.NoteDetailActivity"/>
-        <activity android:name=".ui.test.TestActivity">
-
-        </activity>
     </application>
 
 

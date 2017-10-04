@@ -15,25 +15,17 @@ import io.reactivex.Observable;
 
 public interface LocalRepository {
 
-    List<Note> getAllNotesOrderByData(Property property);
+    Observable<Note> getNote(long id);
+    Observable<Long> addNote(Note note);
+    Observable<Long> UpdateNote(Note note);
+    Observable<Boolean> deleteNote(long id);
+
+    List<Note> getAllNotesOrderBy(Property property);
+    Observable<List<Note>> getAllNotesOrderByObservable(Property property);
 
     Observable<Boolean> subscribeToChangeListenerManager();
 
     Observable<List<Comment>> getAllComments();
-
-    Observable<List<Comment>> addComments(List<Comment> comments);
-
-    Observable<Description> addDescription(Description description);
-
-    Observable<List<Comment>> getCommentsById(long note_id);
-
     Observable<List<Description>> getAllDescription();
 
-    Observable<List<Note>> getAllNotesOrderBy(Property property);
-    Observable<Note> getNote(long id);
-    Observable<Long> addNote(Note note);
-
-    Observable<Long> UpdateNote(Note note);
-
-    Observable<Boolean> deleteNote(long id);
 }
