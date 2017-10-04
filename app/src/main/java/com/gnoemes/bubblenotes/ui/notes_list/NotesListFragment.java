@@ -60,7 +60,7 @@ public class NotesListFragment extends MvpAppCompatFragment implements NotesList
     Toolbar toolbar;
 
     @InjectPresenter
-    private NotesListPresenter presenter;
+    NotesListPresenter presenter;
 
     private BoxStore boxStore;
 
@@ -159,14 +159,12 @@ public class NotesListFragment extends MvpAppCompatFragment implements NotesList
 
             case R.id.menu_update_description:
                 Timber.d("Button changeDescription");
-                Description description = descriptions.get(1);
-                description.setPriority(1);
-                description.setName("Name from frag");
-                descriptionBox.put(description);
-
-                Description newDesc = descriptionBox.get(description.getId());
-
-
+                if (descriptions.size() > 0) {
+                    Description description = descriptions.get(0);
+                    description.setPriority(1);
+                    description.setName("Name from frag");
+                    descriptionBox.put(description);
+                }
                 return true;
             case R.id.menu_update_comment:
 

@@ -15,8 +15,6 @@ dependencies {
 }
 apply plugin: 'io.objectbox'
 
-uploadArchives.enabled = false
-
 android {
     compileSdkVersion 26
     buildToolsVersion "26.0.1"
@@ -55,8 +53,8 @@ dependencies {
 //    compile 'com.google.dagger:dagger-android:2.10'
 //    compile 'com.google.dagger:dagger-android-support:2.10'
 //    annotationProcessor 'com.google.dagger:dagger-android-processor:2.10'
-    compile "com.google.dagger:dagger:2.9"
-    annotationProcessor "com.google.dagger:dagger-compiler:2.9"
+//    compile "com.google.dagger:dagger:2.9"
+//    annotationProcessor "com.google.dagger:dagger-compiler:2.9"
 
     //Widgets
     compile 'me.srodrigo:androidhintspinner:1.0.0' //hint spinner
