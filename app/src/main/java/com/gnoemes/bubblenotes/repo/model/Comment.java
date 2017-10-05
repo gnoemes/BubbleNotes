@@ -1,10 +1,8 @@
 package com.gnoemes.bubblenotes.repo.model;
 
-import java.util.Date;
-
 import io.objectbox.annotation.Entity;
 import io.objectbox.annotation.Id;
-import io.objectbox.relation.ToMany;
+import io.objectbox.relation.ToOne;
 
 /**
  * Created by kenji1947 on 29.09.2017.
@@ -16,7 +14,16 @@ public class Comment {
     long id;
 
     String body;
-    Date date;
+    long unixTime;
+    ToOne<Note> noteToOne;
+
+    public ToOne<Note> getNoteToOne() {
+        return noteToOne;
+    }
+
+    public void setNoteToOne(ToOne<Note> noteToOne) {
+        this.noteToOne = noteToOne;
+    }
 
     public long getId() {
         return id;
@@ -34,11 +41,11 @@ public class Comment {
         this.body = body;
     }
 
-    public Date getDate() {
-        return date;
+    public long getUnixTime() {
+        return unixTime;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public void setUnixTime(long unixTime) {
+        this.unixTime = unixTime;
     }
 }

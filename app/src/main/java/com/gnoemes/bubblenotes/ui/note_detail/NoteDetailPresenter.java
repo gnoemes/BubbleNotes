@@ -2,15 +2,11 @@ package com.gnoemes.bubblenotes.ui.note_detail;
 
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
+import com.gnoemes.bubblenotes.repo.local.LocalRepository;
 import com.gnoemes.bubblenotes.repo.local.LocalRepositoryImpl;
-import com.gnoemes.bubblenotes.repo.model.Comment;
-import com.gnoemes.bubblenotes.repo.model.Description;
 import com.gnoemes.bubblenotes.repo.model.Note;
+import com.gnoemes.bubblenotes.util.EspressoIdlingResource;
 
-import java.util.List;
-
-import io.objectbox.relation.ToMany;
-import io.objectbox.relation.ToOne;
 import io.reactivex.Scheduler;
 import timber.log.Timber;
 
@@ -22,10 +18,10 @@ import timber.log.Timber;
 public class NoteDetailPresenter extends MvpPresenter<NoteDetailView> {
     private Scheduler main;
     private Scheduler io;
-    private LocalRepositoryImpl localRepositoryBox;
+    private LocalRepository localRepositoryBox;
     private long id;
 
-    public NoteDetailPresenter(Scheduler main, Scheduler io, LocalRepositoryImpl localRepositoryBox, long id) {
+    public NoteDetailPresenter(Scheduler main, Scheduler io, LocalRepository localRepositoryBox, long id) {
         this.main = main;
         this.io = io;
         this.localRepositoryBox = localRepositoryBox;
@@ -35,16 +31,13 @@ public class NoteDetailPresenter extends MvpPresenter<NoteDetailView> {
     @Override
     protected void onFirstViewAttach() {
         super.onFirstViewAttach();
+        Timber.d("onFirstViewAttach");
         if (id != -1)
             getNote(id);
-
-        Note note = new Note();
-
-        List<Comment> comments = note.getComments();
-        ToOne<Description> description = note.getDescription();
     }
 
     public void getNote(long id) {
+        Timber.d("getNote");
         localRepositoryBox.getNote(id)
                 .subscribeOn(io)
                 .observeOn(main)
@@ -56,15 +49,35 @@ public class NoteDetailPresenter extends MvpPresenter<NoteDetailView> {
                 });
     }
 
-    public void addOrUpdateNote(Note note) {
-        localRepositoryBox.addOrUpdateNote(note)
+    public void addNote(Note note) {
+        EspressoIdlingResource.increment();
+
+        localRepositoryBox.addNote(note)
                 .subscribeOn(io)
                 .observeOn(main)
                 .subscribe(id -> {
-                    Timber.d("addNote showMessage");
+                    Timber.d("addNote onNext");
+                    EspressoIdlingResource.decrement();
+
                     getViewState().showToast("Note added " + id);
                     getViewState().backPressed();
-                }, throwable -> {}, () -> {});
+                }, throwable -> {
+                    Timber.d("addNote onError " + throwable);
+                    EspressoIdlingResource.decrement();
+                }, () -> {});
+    }
+
+    public void updateNote(Note note) {
+        localRepositoryBox.UpdateNote(note)
+                .subscribeOn(io)
+                .observeOn(main)
+                .subscribe(id -> {
+                    Timber.d("UpdateNote onNext");
+                    getViewState().showToast("Note updated " + id);
+                    getViewState().backPressed();
+                }, throwable -> {
+                    Timber.d("UpdateNote onError " + throwable);
+                }, () -> {});
     }
 
     public void deleteNote(long id) {

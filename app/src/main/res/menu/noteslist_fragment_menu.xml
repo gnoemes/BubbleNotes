@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/menu_log_note"
+        android:title="Log notes"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/menu_log_description"
+        android:title="Log description"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/menu_log_comment"
+        android:title="Log comment"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/menu_update_description"
+        android:title="Update description"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/menu_update_comment"
+        android:title="Update comment"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/menu_delete_all"
+        android:title="Delete all"
+        app:showAsAction="never" />
+
+</menu>

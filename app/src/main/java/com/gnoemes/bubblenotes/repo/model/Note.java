@@ -1,5 +1,6 @@
 package com.gnoemes.bubblenotes.repo.model;
 
+import io.objectbox.annotation.Backlink;
 import io.objectbox.annotation.Entity;
 import io.objectbox.annotation.Id;
 import io.objectbox.relation.ToMany;
@@ -13,13 +14,21 @@ public class Note {
     @Id
     long id;
     private String name;
-    private int priority;
+    private long unixTime;
+    boolean complete;
 
+    @Backlink
     ToOne<Description> description;
+    @Backlink
     ToMany<Comment> comments;
+
 
     public ToOne<Description> getDescription() {
         return description;
+    }
+
+    public void setDescription(ToOne<Description> description) {
+        this.description = description;
     }
 
     public ToMany<Comment> getComments() {
@@ -42,11 +51,19 @@ public class Note {
         this.name = name;
     }
 
-    public int getPriority() {
-        return priority;
+    public long getUnixTime() {
+        return unixTime;
     }
 
-    public void setPriority(int priority) {
-        this.priority = priority;
+    public void setUnixTime(long unixTime) {
+        this.unixTime = unixTime;
+    }
+
+    public boolean isComplete() {
+        return complete;
+    }
+
+    public void setComplete(boolean complete) {
+        this.complete = complete;
     }
 }

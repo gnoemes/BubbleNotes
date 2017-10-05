@@ -1,5 +1,7 @@
 package com.gnoemes.bubblenotes.repo.local;
 
+import com.gnoemes.bubblenotes.repo.model.Comment;
+import com.gnoemes.bubblenotes.repo.model.Description;
 import com.gnoemes.bubblenotes.repo.model.Note;
 
 import java.util.List;
@@ -13,8 +15,17 @@ import io.reactivex.Observable;
 
 public interface LocalRepository {
 
-    Observable<List<Note>> getAllNotesOrderBy(Property property);
     Observable<Note> getNote(long id);
-    Observable<Long> addOrUpdateNote(Note note);
+    Observable<Long> addNote(Note note);
+    Observable<Long> UpdateNote(Note note);
     Observable<Boolean> deleteNote(long id);
+
+    List<Note> getAllNotesSortedList(Property property);
+    Observable<List<Note>> getAllNotesSorted(Property property);
+
+    Observable<Boolean> observeNoteForeignChangesStatus();
+
+    Observable<List<Comment>> getAllComments();
+    Observable<List<Description>> getAllDescription();
+
 }
