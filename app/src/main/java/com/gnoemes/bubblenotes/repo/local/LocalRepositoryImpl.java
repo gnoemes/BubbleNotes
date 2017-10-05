@@ -27,7 +27,7 @@ public class LocalRepositoryImpl implements LocalRepository {
     private Box<Comment> commentBox;
     private Box<Description> descriptionBox;
 
-    private PublishSubject<Boolean> receiveNoteForeignChangesSubject;
+    private PublishSubject<Boolean> subjectNoteForeignChangesStatus;
 
     public LocalRepositoryImpl(BoxStore boxStore) {
         this.boxStore = boxStore;
@@ -36,7 +36,7 @@ public class LocalRepositoryImpl implements LocalRepository {
         commentBox = boxStore.boxFor(Comment.class);
         descriptionBox = boxStore.boxFor(Description.class);
 
-        receiveNoteForeignChangesSubject = PublishSubject.create();
+        subjectNoteForeignChangesStatus = PublishSubject.create();
 
         //clearAllEntities();
     }
@@ -49,7 +49,7 @@ public class LocalRepositoryImpl implements LocalRepository {
 
     @Override
     public Observable<Boolean> observeNoteForeignChangesStatus() {
-        return receiveNoteForeignChangesSubject;
+        return subjectNoteForeignChangesStatus;
     }
 
     @Override
@@ -94,10 +94,11 @@ public class LocalRepositoryImpl implements LocalRepository {
             return noteBox.get(id);});
     }
 
+    //Создание новой Note
     @Override
     public Observable<Long> addNote(Note note) {
         Timber.d("addNote");
-        receiveNoteForeignChangesSubject.onNext(false);
+        subjectNoteForeignChangesStatus.onNext(false);
         return Observable.fromCallable(() -> {
             //CommonUtils.longOperation();
             return noteBox.put(note);
@@ -105,15 +106,21 @@ public class LocalRepositoryImpl implements LocalRepository {
     }
 
     //Каскадное сохранение.
+
+
+    //Обновление сохраненной Note.
+    //Каскадное сохранение дочерних сущностей произойдет при добавлении новой сущности(без id).
+    //При удалении дочерней сущности из связи, последняя будет отвязана от родительской но останется в бд.
+    //Для сохранения изменения в дочерних нужных сохранять их явно
     @Override
     public Observable<Long> UpdateNote(Note note) {
         Timber.d("UpdateNote");
-        receiveNoteForeignChangesSubject.onNext(false);
+        subjectNoteForeignChangesStatus.onNext(false);
         return Observable.fromCallable(() -> {
             //CommonUtils.longOperation();
             boxStore.runInTx(() -> {
 
-                //explicitly save
+                //явное сохранение изменений в дочерней сущности
                 descriptionBox.put(note.getDescription().getTarget());
 
                 noteBox.put(note);
@@ -126,7 +133,6 @@ public class LocalRepositoryImpl implements LocalRepository {
                     }
                 }
             });
-
             return note.getId();
         });
 
@@ -135,7 +141,7 @@ public class LocalRepositoryImpl implements LocalRepository {
     @Override
     public Observable<Boolean> deleteNote(long id) {
         Timber.d("deleteNote");
-        receiveNoteForeignChangesSubject.onNext(false);
+        subjectNoteForeignChangesStatus.onNext(false);
         return Observable.fromCallable(() -> {
             //CommonUtils.longOperation();
             boxStore.runInTx(() -> {
