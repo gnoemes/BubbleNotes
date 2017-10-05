@@ -26,98 +26,97 @@ public class NotesListPresenter extends MvpPresenter<NotesListView> {
     private Scheduler main;
     private Scheduler io;
 
-    private LocalRepository localRepositoryBox;
+    private LocalRepository localRepository;
 
     private Disposable disposableNotes;
-    private Disposable listenerManager;
-
-    private volatile boolean listenForeignUpdates = false;
-
+    private Disposable disposableListenForeignUpdates;
     private Disposable disposableDescriptions;
     private Disposable disposableComments;
+
+    private volatile boolean receiveNoteForeignChanges = false;
 
     public NotesListPresenter(Scheduler main, Scheduler io, LocalRepository localRepositoryBox) {
         this.main = main;
         this.io = io;
-        this.localRepositoryBox = localRepositoryBox;
+        this.localRepository = localRepositoryBox;
     }
 
     @Override
     protected void onFirstViewAttach() {
         super.onFirstViewAttach();
 
-        loadNotesAndListenForChanges();
-        listenForeignEntitiesUpdateStatus();
+        loadNotesAndObserve();
+        observeNoteForeignChangesStatus();
 
         //loadNotes();
         //listenCommentsChanges();
         //listenDescriptionChanges();
 
     }
-    public Observable<List<Note>> listenChangesComments() {
-        return localRepositoryBox.getAllComments()
+    public Observable<List<Note>> observeComments() {
+        return localRepository.getAllComments()
                 .flatMap(comments -> {
-                    if (listenForeignUpdates) {
-                        Timber.d("listenChangesComments NOTIFY");
+                    if (receiveNoteForeignChanges) {
+                        Timber.d("observeComments NOTIFY");
                         return Observable.fromCallable(() ->
-                                localRepositoryBox.getAllNotesOrderBy(Note_.unixTime));
+                                localRepository.getAllNotesSortedList(Note_.unixTime));
                     }
                     else {
-                        Timber.d("listenChangesComments CUT");
+                        Timber.d("observeComments IGNORE");
                         return Observable.never();
                     }
                 });
     }
 
-    public Observable<List<Note>> listenChangesDescription() {
-        return localRepositoryBox.getAllDescription()
+    public Observable<List<Note>> observeDescriptions() {
+        return localRepository.getAllDescription()
                 .flatMap(descriptions -> {
-                    if (listenForeignUpdates) {
-                        Timber.d("listenChangesDescription NOTIFY");
+                    if (receiveNoteForeignChanges) {
+                        Timber.d("observeDescriptions NOTIFY");
                         return Observable.fromCallable(() ->
-                                localRepositoryBox.getAllNotesOrderBy(Note_.unixTime));
+                                localRepository.getAllNotesSortedList(Note_.unixTime));
                     }
                     else {
-                        Timber.d("listenChangesDescription CUT");
+                        Timber.d("observeDescriptions IGNORE");
                         return Observable.never();
                     }
 
                 });
     }
 
-    private Observable<List<Note>> listenChangesNotes() {
-        return localRepositoryBox.getAllNotesOrderByObservable(Note_.unixTime);
+    private Observable<List<Note>> observeNotes() {
+        return localRepository.getAllNotesSorted(Note_.unixTime);
     }
 
-    private void loadNotesAndListenForChanges() {
+    private void loadNotesAndObserve() {
         EspressoIdlingResource.increment();
-        disposableNotes = Observable.merge(listenChangesComments(), listenChangesDescription(), listenChangesNotes())
+        disposableNotes = Observable.merge(observeComments(), observeDescriptions(), observeNotes())
                 .observeOn(main)
                 .subscribe(notes -> {
-                    if (notes != null) {
-                        Timber.d("loadNotes onNext");
+                            Timber.d("loadNotesAndObserve onNext");
+                            if (!EspressoIdlingResource.getIdlingResource().isIdleNow())
+                                EspressoIdlingResource.decrement();
 
-                        if(!EspressoIdlingResource.getIdlingResource().isIdleNow())
-                            EspressoIdlingResource.decrement();
+                            getViewState().setNotesList(notes);
+                            receiveNoteForeignChanges = true;
 
-                        getViewState().setNotesList(notes);
-                        listenForeignUpdates = true;
-                    } else {
-                    }
-                }, throwable -> {
-                    throwable.printStackTrace();
-                    if(!EspressoIdlingResource.getIdlingResource().isIdleNow())
-                        EspressoIdlingResource.decrement();
-                }, () -> {Timber.d("onComplete");});
+                        }, throwable -> {
+                            throwable.printStackTrace();
+                            if (!EspressoIdlingResource.getIdlingResource().isIdleNow())
+                                EspressoIdlingResource.decrement();
+                        },
+                        () -> {
+                            Timber.d("onComplete");
+                        });
     }
 
-    public void listenForeignEntitiesUpdateStatus() {
-        listenerManager = localRepositoryBox.subscribeToChangeListenerManager()
+    public void observeNoteForeignChangesStatus() {
+        disposableListenForeignUpdates = localRepository.observeNoteForeignChangesStatus()
                 .observeOn(main)
                 .subscribe(aBoolean -> {
-                    listenForeignUpdates = aBoolean;
-                }, throwable -> {Timber.d("listenForeignEntitiesUpdateStatus onError " + throwable);
-                }, () -> {Timber.d("listenForeignEntitiesUpdateStatus onComplete");});
+                    receiveNoteForeignChanges = aBoolean;
+                }, throwable -> {Timber.d("observeNoteForeignChangesStatus onError " + throwable);
+                }, () -> {Timber.d("observeNoteForeignChangesStatus onComplete");});
     }
 
 
@@ -127,29 +126,30 @@ public class NotesListPresenter extends MvpPresenter<NotesListView> {
 
     @Override
     public void onDestroy() {
+        Timber.d("onDestroy");
         super.onDestroy();
         disposableNotes.dispose();
-        listenerManager.dispose();
+        disposableListenForeignUpdates.dispose();
     }
 
     //TODO OLD
     //------------------------------------------------------------------------
     private void listenCommentsChanges() {
 
-        disposableComments = localRepositoryBox.getAllComments()
+        disposableComments = localRepository.getAllComments()
                 .flatMap(comments -> {
-                    if (listenForeignUpdates) {
-                        Timber.d("listenChangesDescription GO");
-                        return localRepositoryBox.getAllNotesOrderByObservable(Note_.unixTime);
+                    if (receiveNoteForeignChanges) {
+                        Timber.d("observeDescriptions GO");
+                        return localRepository.getAllNotesSorted(Note_.unixTime);
                     } else {
-                        Timber.d("listenChangesDescription CUT");
+                        Timber.d("observeDescriptions CUT");
                         return Observable.never();
                     }
                 })
                 .observeOn(main)
                 .subscribe(descriptions -> {
                     Timber.d("listenCommentsChanges onNext");
-                    if (listenForeignUpdates) {
+                    if (receiveNoteForeignChanges) {
                         Timber.d("listenCommentsChanges onNext notifyViewState");
                         //getViewState().notifyDescriptionChanged(descriptions);
                     }
@@ -157,42 +157,42 @@ public class NotesListPresenter extends MvpPresenter<NotesListView> {
     }
 
     private void listenDescriptionChanges() {
-        disposableDescriptions = localRepositoryBox.getAllDescription()
+        disposableDescriptions = localRepository.getAllDescription()
                 .flatMap(descriptions -> {
-                    Timber.d("listenChangesDescription Fire");
+                    Timber.d("observeDescriptions Fire");
                     return Observable.just(descriptions);
                 })
                 .flatMap(comments -> {
-                    if (listenForeignUpdates) {
-                        Timber.d("listenChangesDescription GO");
+                    if (receiveNoteForeignChanges) {
+                        Timber.d("observeDescriptions GO");
                         return Observable.fromCallable(() -> {
-                            return localRepositoryBox.getAllNotesOrderBy(Note_.unixTime);
+                            return localRepository.getAllNotesSortedList(Note_.unixTime);
                         });
-                        //return localRepositoryBox.getAllNotesOrderByObservable(Note_.unixTime);
+                        //return localRepository.getAllNotesSorted(Note_.unixTime);
                     } else {
-                        Timber.d("listenChangesDescription CUT");
+                        Timber.d("observeDescriptions CUT");
                         return Observable.never();
                     }
                 })
                 .observeOn(main)
                 .subscribe(descriptions -> {
-                    Timber.d("listenChangesDescription onNext");
-                    if (listenForeignUpdates) {
-                        Timber.d("listenChangesDescription onNext notifyViewState");
+                    Timber.d("observeDescriptions onNext");
+                    if (receiveNoteForeignChanges) {
+                        Timber.d("observeDescriptions onNext notifyViewState");
                         //getViewState().notifyDescriptionChanged(descriptions);
                     }
                 });
     }
 
     private void loadNotes() {
-        disposableNotes = localRepositoryBox.getAllNotesOrderByObservable(Note_.unixTime)
+        disposableNotes = localRepository.getAllNotesSorted(Note_.unixTime)
                 .observeOn(main)
                 .subscribe(new Consumer<List<Note>>() {
                     @Override
                     public void accept(List<Note> notes) throws Exception {
                         Timber.d("loadNotes onComplete");
                         getViewState().setNotesList(notes);
-                        listenForeignUpdates = true;
+                        receiveNoteForeignChanges = true;
                     }
                 }, throwable -> {
                     throwable.printStackTrace();

@@ -20,10 +20,10 @@ public interface LocalRepository {
     Observable<Long> UpdateNote(Note note);
     Observable<Boolean> deleteNote(long id);
 
-    List<Note> getAllNotesOrderBy(Property property);
-    Observable<List<Note>> getAllNotesOrderByObservable(Property property);
+    List<Note> getAllNotesSortedList(Property property);
+    Observable<List<Note>> getAllNotesSorted(Property property);
 
-    Observable<Boolean> subscribeToChangeListenerManager();
+    Observable<Boolean> observeNoteForeignChangesStatus();
 
     Observable<List<Comment>> getAllComments();
     Observable<List<Description>> getAllDescription();
